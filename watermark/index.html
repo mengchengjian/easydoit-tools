@@ -213,6 +213,28 @@ input[type="file"]{display:none}
 .modal-box input[type="text"]{width:100%;padding:6px 8px;border:1px solid var(--border2);border-radius:4px;background:var(--bg4);color:var(--text);font-size:11px;margin-bottom:10px}
 .modal-actions{display:flex;gap:5px;justify-content:flex-end}
 
+/* feature info */
+.feat-info{border:1px solid var(--border2);border-radius:6px;background:var(--tmpl-bg);margin-bottom:10px;overflow:hidden}
+.feat-header{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;cursor:pointer;user-select:none}
+.feat-header:hover{background:var(--tmpl-hover)}
+.feat-title{font-size:10px;font-weight:600;color:var(--text)}
+.feat-arrow{font-size:8px;color:var(--text2);transition:transform .2s}
+.feat-arrow.open{transform:rotate(180deg)}
+.feat-body{padding:0 10px 8px}
+.feat-body.hidden{display:none}
+.feat-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;font-size:9px;color:var(--text2)}
+.feat-dot{color:var(--accent);flex-shrink:0;margin-top:1px;font-size:7px}
+.feat-kbd{display:inline-block;padding:1px 4px;border:1px solid var(--border2);border-radius:3px;font-size:8px;color:var(--text3);background:var(--bg4);margin:0 2px;font-family:monospace}
+.feat-divider{margin:6px 0;border:none;border-top:1px solid var(--border)}
+
+/* sponsor */
+.sponsor{margin-top:auto;border-top:1px solid var(--border);padding:10px;text-align:center}
+.sponsor-title{font-size:9px;color:var(--text3);margin-bottom:8px}
+.sponsor-qrs{display:flex;gap:10px;justify-content:center}
+.sponsor-qr{width:80px;height:80px;border-radius:6px;border:1px solid var(--border2);object-fit:cover;cursor:pointer;transition:transform .15s}
+.sponsor-qr:hover{transform:scale(1.05)}
+.sponsor-label{font-size:8px;color:var(--text3);margin-top:3px}
+
 .hidden{display:none!important}
 .kv{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;margin-top:6px}
 </style>
@@ -247,6 +269,24 @@ input[type="file"]{display:none}
       <div class="icon">📁</div><div class="text">点击或拖拽上传</div><div class="hint">JPG/PNG/WebP</div>
     </div>
     <input type="file" id="fi" accept="image/*" multiple onchange="handleFiles(this.files)">
+
+    <div class="feat-info">
+      <div class="feat-header" onclick="toggleFeatInfo()">
+        <span class="feat-title">功能说明</span>
+        <span class="feat-arrow" id="featArrow">▼</span>
+      </div>
+      <div class="feat-body" id="featBody">
+        <div class="feat-row"><span class="feat-dot">●</span>文字/图片水印，批量处理多张图片</div>
+        <div class="feat-row"><span class="feat-dot">●</span>九宫格定位 + 预览区直接拖动水印位置</div>
+        <div class="feat-row"><span class="feat-dot">●</span>16款预设模板（版权/社交/商务/创意），一键套用</div>
+        <div class="feat-row"><span class="feat-dot">●</span>大图灯箱双击预览，键盘 ← → 切换图片</div>
+        <hr class="feat-divider">
+        <div style="font-size:9px;color:var(--text3);margin-bottom:4px">快捷键</div>
+        <div class="feat-row"><span class="feat-kbd">?</span> 快捷键面板 &nbsp;&nbsp;&nbsp;<span class="feat-kbd">Ctrl+Z</span> 撤销</div>
+        <div class="feat-row"><span class="feat-kbd">Ctrl+V</span> 粘贴上传 &nbsp;<span class="feat-kbd">Ctrl+S</span> 保存预设</div>
+        <div class="feat-row"><span class="feat-kbd">← →</span> 切换图片</div>
+      </div>
+    </div>
 
     <div class="sec">
       <div class="sec-title">水印类型</div>
@@ -366,6 +406,13 @@ input[type="file"]{display:none}
       <span style="font-size:8px;color:var(--text3)" id="rCount">0 张</span>
     </div>
     <div class="right-list" id="rList"></div>
+    <div class="sponsor">
+      <div class="sponsor-title">支持作者</div>
+      <div class="sponsor-qrs">
+        <div><img class="sponsor-qr" src="qr-wx.jpeg" alt="微信赞赏"><div class="sponsor-label">微信</div></div>
+        <div><img class="sponsor-qr" src="qr-alipay.jpeg" alt="支付宝赞赏"><div class="sponsor-label">支付宝</div></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -634,6 +681,7 @@ function removeImage(i){
 
 
 function toggleHelp(){$('helpOverlay').classList.toggle('hidden')}
+function toggleFeatInfo(){$('featBody').classList.toggle('hidden');$('featArrow').classList.toggle('open')}
 function hideHelp(){$('helpOverlay').classList.add('hidden')}
 
 // ==== config ====
