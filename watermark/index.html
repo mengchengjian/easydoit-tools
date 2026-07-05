@@ -225,6 +225,7 @@ input[type="file"]{display:none}
   </div>
     <div class="theme-dots" id="themeDots"><span class="theme-dot dot-blue active" data-theme="" title="深蓝科技"></span><span class="theme-dot dot-night" data-theme="midnight" title="墨夜"></span><span class="theme-dot dot-gold" data-theme="gold" title="暖金"></span><span class="theme-dot dot-mist" data-theme="mist" title="雾蓝"></span><span class="theme-dot dot-green" data-theme="bamboo" title="竹韵"></span><span class="theme-dot dot-light" data-theme="light" title="极昼"></span></div>
   <div style="display:flex;gap:5px;align-items:center">
+    <button class="btn btn-xs" onclick="toggleHelp()" title="快捷键 (?)">?</button>
     <button class="btn btn-xs" onclick="undoLast()">↩ 撤销</button>
     <button class="btn btn-xs" onclick="savePreset()">保存预设</button>
     <select id="fmtSel" style="padding:3px 6px;border:1px solid var(--border2);border-radius:3px;background:var(--bg4);color:var(--text);font-size:9px">
@@ -270,6 +271,7 @@ input[type="file"]{display:none}
           <div class="fg"><label>透明</label><input type="range" id="wOp" min="5" max="100" value="40" oninput="ur('wOp')"><span class="rv" id="wOpV">40%</span></div>
         </div>
         <div class="fg"><label>旋转</label><input type="range" id="wRot" min="-90" max="90" value="-20" oninput="ur('wRot')"><span class="rv" id="wRotV">-20°</span></div>
+        <div class="fg"><label>混合模式</label><select id="wBM" onchange="autoPreview()"><option value="normal">正常</option><option value="multiply">正片叠底</option><option value="screen">滤色</option><option value="overlay">叠加</option><option value="darken">变暗</option><option value="lighten">变亮</option></select></div>
       </div>
 
       <div class="effect-row"><input type="checkbox" id="wSh" onchange="onShadow()"><label>阴影</label></div>
@@ -402,7 +404,8 @@ input[type="file"]{display:none}
 const $ = id => document.getElementById(id);
 let images = [], curIdx = -1, wmImg = null, wmType = 'text', history = [],
     presets = JSON.parse(localStorage.wm_presets || '[]'),
-    _wmBounds = null, _drag = false, _dragOX = 0, _dragOY = 0, _imgW = 0, _imgH = 0;
+    _wmBounds = null, _drag = false, _dragOX = 0, _dragOY = 0, _imgW = 0, _imgH = 0,
+    _cachedImg = null, _dragRAF = null, _snapX = 0, _snapY = 0, _showGuides = false;
 
 const TEMPLATES = {
   'cr-w':{text:'© 2026 All Rights Reserved',fontSize:22,color:'#ffffff',opacity:55,rotation:0,position:'br',marginX:18,marginY:14,fontFamily:'Arial',shadow:true,shadowColor:'#000',shadowOffset:1,stroke:false},
@@ -492,6 +495,7 @@ function renderPreview(){
   img.onload=()=>{
     cv.width=img.width;cv.height=img.height;
     _imgW=img.width;_imgH=img.height;
+    _cachedImg=img;
     const ctx=cv.getContext('2d');
     ctx.drawImage(img,0,0);
     drawWM(ctx,img.width,img.height);
@@ -525,21 +529,41 @@ function updateMarginsByCanvasXY(nx,ny){
 }
 
 (function initDrag(){
+  let rafPending=false;
+  function renderDrag(cv){
+    const ctx=cv.getContext('2d');
+    if(_cachedImg)ctx.drawImage(_cachedImg,0,0,_imgW,_imgH);
+    drawWM(ctx,_imgW,_imgH);
+    if(_showGuides)drawGuides(ctx);
+    rafPending=false;
+  }
+  function scheduleRender(cv){
+    if(!rafPending){rafPending=true;_dragRAF=requestAnimationFrame(()=>renderDrag(cv));}
+  }
   document.addEventListener('mousemove',e=>{
     if(!_drag)return;
     const cv=document.querySelector('#pvMain canvas');if(!cv)return;
     cv.style.cursor='grabbing';
     const p=canvasPos(e,cv);
-    const nx=p.x-_dragOX,ny=p.y-_dragOY;
+    let nx=p.x-_dragOX,ny=p.y-_dragOY;
+    const b=_wmBounds;
+    if(b){
+      _showGuides=false;
+      const snapDist=15;
+      if(Math.abs(nx+b.w/2-_imgW/2)<snapDist){nx=_imgW/2-b.w/2;_showGuides=true;_snapX=nx+b.w/2;}
+      else if(Math.abs(nx)<snapDist){nx=0;_showGuides=true;_snapX=0;}
+      else if(Math.abs(nx+b.w-_imgW)<snapDist){nx=_imgW-b.w;_showGuides=true;_snapX=_imgW;}
+      if(Math.abs(ny+b.h/2-_imgH/2)<snapDist){ny=_imgH/2-b.h/2;_showGuides=true;_snapY=ny+b.h/2;}
+      else if(Math.abs(ny)<snapDist){ny=0;_showGuides=true;_snapY=0;}
+      else if(Math.abs(ny+b.h-_imgH)<snapDist){ny=_imgH-b.h;_showGuides=true;_snapY=_imgH;}
+    }
     updateMarginsByCanvasXY(nx,ny);
-    const f=images[curIdx];if(!f)return;
-    const ctx=cv.getContext('2d'),img=new Image();
-    img.onload=()=>{ctx.drawImage(img,0,0);drawWM(ctx,_imgW,_imgH)};
-    img.src=URL.createObjectURL(f.file);
+    scheduleRender(cv);
   });
   document.addEventListener('mouseup',()=>{
     if(_drag){
-      _drag=false;
+      _drag=false;_showGuides=false;
+      if(_dragRAF)cancelAnimationFrame(_dragRAF);
       const cv=document.querySelector('#pvMain canvas');
       if(cv)cv.style.cursor='default';
       updateAll();
@@ -562,6 +586,16 @@ function updateMarginsByCanvasXY(nx,ny){
   });
 })();
 
+function drawGuides(ctx){
+  ctx.save();
+  ctx.strokeStyle='rgba(88,166,255,.4)';ctx.lineWidth=1;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(_imgW/2,0);ctx.lineTo(_imgW/2,_imgH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,_imgH/2);ctx.lineTo(_imgW,_imgH/2);ctx.stroke();
+  if(_snapX>0&&_snapX<_imgW){ctx.strokeStyle='rgba(63,185,80,.6)';ctx.beginPath();ctx.moveTo(_snapX,0);ctx.lineTo(_snapX,_imgH);ctx.stroke();}
+  if(_snapY>0&&_snapY<_imgH){ctx.beginPath();ctx.moveTo(0,_snapY);ctx.lineTo(_imgW,_snapY);ctx.stroke();}
+  ctx.restore();
+}
+
 function updateNav(){
   const show=images.length>1;
   $('navPrev').classList.toggle('hidden',!show);
@@ -572,12 +606,24 @@ function updateNav(){
 function selectImage(i){curIdx=i;updateAll()}
 function navigate(d){if(!images.length)return;curIdx=(curIdx+d+images.length)%images.length;updateAll()}
 
-// keyboard navigation
+// keyboard navigation + paste
 document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
   if(e.key==='ArrowLeft')navigate(-1);
   if(e.key==='ArrowRight')navigate(1);
   if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undoLast()}
-  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();savePreset()}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();savePreset();e.preventDefault()}
+  if(e.key==='?'){toggleHelp();e.preventDefault()}
+  if(e.key==='Escape'){hideHelp()}
+});
+document.addEventListener('paste',e=>{
+  const items=e.clipboardData?.items;if(!items)return;
+  for(let i=0;i<items.length;i++){
+    if(items[i].type.startsWith('image/')){
+      const f=items[i].getAsFile();
+      if(f){handleFiles([f]);log('已从剪贴板粘贴');return;}
+    }
+  }
 });
 
 function removeImage(i){
@@ -585,6 +631,10 @@ function removeImage(i){
   if(curIdx>=images.length)curIdx=images.length-1;
   updateAll();log('已移除');
 }
+
+
+function toggleHelp(){$('helpOverlay').classList.toggle('hidden')}
+function hideHelp(){$('helpOverlay').classList.add('hidden')}
 
 // ==== config ====
 function cfg(){
@@ -603,6 +653,7 @@ function cfg(){
     imageScale:+$('wIS').value||25,
     imageOpacity:+$('wIO').value||40,
     shadow:$('wSh').checked,shadowColor:$('wShC').value,shadowOffset:+$('wShO').value||2,
+    blendMode:$('wBM').value||'normal',
     stroke:$('wSt').checked,strokeColor:$('wStC').value,strokeWidth:+$('wStW').value||2,
   };
 }
@@ -614,7 +665,9 @@ function pos(w,h,tw,th,c){
 }
 
 function drawWM(ctx,w,h){
-  const c=cfg();ctx.save();ctx.globalAlpha=(c.type==='text'?c.opacity:c.imageOpacity)/100;
+  const c=cfg();ctx.save();
+  ctx.globalAlpha=(c.type==='text'?c.opacity:c.imageOpacity)/100;
+  if(c.blendMode&&c.blendMode!=='normal')ctx.globalCompositeOperation=c.blendMode;
   if(c.type==='text')drawText(ctx,w,h,c);
   else if(wmImg)drawImageWM(ctx,w,h,c);
   ctx.restore();
@@ -812,5 +865,21 @@ function fmtSize(b){return b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/10
 updateRanges();renderPresets();
 window.addEventListener('resize',()=>{if(curIdx>=0)renderPreview()});
 </script>
+
+<div class="modal hidden" id="helpOverlay" onclick="hideHelp()">
+  <div class="modal-box" style="width:360px;max-height:80vh;overflow-y:auto" onclick="event.stopPropagation()">
+    <h3>快捷键</h3>
+    <table style="width:100%;font-size:11px;color:var(--text2);border-collapse:collapse">
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">← →</kbd></td><td>切换图片</td></tr>
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">Ctrl+Z</kbd></td><td>撤销</td></tr>
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">Ctrl+S</kbd></td><td>保存预设</td></tr>
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">Ctrl+V</kbd></td><td>粘贴上传图片</td></tr>
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">?</kbd></td><td>显示此面板</td></tr>
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">Esc</kbd></td><td>关闭面板</td></tr>
+      <tr><td style="padding:4px 0"><kbd style="background:var(--bg4);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">拖拽水印</kbd></td><td>自由调整位置 · 自动吸附对齐</td></tr>
+    </table>
+    <div style="text-align:right;margin-top:10px"><button class="btn btn-xs" onclick="hideHelp()">关闭</button></div>
+  </div>
+</div>
 </body>
 </html>
