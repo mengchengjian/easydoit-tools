@@ -209,17 +209,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
   .hdr{padding:0 10px;height:42px}
   .hl-t{font-size:12px}.th-dots{display:none}
   .mb{display:flex}.ct{flex-direction:column}
-  .lp{width:100%;border-right:none;min-width:0}
+  .lp{width:100%;border-right:none;min-width:0;flex:1}
   .lp.mh{display:none}
-  .rp{flex:1;padding:8px;gap:0;flex-direction:column}
+  .rp{flex:1;padding:10px;gap:12px;flex-direction:column;overflow-y:auto;overflow-x:hidden;align-items:center;justify-content:flex-start}
   .rp.mh{display:none}
+  .rp::before{background-size:16px 16px}
   .ra{display:none}
-  .phone{width:240px;height:480px;border-radius:28px;padding:7px 5px}
-  .phone-island{top:7px;width:56px;height:16px;border-radius:10px}
+  .phone{width:230px;height:456px;border-radius:28px;padding:7px 5px;flex-shrink:0}
+  .phone-island{top:7px;width:54px;height:16px;border-radius:10px}
   .phone-scr{border-radius:22px}
-  .cp-cards{flex-direction:row;width:auto;gap:6px;flex-wrap:wrap;justify-content:center}
-  .cp-card{padding:8px 10px;font-size:10px;border-radius:var(--radius-sm)}
-  .cp-card .cp-ico{width:24px;height:24px;font-size:12px;border-radius:6px}
+  .cp-cards{flex-direction:row;width:100%;gap:6px;flex-wrap:wrap;justify-content:center;flex-shrink:0}
+  .cp-card{padding:7px 10px;font-size:10px;border-radius:var(--radius-sm);flex:1 1 auto;min-width:56px;justify-content:center}
+  .cp-card .cp-ico{width:22px;height:22px;font-size:11px;border-radius:6px}
 }
 </style>
 </head>
