@@ -238,6 +238,60 @@ input[type="file"]{display:none}
 
 .hidden{display:none!important}
 .kv{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;margin-top:6px}
+
+/* ═══ VIP ═══ */
+.btn-vip{background:linear-gradient(135deg,#8b5cf6,#6366f1);border-color:transparent;color:#fff;font-weight:600;position:relative;overflow:hidden}
+.btn-vip:hover{background:linear-gradient(135deg,#9333ea,#4f46e5)}
+.btn-vip::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.2) 0%,transparent 60%);animation:vipShine 3s linear infinite}
+@keyframes vipShine{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.btn-vip-off{padding:8px 20px;font-size:12px;border-radius:6px}
+.btn-vip-lg{padding:10px 32px;font-size:13px;border-radius:8px;letter-spacing:.5px}
+
+.vip-badge{display:inline-block;font-size:9px;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;padding:1px 7px;border-radius:6px;margin-left:6px;letter-spacing:.5px;animation:vipPulse 2s ease-in-out infinite}
+@keyframes vipPulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 4px rgba(139,92,246,0)}}
+
+.vip-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:3000;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.vip-modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:380px;max-width:92vw;overflow:hidden;animation:vipSlide .3s ease}
+@keyframes vipSlide{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.vip-modal-hero{background:linear-gradient(135deg,#4c1d95,#1e1b4b,#312e81);padding:28px 24px 24px;text-align:center;position:relative;overflow:hidden}
+.vip-modal-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%,rgba(139,92,246,.25),transparent 60%)}
+.vip-modal-icon{font-size:40px;margin-bottom:10px;position:relative}
+.vip-modal-title{font-size:20px;font-weight:700;color:#fff;position:relative;letter-spacing:-.3px}
+.vip-modal-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;position:relative}
+
+.vip-modal-body{padding:20px 24px 16px}
+.vip-price{text-align:center;padding:10px 0 16px}
+.vip-price-val{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px}
+.vip-price-unit{font-size:13px;color:var(--text2);margin-left:2px}
+.vip-price-tag{display:inline-block;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:super}
+.vip-price-desc{font-size:10px;color:var(--text3);margin-top:2px}
+
+.vip-qr-section{display:flex;gap:16px;margin-bottom:16px}
+.vip-qr-item{flex:1;text-align:center}
+.vip-qr-img{width:100%;aspect-ratio:1;border-radius:8px;border:1px solid var(--border);object-fit:cover;cursor:pointer;transition:transform .2s}
+.vip-qr-img:hover{transform:scale(1.03)}
+.vip-qr-label{font-size:10px;color:var(--text2);margin-top:4px;font-weight:500}
+.vip-qr-hint{font-size:9px;color:var(--text3);text-align:center;margin-bottom:14px;line-height:1.5}
+
+.vip-input-label{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.vip-input-row{display:flex;gap:8px}
+.vip-input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg4);color:var(--text);font-size:13px;font-family:monospace;letter-spacing:1px;text-align:center;outline:none;transition:border-color .2s}
+.vip-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.vip-input:invalid{border-color:var(--danger)}
+.vip-input::placeholder{font-size:11px;letter-spacing:0;font-family:var(--font);color:var(--text3)}
+.vip-msg{font-size:10px;text-align:center;margin-top:6px;min-height:16px}
+.vip-msg.error{color:var(--danger)}
+.vip-msg.success{color:var(--success)}
+
+.vip-modal-foot{padding:12px 24px 16px;text-align:center;border-top:1px solid var(--border)}
+.vip-modal-foot .btn{cursor:pointer}
+.vip-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:1}
+.vip-close:hover{background:rgba(255,255,255,.25)}
+
+.vip-limit-tip{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(99,102,241,.08));border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:10px 14px;font-size:10px;color:var(--text2);text-align:center;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.vip-limit-tip .btn-vip{padding:4px 12px;font-size:9px}
 </style>
 </head>
 <body>
@@ -249,15 +303,8 @@ input[type="file"]{display:none}
     <div class="theme-dots" id="themeDots"><span class="theme-dot dot-blue active" data-theme="" title="深蓝科技"></span><span class="theme-dot dot-night" data-theme="midnight" title="墨夜"></span><span class="theme-dot dot-gold" data-theme="gold" title="暖金"></span><span class="theme-dot dot-mist" data-theme="mist" title="雾蓝"></span><span class="theme-dot dot-green" data-theme="bamboo" title="竹韵"></span><span class="theme-dot dot-light" data-theme="light" title="极昼"></span></div>
   <div style="display:flex;gap:5px;align-items:center">
     <button class="btn btn-xs" onclick="toggleHelp()" title="快捷键 (?)">?</button>
-    <span class="sponsor-wrap" onmouseenter="showSponsor()" onmouseleave="hideSponsor()">
-      <button class="btn btn-xs" onclick="toggleSponsor()">💛 支持作者</button>
-      <div class="sponsor-popup hidden" id="sponsorPopup">
-        <div class="sponsor-qrs">
-          <div><img class="sponsor-qr" src="qr-wx.jpeg" alt="微信赞赏"><div class="sponsor-label">微信</div></div>
-          <div><img class="sponsor-qr" src="qr-alipay.jpeg" alt="支付宝赞赏"><div class="sponsor-label">支付宝</div></div>
-        </div>
-      </div>
-    </span>
+    <span class="vip-badge hidden" id="vipBadge">VIP</span>
+    <button class="btn btn-xs btn-vip" id="btnVip" onclick="openVIP()">🔒 开通VIP</button>
     <button class="btn btn-xs" onclick="undoLast()">↩ 撤销</button>
     <button class="btn btn-xs" onclick="savePreset()">保存预设</button>
     <select id="fmtSel" style="padding:3px 6px;border:1px solid var(--border2);border-radius:3px;background:var(--bg4);color:var(--text);font-size:9px">
@@ -434,6 +481,45 @@ input[type="file"]{display:none}
   onerror="document.head.insertAdjacentHTML('beforeend','<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js\"></'+'script>')"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"
   onerror="document.head.insertAdjacentHTML('beforeend','<script src=\"https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js\"></'+'script>')"></script>
+
+<div class="vip-modal hidden" id="vipModal">
+  <div class="vip-modal-box">
+    <div class="vip-modal-hero">
+      <button class="vip-close" onclick="closeVIP()">✕</button>
+      <div class="vip-modal-icon">💎</div>
+      <div class="vip-modal-title">解锁 Watermark Pro</div>
+      <div class="vip-modal-sub">一次购买，永久使用</div>
+    </div>
+    <div class="vip-modal-body">
+      <div class="vip-price">
+        <span class="vip-price-val">¥9.9</span>
+        <span class="vip-price-unit">/ 永久</span>
+        <span class="vip-price-tag">买断制</span>
+        <div class="vip-price-desc">解锁无限张图片水印处理 + 所有模板</div>
+      </div>
+      <div class="vip-qr-section">
+        <div class="vip-qr-item">
+          <img class="vip-qr-img" src="qr-wx.jpeg" alt="微信支付" onclick="this.requestFullscreen?.()">
+          <div class="vip-qr-label">微信支付</div>
+        </div>
+        <div class="vip-qr-item">
+          <img class="vip-qr-img" src="qr-alipay.jpeg" alt="支付宝" onclick="this.requestFullscreen?.()">
+          <div class="vip-qr-label">支付宝</div>
+        </div>
+      </div>
+      <div class="vip-qr-hint">请使用微信/支付宝扫码支付 ¥9.9<br>付款后输入收到的激活码解锁</div>
+      <div class="vip-input-label">激活码</div>
+      <div class="vip-input-row">
+        <input class="vip-input" id="vipCode" placeholder="WM-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+        <button class="btn btn-vip" onclick="activateVIP()">激活</button>
+      </div>
+      <div class="vip-msg" id="vipMsg"></div>
+    </div>
+    <div class="vip-modal-foot">
+      <button class="btn" onclick="closeVIP()">稍后再说</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // === Theme ===
@@ -918,6 +1004,50 @@ function fmtSize(b){return b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/10
 // init
 updateRanges();renderPresets();
 window.addEventListener('resize',()=>{if(curIdx>=0)renderPreview()});
+
+// ═══ VIP System ═══
+const VIP_SALT='wmpro_vip_2024_secret',VIP_SECRET='v1p_pro_secr3t_k3y';
+function isVIP(){return localStorage.getItem('wm_vip')==='1'||false}
+function setVIP(key){localStorage.setItem('wm_vip','1');localStorage.setItem('wm_vip_key',key);$('vipBadge').classList.remove('hidden');$('btnVip').classList.add('hidden');$('vipMsg').textContent='';closeVIP();log('VIP已解锁！无限使用')}
+function vipHash(raw){for(var i=0,h=0,c;i<raw.length;i++){c=raw.charCodeAt(i);h=((h<<5)-h+c)|0}return h.toString(16).toUpperCase()}
+
+function validateVIPCode(code){
+  code=code.replace(/\s/g,'').toUpperCase();
+  if(!/^WM-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code))return false;
+  var parts=code.split('-'),raw=parts[1]+parts[2],provided=parts[3];
+  try{var hasher=new Uint32Array(1);for(var i=0;i<raw.length;i++)hasher[0]=(hasher[0]*31+raw.charCodeAt(i))>>>0;for(var j=0;j<VIP_SECRET.length;j++)hasher[0]=(hasher[0]*31+VIP_SECRET.charCodeAt(j))>>>0;var expected='';for(var k=0;k<4;k++)expected+='0123456789ABCDEF'[((hasher[0]>>>(k*4))&15)];return expected===provided.split('').reverse().join('')}catch(e){return false}
+}
+
+function activateVIP(){
+  var code=$('vipCode').value.trim(),msg=$('vipMsg');
+  if(!code){msg.textContent='请输入激活码';msg.className='vip-msg error';return}
+  if(validateVIPCode(code)){setVIP(code);msg.textContent='激活成功！已解锁全部功能';msg.className='vip-msg success'}else{msg.textContent='激活码无效，请检查后重试';msg.className='vip-msg error'}
+}
+
+function openVIP(){$('vipModal').classList.remove('hidden');$('vipCode').value='';$('vipMsg').textContent='';$('vipMsg').className='vip-msg';setTimeout(function(){$('vipCode').focus()},200)}
+function closeVIP(){$('vipModal').classList.add('hidden')}
+$('vipModal').addEventListener('click',function(e){if(e.target===this)closeVIP()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('vipModal').classList.contains('hidden')){closeVIP();e.preventDefault()}});
+
+function vipUsageCount(){return parseInt(localStorage.getItem('wm_usage')||'0')}
+function vipIncrement(){var c=vipUsageCount()+1;localStorage.setItem('wm_usage',c);return c}
+
+function vipGuard(action){
+  if(isVIP()){if(action)action();return}
+  var used=vipUsageCount();
+  if(used>=20){log('免费额度已用完（20张）');openVIP();setTimeout(function(){log('请开通VIP后继续使用')},500)}else{if(action)action();vipIncrement();log('已使用 '+(used+1)+'/20 张免费额度')}
+}
+
+// Init VIP UI
+(function initVIP(){if(isVIP()){$('vipBadge').classList.remove('hidden');$('btnVip').classList.add('hidden')}else{$('vipBadge').classList.add('hidden');$('btnVip').classList.remove('hidden')}})();
+
+// Gate: applyWatermark
+var _origApplyWatermark=applyWatermark;
+applyWatermark=function(){vipGuard(_origApplyWatermark)};
+
+// Gate: applyAllWatermarks
+var _origApplyAll=applyAllWatermarks;
+applyAllWatermarks=function(){vipGuard(_origApplyAll)};
 </script>
 
 <div class="modal hidden" id="helpOverlay" onclick="hideHelp()">
