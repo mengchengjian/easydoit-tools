@@ -206,12 +206,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
 .ts.sh{opacity:1}
 
 @media(max-width:768px){
+  body{height:100dvh}
   .hdr{padding:0 10px;height:42px}
   .hl-t{font-size:12px}.th-dots{display:none}
-  .mb{display:flex}.ct{flex-direction:column;overflow:visible}
+  .mb{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;border-bottom:none;border-top:1px solid var(--border);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0)}
+  .ct{flex-direction:column;overflow:visible;padding-bottom:calc(44px + env(safe-area-inset-bottom, 0px))}
   .lp{width:100%;border-right:none;min-width:0;flex:1}
   .lp.mh{display:none}
-  .rp{flex:1;padding:16px;gap:16px;flex-direction:column;overflow-y:auto;overflow-x:hidden;align-items:center;justify-content:flex-start;-webkit-overflow-scrolling:touch}
+  .rp{flex:1;padding:16px;gap:16px;flex-direction:column;overflow-y:auto;overflow-x:hidden;align-items:center;justify-content:flex-start;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   .rp.mh{display:none}
   .rp::before{background-size:16px 16px}
   .ra{display:none}
@@ -417,14 +419,14 @@ function clr(){if(!confirm('确定清空全部文案？'))return;d={items:[[],[]
 function sw(i){document.querySelectorAll('.tb-i').forEach((t,idx)=>t.classList.toggle('act',idx===i));document.querySelectorAll('.tp').forEach((p,idx)=>p.classList.toggle('act',idx===i))}
 
 let im=window.innerWidth<=768;
-function ckm(){const nw=window.innerWidth<=768;if(nw&&!im){$('mb').style.display='flex';im=true}else if(!nw&&im){$('mb').style.display='none';$('lp').classList.remove('mh');$('rp').classList.remove('mh');im=false}}
+function ckm(){const nw=window.innerWidth<=768;if(nw&&!im){im=true}else if(!nw&&im){$('lp').classList.remove('mh');$('rp').classList.remove('mh');im=false}}
 window.addEventListener('resize',ckm);
 function ms(v){if(v==='edit'){$('lp').classList.remove('mh');$('rp').classList.add('mh');$('mbe').classList.add('act');$('mbp').classList.remove('act')}else{$('lp').classList.add('mh');$('rp').classList.remove('mh');$('mbe').classList.remove('act');$('mbp').classList.add('act');up()}}
 
 ld();
 $('tb').innerHTML=M.map((n,i)=>`<div class="tb-i ${i===0?'act':''}" onclick="sw(${i})">${n}<span class="tb-b" id="bd-${i}">0</span></div>`).join('');
 for(let i=0;i<6;i++)rn(i);
-ua();if(im)$('mb').style.display='flex';
+ua();
 </script>
 </body>
 </html>
