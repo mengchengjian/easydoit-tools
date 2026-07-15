@@ -459,9 +459,15 @@ async function createFile(folderId){
   const fl={id:uid(),name:name.trim(),type,folderId:folderId||null,content:'',createdAt:Date.now(),updatedAt:Date.now()};
   await dbPut('files',fl);
   if(folderId)treeExpanded[folderId]=true;
+  if(currentFileId)await saveCurrentFileSilent();
+  currentFileId=fl.id;
+  currentFile=fl;
   await loadTree();
-  renderTree();
-  await selectFile(fl.id);
+  fileName.textContent=fl.name;
+  editor.value=fl.content||'';
+  editor.readOnly=fl.type==='svg';
+  updatePreview();
+  updateLineNums();
 }
 async function uploadFiles(e){
   const files=e.target.files;
@@ -535,7 +541,7 @@ function onFileDragStart(e,fileId){
   e.dataTransfer.setData('text/plain',fileId);
 }
 function onItemDragOver(e,folderId){
-  if(!dragFileId)return;
+  if(!dragFileId){e.dataTransfer.dropEffect='none';return;}
   e.preventDefault();
   e.dataTransfer.dropEffect='move';
   const el=e.currentTarget;
