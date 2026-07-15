@@ -387,7 +387,7 @@ function renderFolder(fd,folders,files){
   h+=`<div class="tree-children${expanded?'':' collapsed'}">`;
   for(const sf of subFolders) h+=renderFolder(sf,folders,files);
   for(const sf of subFiles) h+=renderFile(sf);
-  h+='</div></div>`;
+  h+='</div></div>';
   return h;
 }
 function renderFile(fl){
