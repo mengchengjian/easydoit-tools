@@ -242,6 +242,7 @@ input[type="file"]{display:none}
 /* ═══ Mobile responsive ═══ */
 .mobile-toggle{display:none;width:32px;height:32px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text);font-size:16px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0}
 .mobile-toggle:active{background:var(--border2)}
+.mobile-close{display:none}
 .mobile-panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000}
 
 @media(max-width:768px){
@@ -261,6 +262,7 @@ input[type="file"]{display:none}
   .right-panel{width:100%;max-height:200px;border-left:none;border-top:1px solid var(--border)}
   .right-list{max-height:160px}
   .mobile-toggle{display:flex}
+  .mobile-close{display:flex;align-items:center;justify-content:center;position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:16px;cursor:pointer;z-index:5;line-height:1}
   .preview-main{min-height:300px;touch-action:none}
   .preview-main canvas{max-width:100%;max-height:100%}
   .preview-nav{width:30px;height:30px;font-size:14px}
@@ -289,8 +291,7 @@ input[type="file"]{display:none}
   .sponsor-popup{right:-40px}
   .modal-box{width:90vw;max-width:300px}
   select,input[type="range"]{min-height:30px}
-  .lw{bottom:80px;right:10px;padding:6px 10px;font-size:12px}
-  .lw select{padding:5px 28px 5px 8px;font-size:12px;min-width:90px}
+  .lw{display:none}
 }
 
 /* ═══ VIP ═══ */
@@ -378,6 +379,7 @@ input[type="file"]{display:none}
 <div class="container">
   <!-- 左侧：设置区 -->
   <div class="left-panel">
+    <span class="mobile-close" onclick="closeLeftPanel()">✕</span>
     <div class="upload-zone" id="dz" onclick="document.getElementById('fi').click()">
       <div class="icon">📁</div><div class="text">点击或拖拽上传</div><div class="hint">JPG/PNG/WebP</div>
     </div>

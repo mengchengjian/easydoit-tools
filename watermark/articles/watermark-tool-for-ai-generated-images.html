@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Watermark Tools for AI-Generated Images and Art | Watermark Pro</title>
+    <meta name="description" content="AI images need protection too. Discover the best watermark tools for Midjourney, DALL-E, and Stable Diffusion outputs. Protect your AI creations from unauthorized use.">
+    <meta name="keywords" content="AI image watermark, Midjourney watermark, DALL-E watermark, protect AI art">
+    <link rel="canonical" href="https://watermark.easydoit.top/articles/watermark-tool-for-ai-generated-images.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Best Watermark Tools for AI-Generated Images and Art">
+    <meta property="og:description" content="AI images need protection too. Discover the best watermark tools for Midjourney, DALL-E, and Stable Diffusion outputs. Protect your AI creations from unauthorized use.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://watermark.easydoit.top/articles/watermark-tool-for-ai-generated-images.html">
+    <meta property="og:site_name" content="Watermark Pro">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Best Watermark Tools for AI-Generated Images and Art">
+    <meta name="twitter:description" content="AI images need protection too. Discover the best watermark tools for Midjourney, DALL-E, and Stable Diffusion outputs. Protect your AI creations from unauthorized use.">
+    
+    <!-- Schema.org Article -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Best Watermark Tools for AI-Generated Images and Art",
+        "description": "AI images need protection too. Discover the best watermark tools for Midjourney, DALL-E, and Stable Diffusion outputs. Protect your AI creations from unauthorized use.",
+        "datePublished": "2026-07-07",
+        "dateModified": "2026-07-07",
+        "author": {
+            "@type": "Organization",
+            "name": "Watermark Pro"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Watermark Pro",
+            "url": "https://watermark.easydoit.top"
+        }
+    }
+    </script>
+    
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #7c5cfc;
+            --accent-hover: #9b7fff;
+            --border: #2a2a2a;
+            --code-bg: #111;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 17px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Header */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo svg { width: 28px; height: 28px; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+        .btn-tool {
+            background: var(--accent);
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-tool:hover { background: var(--accent-hover); }
+        
+        /* Article */
+        .breadcrumb {
+            padding: 24px 0 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--accent); }
+        
+        .article-header {
+            padding: 32px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+        .category-badge {
+            display: inline-block;
+            background: rgba(124,92,252,0.15);
+            color: var(--accent);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .article-header h1 {
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+        .article-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* Content */
+        article h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 48px 0 16px;
+            color: #fff;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+        article h3 {
+            font-size: 21px;
+            font-weight: 600;
+            margin: 32px 0 12px;
+            color: #f0f0f0;
+        }
+        article p {
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+        article strong { color: #fff; }
+        article a { color: var(--accent); text-decoration: none; }
+        article a:hover { text-decoration: underline; }
+        
+        article ul, article ol {
+            margin: 16px 0 20px 24px;
+        }
+        article li {
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        article pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        article code {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            color: #c9a8ff;
+        }
+        
+        .tips-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 24px 0;
+        }
+        .tips-box h3 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, rgba(124,92,252,0.15), rgba(124,92,252,0.05));
+            border: 1px solid rgba(124,92,252,0.3);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+        .btn-cta {
+            display: inline-block;
+            background: var(--accent);
+            color: white !important;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none !important;
+            margin-top: 16px;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-cta:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .faq h3 {
+            color: var(--accent);
+            margin-top: 32px;
+        }
+        
+        /* Related */
+        .related {
+            margin: 48px 0;
+            padding: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .related h2 {
+            margin-top: 0;
+            border: none;
+            padding: 0;
+        }
+        .related ul {
+            columns: 2;
+            column-gap: 32px;
+        }
+        @media (max-width: 600px) {
+            .related ul { columns: 1; }
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+        footer .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        footer p { color: var(--text-secondary); font-size: 14px; }
+        
+        @media (max-width: 768px) {
+            .article-header h1 { font-size: 28px; }
+            article h2 { font-size: 22px; }
+            header .container { flex-wrap: wrap; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="https://watermark.easydoit.top" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                Watermark Pro
+            </a>
+            <nav class="nav-links">
+                <a href="https://watermark.easydoit.top/articles/">Articles</a>
+                <a href="https://watermark.easydoit.top/index.html" class="btn-tool">Open Tool</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+        <nav class="breadcrumb">
+            <a href="https://watermark.easydoit.top">Home</a> &raquo; 
+            <a href="https://watermark.easydoit.top/articles/">Articles</a> &raquo; 
+            Best Watermark Tools for AI-Generated Images and Art
+        </nav>
+        
+        <div class="article-header">
+            <span class="category-badge">Tool Comparison</span>
+            <h1>Best Watermark Tools for AI-Generated Images</h1>
+            <p class="article-meta">Published: 2026-07-07 &middot; Updated: 2026-07-07 &middot; ~1,500 words &middot; 8 min read</p>
+        </div>
+        
+        <article>
+<p>In today's digital landscape, protecting your visual content has never been more critical. Whether you're a professional photographer, ecommerce seller, AI artist, or social media creator, your images represent your hard work and brand identity. This comprehensive guide covers everything you need to know about <strong>best watermark tools for ai-generated images and art</strong>, with practical, actionable advice you can implement today.</p>
+<p>We've tested dozens of tools and workflows to bring you the most effective methods. At the end of this article, you'll find a free tool recommendation that handles all the techniques discussed below — no download, no signup required.</p>
+<h2>Why This Matters in 2026</h2>
+<p>Image theft costs creators and businesses billions annually. According to Copytrack's Global Infringement Report, over 2.5 billion images are stolen daily. Social media platforms make it trivially easy to screenshot and repost content without attribution. AI scraping adds another dimension — your images could end up in training datasets without your consent.</p>
+<p>A well-designed watermark serves as both a deterrent and a branding tool. It tells viewers who created the image and where to find more. When done right, it doesn't detract from the visual experience — it enhances your professional credibility.</p>
+<h2>Method 1: Using a Free Online Watermark Tool (Recommended)</h2>
+<p>The fastest and most accessible way to watermark images is through a browser-based tool. Modern online watermark tools use client-side processing — your images never leave your device, ensuring maximum privacy and security.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Open a reliable online watermark tool in your browser</li>
+<li>Upload your image(s) — drag and drop or click to select files</li>
+<li>Choose your watermark type: text or image (PNG with transparency recommended)</li>
+<li>Customize appearance: font, size, color, opacity, rotation, position</li>
+<li>Preview the result and adjust as needed</li>
+<li>Download your watermarked image(s)</li>
+</ol>
+<p>Our recommended tool — <a href="https://watermark.easydoit.top/index.html">Watermark Pro</a> — supports all these features and more. It handles batch processing, custom fonts, positioning presets, and exports in original quality. No account needed, works entirely in your browser.</p>
+
+<h2>Method 2: Desktop Software Approach</h2>
+<p>For power users who need advanced features like layer-based watermarks or integration with other editing workflows, desktop software offers more control:</p>
+<ul>
+<li><strong>Photoshop:</strong> Create a watermark action and batch-process via File &gt; Automate &gt; Batch</li>
+<li><strong>GIMP (Free):</strong> Use the watermark plugin or script-fu for batch processing</li>
+<li><strong>Lightroom:</strong> Add watermarks during export with customizable presets</li>
+</ul>
+<p>However, desktop software requires installation, learning curves, and often paid licenses. For most users, online tools provide the best balance of features and convenience.</p>
+
+<h2>Method 3: Command-Line Automation</h2>
+<p>Developers and system administrators can use command-line tools for fully automated watermarking pipelines:</p>
+<pre><code># Using ImageMagick to add a text watermark
+convert input.jpg -font Arial -pointsize 36 \
+  -fill "rgba(255,255,255,0.5)" \
+  -annotate +50+50 "© Your Name" output.jpg
+  
+# Batch watermark all JPGs in a directory
+for f in *.jpg; do
+  convert "$f" -font Arial -pointsize 36 \
+    -fill "rgba(255,255,255,0.5)" \
+    -annotate +50+50 "© Your Name" "watermarked_$f"
+done</code></pre>
+<p>Command-line methods are powerful but require technical expertise. For non-developers, a graphical online tool is far more practical.</p>
+<h2>Best Practices for Effective Watermarking</h2>
+<div class="tips-box">
+<h3>1. Balance Visibility and Subtlety</h3>
+<p>Your watermark should be visible enough to deter theft but subtle enough not to ruin the viewing experience. Use 30-50% opacity as a starting point and adjust based on image content.</p>
+
+<h3>2. Position Strategically</h3>
+<p>Corner watermarks are easiest to crop out. For maximum protection, place watermarks across key visual elements or use a tiled/repeating pattern. Center placement offers the best protection at the cost of aesthetics — choose based on your priority.</p>
+
+<h3>3. Use PNG Format for Logo Watermarks</h3>
+<p>Always use PNG format with alpha transparency for logo-based watermarks. This ensures clean overlay without white boxes or jagged edges on any background color.</p>
+
+<h3>4. Keep EXIF Metadata Intact</h3>
+<p>Watermarking should preserve your image's metadata (camera info, copyright, GPS). Choose tools that maintain EXIF/IPTC data through the processing pipeline.</p>
+
+<h3>5. Be Consistent Across Your Brand</h3>
+<p>Use the same watermark style and position across all your images. Consistency builds brand recognition and makes your content instantly identifiable across platforms.</p>
+
+<h3>6. Test on Multiple Devices</h3>
+<p>Preview your watermarked images on desktop, tablet, and mobile screens. What looks good on a 27-inch monitor may be too subtle or too obtrusive on a smartphone.</p>
+</div>
+<h2>Recommended Free Tool: Watermark Pro</h2>
+<div class="cta-box">
+<p>After comparing dozens of watermark tools, <strong><a href="https://watermark.easydoit.top/index.html">Watermark Pro</a></strong> stands out as our top recommendation:</p>
+<ul>
+<li><strong>100% Free:</strong> No signup, no subscription, no hidden costs — first 20 watermarks free, unlimited with one-time $9.99 activation</li>
+<li><strong>Client-Side Processing:</strong> Your images never leave your device — maximum privacy and security</li>
+<li><strong>Batch Processing:</strong> Watermark hundreds of images at once with consistent settings</li>
+<li><strong>Full Customization:</strong> Custom fonts, colors, opacity, rotation, tiling, and positioning presets</li>
+<li><strong>PNG & JPG Support:</strong> Export in your preferred format with quality control</li>
+<li><strong>Dark & Light UI:</strong> Six theme options to match your preference</li>
+<li><strong>No Installation:</strong> Works instantly in any modern browser</li>
+</ul>
+<p><a href="https://watermark.easydoit.top/index.html" class="btn-cta">Try Watermark Pro Now →</a></p>
+</div>
+<h2>Frequently Asked Questions</h2>
+<div class="faq">
+<h3>Can watermarks be removed?</h3>
+<p>Yes, determined individuals can remove watermarks using editing tools, especially if the watermark is placed in a corner or on a uniform background. However, a well-placed watermark significantly raises the effort required, deterring casual theft. Tiled watermarks and those placed over complex image areas are much harder to remove cleanly.</p>
+
+<h3>Should I watermark every image I post?</h3>
+<p>For professional work, client deliverables, product photos, and AI-generated art — yes. For personal snapshots shared with friends and family, probably not needed. The rule of thumb: if the image has commercial or portfolio value, watermark it.</p>
+
+<h3>Does watermarking affect image quality?</h3>
+<p>When done correctly, watermarking should not degrade the underlying image quality. Always use tools that maintain original resolution and metadata. Avoid repeated save cycles with lossy formats like JPEG — apply the watermark in a single processing step.</p>
+
+<h3>What's the best font for text watermarks?</h3>
+<p>Clean, readable fonts work best: Helvetica, Arial, Roboto, or Montserrat for modern looks; serif fonts like Garamond or Playfair Display for elegant, classic styles. Avoid overly decorative fonts that become illegible at small sizes.</p>
+
+<h3>Is it legal to watermark images I didn't create?</h3>
+<p>No. You should only watermark images you own or have explicit permission to modify. Watermarking someone else's work and claiming ownership is copyright infringement and potentially illegal.</p>
+</div>
+<h2>Start Protecting Your Images Today</h2>
+<p>Image protection doesn't have to be complicated or expensive. With the right tools and techniques, you can add professional watermarks to your photos in seconds. Whether you're a photographer protecting your portfolio, an ecommerce seller safeguarding product images, or an AI artist establishing ownership of your creations, watermarking is the first line of defense.</p>
+<p>Ready to get started? <strong><a href="https://watermark.easydoit.top/index.html">Try Watermark Pro</a></strong> — free, fast, and no signup required. Your images deserve protection, and it's never been easier to provide it.</p>
+        </article>
+        
+        <div class="related">
+<h2>Related Articles</h2><ul>
+<li><a href="https://watermark.easydoit.top/articles/best-free-watermark-tool.html">Best Free Watermark Tool 2026: Top 10 Compared and Ranked</a></li>
+<li><a href="https://watermark.easydoit.top/articles/watermark-tool-for-mobile-add-watermark-on-phone.html">Best Watermark Tools for Mobile: Add Watermarks on Your Phone</a></li>
+<li><a href="https://watermark.easydoit.top/articles/watermark-tool-with-metadata-preservation.html">Watermark Tools That Preserve EXIF and Metadata: Why It Matters</a></li>
+<li><a href="https://watermark.easydoit.top/articles/batch-watermark-jpg-photos-for-social-media.html">Batch Watermark JPG Photos for Social Media: Instagram, Facebook, X</a></li>
+<li><a href="https://watermark.easydoit.top/articles/jpg-watermark-how-to-protect-jpeg-images.html">JPG Watermark: How to Protect Your JPEG Images from Theft</a></li>
+</ul>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Watermark Pro. All rights reserved.</p>
+            <p><a href="https://watermark.easydoit.top/articles/" style="color: var(--accent);">All Articles</a></p>
+        </div>
+    </footer>
+
+
+
+<!-- Lang -->
+<style>.lw{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--surface,#1a1a1a);border:1px solid var(--border,#2a2a2a);border-radius:12px;padding:8px 12px;box-shadow:0 4px 20px rgba(0,0,0,.5);font-size:13px}.lw:hover{box-shadow:0 6px 28px rgba(0,0,0,.6)}.lw select{appearance:none;-webkit-appearance:none;padding:6px 32px 6px 10px;border:1px solid var(--border,#2a2a2a);border-radius:8px;background:var(--bg,#0f0f0f) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;color:var(--text,#e0e0e0);font-size:13px;cursor:pointer;outline:none;min-width:110px}.lw select:focus{border-color:var(--accent,#7c5cfc)}</style><div class="lw" data-i18n-ignore><select id="langSelect" onchange="switchLang(this.value)" data-i18n-ignore><option value="en">EN</option><option value="zh-CN">中文</option></select></div>
+<script>// Watermark Pro i18n - EN ↔ 中文
+(function(){
+  var E2Z = {"Articles": "文章", "Drag images to start": "拖拽图片开始", "Undo": "撤销", "Save Preset": "保存预设", "Apply": "应用水印", "Apply All": "应用全部", "Clear": "清除", "Download All": "下载全部", "Get VIP": "🔒 开通VIP", "Watermark Type": "水印类型", "Text": "文字", "Aa Text": "Aa 文字", "Image": "图片", "🖼 Image": "🖼 图片", "Color": "颜色", "Opacity": "透明", "Rotate": "旋转", "Blend Mode": "混合模式", "Normal": "正常", "Multiply": "正片叠底", "Screen": "滤色", "Overlay": "叠加", "Darken": "变暗", "Lighten": "变亮", "Shadow": "阴影", "Stroke": "描边", "Watermark Image": "水印图片", "Choose Image...": "选择图片...", "Scale": "缩放", "Position": "位置", "Bottom Right": "右下", "Bottom Left": "左下", "Top Right": "右上", "Top Left": "左上", "Center": "居中", "Tile": "平铺", "Horizontal": "水平", "Vertical": "垂直", "Spacing": "间距", "Templates": "模板", "Copyright": "版权保护", "White ©": "白字版权", "Confidential": "机密文件", "Tile Guard": "平铺防伪", "Black ©": "黑字版权", "Social Share": "社交分享", "Social ID": "社交ID", "Date Stamp": "日期戳", "Minimal Line": "极简细线", "Gradient Bar": "渐隐底栏", "Business": "商务办公", "Company Stamp": "公司印章", "Draft Mark": "草稿标记", "Number Stamp": "编号水印", "Contract": "合同水印", "Creative FX": "创意特效", "Neon Glow": "霓虹灯效", "Vintage Film": "复古胶片", "Handwritten": "手写签名", "Pattern Tile": "图案平铺", "My Presets": "我的预设", "None": "暂无", "No image selected": "未选择图片", "Previous": "上一张", "Next": "下一张", "Click or drag to upload": "点击或拖拽上传", "Features": "功能说明", "Free trials left": "免费体验剩余", "Get VIP Now": "立即开通VIP", "Lifetime ¥9.9": "¥9.9 永久买断", "Published": "发布", "Updated": "更新", "Home": "首页", "Open Tool": "打开工具", "All Articles": "全部文章", "Related Articles": "相关文章", "Watermark Basics": "水印基础", "Batch Watermarking": "批量水印", "Tool Comparison": "工具对比", "PNG Watermark": "PNG 水印", "JPG Watermark": "JPG 水印", "Online Watermarking": "在线水印", "AI Image Protection": "AI 图片保护", "Product Photo Protection": "产品图片保护", "Start Protecting Your Images Today": "立即开始保护你的图片", "© 2026 Watermark Pro. All rights reserved.": "© 2026 Watermark Pro. 保留所有权利。", "words": "词", "min read": "分钟阅读", "Text/image watermark, batch process multiple images": "文字/图片水印，批量处理多张图片", "9‑grid positioning + drag watermark in preview": "九宫格定位 + 预览区直接拖动水印位置", "16 preset templates (copyright/social/business/creative), one‑click apply": "16款预设模板（版权/社交/商务/创意），一键套用", "Lightbox double‑click preview, keyboard ← → to navigate": "大图灯箱双击预览，键盘 ← → 切换图片", "Shortcuts": "快捷键", "Shortcut panel": "快捷键面板", "Paste upload": "粘贴上传", "Switch images": "切换图片", "JPG/PNG/WebP": "JPG/PNG/WebP"};
+  var Z2E = {};
+  for (var k in E2Z) { Z2E[E2Z[k]] = k; }
+
+  var LANG = localStorage.getItem('wp-lang') || 'en';
+  var TRANSLATING = false;
+
+  function t(text) {
+    var s = text.trim();
+    if (!s) return text;
+    var prefix = text.match(/^\s*/)[0];
+    var suffix = text.match(/\s*$/)[0];
+    if (LANG === 'en') {
+      var e = Z2E[s];
+      if (e !== undefined) return prefix + e + suffix;
+      // Try without leading emoji
+      var ns = s.replace(/^[^\w\u4e00-\u9fff]+/, '').trim();
+      if (ns !== s) {
+        var ne = Z2E[ns];
+        if (ne !== undefined) {
+          var removed = s.slice(0, s.indexOf(ns));
+          return prefix + removed + ne + suffix;
+        }
+      }
+    } else if (LANG === 'zh-CN') {
+      var c = E2Z[s];
+      if (c !== undefined) return prefix + c + suffix;
+      var ns2 = s.replace(/^[^\w\u4e00-\u9fff]+/, '').trim();
+      if (ns2 !== s) {
+        var nc = E2Z[ns2];
+        if (nc !== undefined) {
+          var removed2 = s.slice(0, s.indexOf(ns2));
+          return prefix + removed2 + nc + suffix;
+        }
+      }
+    }
+    return text;
+  }
+
+  function walk(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [];
+    while (w.nextNode()) {
+      var p = w.currentNode.parentElement;
+      if (!p) continue;
+      if (p.closest('[data-i18n-ignore]')) continue;
+      var tag = p.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'CODE' || tag === 'PRE' || tag === 'SELECT') continue;
+      if (p.closest('#langSelect')) continue;
+      var txt = w.currentNode.textContent;
+      if (txt && txt.trim()) nodes.push(w.currentNode);
+    }
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].textContent = t(nodes[i].textContent);
+    }
+  }
+
+  function translateSelects() {
+    var ss = document.querySelectorAll('select');
+    for (var i = 0; i < ss.length; i++) {
+      if (ss[i].closest('[data-i18n-ignore]')) continue;
+      var opts = ss[i].querySelectorAll('option');
+      for (var j = 0; j < opts.length; j++) {
+        var txt = opts[j].textContent.trim();
+        opts[j].textContent = t(txt);
+      }
+    }
+  }
+
+  function apply(lang) {
+    if (TRANSLATING) return;
+    TRANSLATING = true;
+    LANG = lang;
+    localStorage.setItem('wp-lang', lang);
+    document.documentElement.lang = lang === 'zh-CN' ? 'zh' : 'en';
+    walk(document.body);
+    translateSelects();
+    var sel = document.getElementById('langSelect');
+    if (sel) sel.value = lang;
+    TRANSLATING = false;
+  }
+
+  window.switchLang = apply;
+
+  if (LANG !== 'en') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function(){ apply(LANG); });
+    } else {
+      apply(LANG);
+    }
+  }
+})();
+</script>
+</body>
+</html>
