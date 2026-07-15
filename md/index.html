@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown Editor — EasyDoIt</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+*,::before,::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1b1e;--surface:#232428;--surface2:#2a2b30;--border:#35363b;--border-h:#4a4b50;
+  --text:#e4e4e7;--text-s:#9a9ba0;--text-xs:#65666b;
+  --accent:#60a5fa;--accent-l:#93bbfd;--accent-soft:rgba(96,165,250,.1);
+  --accent2:#f472b6;--warn:#fbbf24;--warn-soft:rgba(251,191,36,.1);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow:0 2px 8px rgba(0,0,0,.25);--shadow-lg:0 4px 24px rgba(0,0,0,.3);
+  --radius-sm:8px;--radius:12px;--radius-lg:18px;--radius-xl:24px;
+  --font:"Inter","Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --transition:.2s cubic-bezier(.4,0,.2,1);
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--accent)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-h);border-radius:10px}
+
+/* Header */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);height:44px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:20;gap:8px}
+.hl{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.hl-logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;font-family:var(--mono)}
+.hl-t{font-size:13px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.hl-t span{color:var(--text-s);font-weight:400}
+
+.hm{display:flex;align-items:center;gap:3px;overflow-x:auto;scrollbar-width:none;flex:1;justify-content:center}
+.hm::-webkit-scrollbar{display:none}
+.btn{padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-s);cursor:pointer;font-size:11px;font-family:var(--font);font-weight:500;transition:var(--transition);white-space:nowrap;display:inline-flex;align-items:center;gap:3px;letter-spacing:-.1px;line-height:1.5}
+.btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border-h)}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn-p:hover{background:var(--accent-l);border-color:var(--accent-l);color:#fff}
+.btn-s{font-size:10px;padding:3px 8px}
+.btn-gh{background:transparent;border-color:transparent}
+.btn-gh:hover{background:var(--surface2);border-color:var(--border)}
+.hr{display:flex;align-items:center;gap:5px;flex-shrink:0}
+
+/* Mobile tab bar */
+.mb{display:none;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.mb-t{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:500;color:var(--text-s);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition)}
+.mb-t.act{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Main container */
+.ct{display:flex;flex:1;overflow:hidden}
+
+/* Editor panel */
+.ep{flex:1;display:flex;flex-direction:column;border-right:1px solid var(--border);min-width:0;background:var(--surface)}
+.ep-header{height:30px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0}
+.ep-dot{width:8px;height:8px;border-radius:50%;background:var(--border-h)}
+.ep-dot:nth-child(1){background:#ff5f57}
+.ep-dot:nth-child(2){background:#febc2e}
+.ep-dot:nth-child(3){background:#28c840}
+.ep-title{font-size:10px;color:var(--text-xs);margin-left:8px;font-weight:500}
+.ep-cm{display:flex;align-items:center;gap:3px;margin-left:auto}
+.ep-cmb{padding:2px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text-s);cursor:pointer;font-size:9px;font-family:var(--font);transition:var(--transition)}
+.ep-cmb:hover{border-color:var(--border-h);color:var(--text)}
+.ep-cmb.act{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+
+.ep-edit{flex:1;position:relative;overflow:hidden}
+.ep-edit textarea{width:100%;height:100%;background:var(--surface);border:none;outline:none;resize:none;padding:16px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text);tab-size:2}
+.ep-edit textarea::placeholder{color:var(--text-xs)}
+.ep-edit .ln{position:absolute;left:0;top:0;bottom:0;width:40px;background:var(--surface2);border-right:1px solid var(--border);overflow:hidden;pointer-events:none;padding:16px 0;counter-reset:line}
+.ep-edit .ln span{counter-increment:line;display:block;text-align:right;padding-right:8px;font-size:11px;font-family:var(--mono);color:var(--text-xs);line-height:1.7}
+.ep-edit.show-ln textarea{padding-left:56px}
+
+.ep-st{height:22px;background:var(--surface2);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;font-size:10px;color:var(--text-xs);gap:12px;flex-shrink:0}
+.ep-st span{display:flex;align-items:center;gap:3px}
+.ep-st b{color:var(--text-s);font-weight:500}
+
+/* Preview panel */
+.pp{flex:1;overflow-y:auto;background:var(--bg);min-width:0}
+.pp-inner{padding:24px 32px;max-width:800px;margin:0 auto}
+/* Markdown rendered styles */
+.md-body{font-size:14px;line-height:1.8;color:var(--text)}
+.md-body h1,.md-body h2,.md-body h3,.md-body h4,.md-body h5,.md-body h6{margin:1.5em 0 .5em;line-height:1.3;font-weight:700;letter-spacing:-.3px}
+.md-body h1{font-size:1.8em;border-bottom:2px solid var(--border);padding-bottom:.3em}
+.md-body h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
+.md-body h3{font-size:1.25em}
+.md-body h4{font-size:1.1em}
+.md-body p{margin:.8em 0}
+.md-body a{color:var(--accent);text-decoration:none}
+.md-body a:hover{text-decoration:underline}
+.md-body strong{font-weight:700;color:#e8e8ec}
+.md-body em{font-style:italic}
+.md-body del{color:var(--text-xs)}
+.md-body ul,.md-body ol{padding-left:1.5em;margin:.6em 0}
+.md-body li{margin:.2em 0}
+.md-body li::marker{color:var(--text-xs)}
+.md-body blockquote{margin:.8em 0;padding:4px 14px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0;color:var(--text-s)}
+.md-body code{font-family:var(--mono);font-size:.88em;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--accent2)}
+.md-body pre{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;overflow-x:auto;margin:.8em 0}
+.md-body pre code{background:none;padding:0;color:var(--text);font-size:.85em;line-height:1.6}
+.md-body table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:.92em}
+.md-body th,.md-body td{border:1px solid var(--border);padding:8px 12px;text-align:left}
+.md-body th{background:var(--surface2);font-weight:600}
+.md-body tr:nth-child(even){background:var(--surface)}
+.md-body img{max-width:100%;border-radius:var(--radius-sm);margin:.6em 0}
+.md-body hr{border:none;border-top:1px solid var(--border);margin:1.5em 0}
+.md-body input[type="checkbox"]{margin-right:6px;accent-color:var(--accent)}
+
+/* Empty state */
+.pp-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-xs);font-size:13px;flex-direction:column;gap:8px}
+.pp-empty svg{width:48px;height:48px;opacity:.3;stroke:var(--text-xs)}
+
+@media(max-width:768px){
+  .hm{display:none}
+  .ep{border-right:none}
+  .pp{display:none}
+  .pp.act{display:block}
+  .ep.hide{display:none}
+  .mb{display:flex}
+  .pp-inner{padding:16px 20px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hl">
+    <div class="hl-logo">M↓</div>
+    <div class="hl-t">Markdown <span>Editor</span></div>
+  </div>
+  <div class="hm">
+    <button class="btn btn-s" onclick="ins('**','**')" title="Bold"><b>B</b></button>
+    <button class="btn btn-s" onclick="ins('*','*')" title="Italic"><i>I</i></button>
+    <button class="btn btn-s" onclick="ins('~~','~~')" title="Strikethrough"><s>S</s></button>
+    <span style="color:var(--border)">|</span>
+    <button class="btn btn-s" onclick="insH()" title="Heading">H</button>
+    <button class="btn btn-s" onclick="insL('ul')" title="Unordered List">•</button>
+    <button class="btn btn-s" onclick="insL('ol')" title="Ordered List">1.</button>
+    <button class="btn btn-s" onclick="ins('> ','')" title="Blockquote">&ldquo;</button>
+    <span style="color:var(--border)">|</span>
+    <button class="btn btn-s" onclick="ins('`','`')" title="Inline Code">&lt;/&gt;</button>
+    <button class="btn btn-s" onclick="ins('\n```\n\n```\n','')" title="Code Block">▯</button>
+    <button class="btn btn-s" onclick="ins('[','](url)')" title="Link">🔗</button>
+    <button class="btn btn-s" onclick="ins('![alt](','')" title="Image">🖼</button>
+    <span style="color:var(--border)">|</span>
+    <button class="btn btn-s" onclick="insTable()" title="Table">⊞</button>
+    <button class="btn btn-s" onclick="ins('---\n','')" title="Horizontal Rule">—</button>
+  </div>
+  <div class="hr">
+    <button class="btn btn-s" onclick="toggleLineNum()" id="btn-ln">#</button>
+    <input type="file" id="fileInput" accept=".md,.txt,.markdown" style="display:none" onchange="openFile(event)">
+    <button class="btn btn-s" onclick="document.getElementById('fileInput').click()">📂</button>
+    <button class="btn btn-s" onclick="downloadMD()">💾</button>
+    <button class="btn btn-s btn-p" onclick="copyHTML()">📋</button>
+  </div>
+</header>
+
+<div class="mb">
+  <div class="mb-t act" id="tab-edit" onclick="switchTab('edit')">编辑</div>
+  <div class="mb-t" id="tab-preview" onclick="switchTab('preview')">预览</div>
+</div>
+
+<div class="ct">
+  <div class="ep" id="editor-panel">
+    <div class="ep-header">
+      <div class="ep-dot"></div><div class="ep-dot"></div><div class="ep-dot"></div>
+      <div class="ep-title" id="file-name">untitled.md</div>
+      <div class="ep-cm">
+        <button class="ep-cmb" onclick="toggleWrap()" id="btn-wrap" title="Toggle word wrap">↩</button>
+        <button class="ep-cmb" onclick="toggleMonospace()" id="btn-mono" title="Toggle font">A</button>
+      </div>
+    </div>
+    <div class="ep-edit" id="editor-area">
+      <div class="ln" id="line-nums"><span></span></div>
+      <textarea id="editor" placeholder="# Start writing Markdown here..."></textarea>
+    </div>
+    <div class="ep-st">
+      <span id="stat-lines"><b>0</b> lines</span>
+      <span id="stat-words"><b>0</b> words</span>
+      <span id="stat-chars"><b>0</b> chars</span>
+      <span style="margin-left:auto" id="stat-save"></span>
+    </div>
+  </div>
+  <div class="pp" id="preview-panel">
+    <div class="pp-inner md-body" id="preview"></div>
+  </div>
+</div>
+
+<script>
+const editor = document.getElementById('editor');
+const preview = document.getElementById('preview');
+const previewPanel = document.getElementById('preview-panel');
+const editorPanel = document.getElementById('editor-panel');
+const fileName = document.getElementById('file-name');
+const lineNums = document.getElementById('line-nums');
+const statSave = document.getElementById('stat-save');
+let currentFileName = 'untitled.md';
+let showLineNums = true;
+let wordWrap = true;
+let monoFont = true;
+
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  highlight: function(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try { return hljs.highlight(code, { language: lang }).value; } catch {}
+    }
+    return hljs.highlightAuto(code).value;
+  }
+});
+
+function updatePreview() {
+  const text = editor.value;
+  preview.innerHTML = text ? marked.parse(text) : '<div class="pp-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>预览区域将在这里展示</span></div>';
+  updateStats();
+  saveLocal();
+}
+
+function updateStats() {
+  const text = editor.value;
+  const lines = text ? text.split('\n').length : 0;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const chars = text.length;
+  document.getElementById('stat-lines').innerHTML = '<b>'+lines+'</b> lines';
+  document.getElementById('stat-words').innerHTML = '<b>'+words+'</b> words';
+  document.getElementById('stat-chars').innerHTML = '<b>'+chars+'</b> chars';
+}
+
+function updateLineNums() {
+  const lines = editor.value.split('\n').length;
+  let html = '';
+  for (let i = 1; i <= lines; i++) html += '<span>'+i+'</span>';
+  lineNums.innerHTML = html;
+  if (showLineNums) {
+    document.getElementById('editor-area').classList.add('show-ln');
+  } else {
+    document.getElementById('editor-area').classList.remove('show-ln');
+  }
+}
+
+function saveLocal() {
+  try {
+    localStorage.setItem('md-editor-content', editor.value);
+    localStorage.setItem('md-editor-filename', currentFileName);
+    statSave.textContent = '已保存';
+    setTimeout(() => { if (statSave.textContent === '已保存') statSave.textContent = ''; }, 1500);
+  } catch {}
+}
+
+function loadLocal() {
+  const saved = localStorage.getItem('md-editor-content');
+  const savedName = localStorage.getItem('md-editor-filename');
+  if (saved) {
+    editor.value = saved;
+    if (savedName) { currentFileName = savedName; fileName.textContent = savedName; }
+    updatePreview();
+    updateLineNums();
+  }
+}
+
+editor.addEventListener('input', () => { updatePreview(); updateLineNums(); });
+editor.addEventListener('scroll', () => {
+  lineNums.style.transform = 'translateY('+(-editor.scrollTop + 16)+'px)';
+});
+editor.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = editor.selectionStart, end = editor.selectionEnd;
+    editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = start + 2;
+    updatePreview(); updateLineNums();
+  }
+});
+
+function ins(before, after) {
+  const start = editor.selectionStart, end = editor.selectionEnd;
+  const sel = editor.value.substring(start, end);
+  const multi = before.includes('\n') || after.includes('\n');
+  if (multi) {
+    editor.value = editor.value.substring(0, start) + before + sel + after + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = start + before.length + sel.length;
+  } else {
+    editor.value = editor.value.substring(0, start) + before + sel + after + editor.value.substring(end);
+    editor.selectionStart = start + before.length;
+    editor.selectionEnd = end + before.length;
+  }
+  editor.focus();
+  updatePreview(); updateLineNums();
+}
+
+function insH() {
+  const start = editor.selectionStart;
+  const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+  const line = editor.value.substring(lineStart, editor.value.indexOf('\n', start) === -1 ? editor.value.length : editor.value.indexOf('\n', start));
+  const m = line.match(/^(#{1,6})\s/);
+  let level = m ? m[1].length : 0;
+  level = level >= 6 ? 0 : level + 1;
+  const newLine = level === 0 ? line.replace(/^#{1,6}\s*/, '') : '#'.repeat(level) + ' ' + line.replace(/^#{1,6}\s*/, '');
+  const lineEnd = editor.value.indexOf('\n', start) === -1 ? editor.value.length : editor.value.indexOf('\n', start);
+  editor.value = editor.value.substring(0, lineStart) + newLine + editor.value.substring(lineEnd);
+  editor.selectionStart = editor.selectionEnd = lineStart + Math.min(newLine.length, start - lineStart + 2);
+  editor.focus();
+  updatePreview(); updateLineNums();
+}
+
+function insL(type) {
+  const start = editor.selectionStart;
+  const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+  const line = editor.value.substring(lineStart, editor.value.indexOf('\n', start) === -1 ? editor.value.length : editor.value.indexOf('\n', start));
+  let prefix = type === 'ul' ? '- ' : '1. ';
+  const hasPrefix = /^[\-\*\+]\s/.test(line) || /^\d+\.\s/.test(line);
+  const newLine = hasPrefix ? line.replace(/^[\-\*\+]\s|^\d+\.\s/, '') : prefix + line;
+  const lineEnd = editor.value.indexOf('\n', start) === -1 ? editor.value.length : editor.value.indexOf('\n', start);
+  editor.value = editor.value.substring(0, lineStart) + newLine + editor.value.substring(lineEnd);
+  editor.focus();
+  updatePreview(); updateLineNums();
+}
+
+function insTable() {
+  const tpl = '\n| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Cell     | Cell     | Cell     |\n| Cell     | Cell     | Cell     |\n';
+  const start = editor.selectionStart;
+  editor.value = editor.value.substring(0, start) + tpl + editor.value.substring(start);
+  editor.selectionStart = editor.selectionEnd = start + tpl.length;
+  editor.focus();
+  updatePreview(); updateLineNums();
+}
+
+function toggleLineNum() {
+  showLineNums = !showLineNums;
+  document.getElementById('btn-ln').classList.toggle('act', showLineNums);
+  updateLineNums();
+}
+
+function toggleWrap() {
+  wordWrap = !wordWrap;
+  const btn = document.getElementById('btn-wrap');
+  btn.classList.toggle('act', !wordWrap);
+  editor.style.whiteSpace = wordWrap ? '' : 'pre';
+  editor.style.overflowX = wordWrap ? '' : 'auto';
+}
+
+function toggleMonospace() {
+  monoFont = !monoFont;
+  const btn = document.getElementById('btn-mono');
+  btn.classList.toggle('act', !monoFont);
+  editor.style.fontFamily = monoFont ? '' : 'var(--font)';
+}
+
+function switchTab(tab) {
+  const tabEdit = document.getElementById('tab-edit');
+  const tabPreview = document.getElementById('tab-preview');
+  if (tab === 'edit') {
+    editorPanel.classList.remove('hide');
+    previewPanel.classList.remove('act');
+    tabEdit.classList.add('act');
+    tabPreview.classList.remove('act');
+  } else {
+    editorPanel.classList.add('hide');
+    previewPanel.classList.add('act');
+    tabEdit.classList.remove('act');
+    tabPreview.classList.add('act');
+    updatePreview();
+  }
+}
+
+function openFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  currentFileName = file.name;
+  fileName.textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    editor.value = ev.target.result;
+    updatePreview();
+    updateLineNums();
+    saveLocal();
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function downloadMD() {
+  const blob = new Blob([editor.value], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = currentFileName;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function copyHTML() {
+  updatePreview();
+  const html = '<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.8;color:#333}pre{background:#f5f5f5;padding:16px;border-radius:8px;overflow-x:auto}code{background:#f5f5f5;padding:2px 6px;border-radius:4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}img{max-width:100%}</style></head>\n<body>\n' + preview.innerHTML + '\n</body>\n</html>';
+  navigator.clipboard.writeText(html).then(() => {
+    statSave.textContent = 'HTML 已复制到剪贴板';
+    setTimeout(() => { statSave.textContent = ''; }, 2000);
+  });
+}
+
+document.getElementById('btn-ln').classList.add('act');
+
+loadLocal();
+updatePreview();
+updateLineNums();
+</script>
+</body>
+</html>
