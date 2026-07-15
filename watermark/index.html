@@ -763,9 +763,12 @@ function updateMarginsByCanvasXY(nx,ny){
     }
   }
   document.addEventListener('mousemove',onDragMove);
-  document.addEventListener('touchmove',e=>{e.preventDefault();onDragMove(e)},{passive:false});
   document.addEventListener('mouseup',onDragEnd);
-  document.addEventListener('touchend',onDragEnd);
+  document.addEventListener('touchend',e=>{
+    document.removeEventListener('touchmove',_touchMoveDragHandler);
+    onDragEnd(e);
+  });
+  const _touchMoveDragHandler=e=>{e.preventDefault();onDragMove(e);};
   document.getElementById('pvMain').addEventListener('mousedown',e=>{
     const cv=document.querySelector('#pvMain canvas');if(!cv)return;
     const p=canvasPos(e,cv);
@@ -781,6 +784,7 @@ function updateMarginsByCanvasXY(nx,ny){
     if(inBounds(p.x,p.y)){
       _drag=true;_dragOX=p.x-_wmBounds.x;_dragOY=p.y-_wmBounds.y;
       e.preventDefault();
+      document.addEventListener('touchmove',_touchMoveDragHandler,{passive:false});
     }
   });
   document.addEventListener('mousemove',e=>{
