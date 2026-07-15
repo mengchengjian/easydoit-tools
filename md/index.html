@@ -461,7 +461,7 @@ async function createFile(folderId){
   if(folderId)treeExpanded[folderId]=true;
   await loadTree();
   renderTree();
-  selectFile(fl.id);
+  await selectFile(fl.id);
 }
 async function uploadFiles(e){
   const files=e.target.files;
