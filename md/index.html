@@ -66,7 +66,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
 .tree-item{display:flex;align-items:center;padding:3px 8px;cursor:pointer;font-size:11px;gap:4px;color:var(--text-s);transition:var(--transition);border-radius:4px;margin:1px 4px;position:relative;user-select:none}
 .tree-item:hover{background:var(--surface2);color:var(--text)}
 .tree-item.act{background:var(--accent-soft);color:var(--accent)}
-.tree-item.drag-over{outline:2px solid var(--accent);outline-offset:-1px;border-radius:4px}
+.tree-item.drag-over,.tree-group.drag-over{outline:2px solid var(--accent);outline-offset:-1px;border-radius:4px}
 .tree-item .ti-icon{width:14px;text-align:center;flex-shrink:0;font-size:11px;line-height:1}
 .tree-item .ti-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}
 .tree-item .ti-actions{display:none;gap:2px;flex-shrink:0}
@@ -370,11 +370,12 @@ function renderFolder(fd,folders,files){
   const subFolders=folders.filter(f=>f.parentId===fd.id).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
   const subFiles=files.filter(f=>f.folderId===fd.id);
   const arrow=expanded?'arrow open':'arrow';
-  let h=`<div class="tree-item folder" data-folder-id="${fd.id}" draggable="false"
-    oncontextmenu="onContextMenu(event,'folder','${fd.id}')"
+  let h=`<div class="tree-group" data-folder-id="${fd.id}"
     ondragover="onItemDragOver(event,'${fd.id}')"
     ondragleave="onItemDragLeave(event)"
-    ondrop="onItemDrop(event,'${fd.id}')">
+    ondrop="onItemDrop(event,'${fd.id}')">`;
+  h+=`<div class="tree-item folder"
+    oncontextmenu="onContextMenu(event,'folder','${fd.id}')">
     <span class="arrow" onclick="event.stopPropagation();toggleFolder('${fd.id}')">▶</span>
     <span class="ti-icon" style="color:#fbbf24">📁</span>
     <span class="ti-name" onclick="toggleFolder('${fd.id}')">${esc(fd.name)}</span>
@@ -386,7 +387,7 @@ function renderFolder(fd,folders,files){
   h+=`<div class="tree-children${expanded?'':' collapsed'}">`;
   for(const sf of subFolders) h+=renderFolder(sf,folders,files);
   for(const sf of subFiles) h+=renderFile(sf);
-  h+='</div>';
+  h+='</div></div>`;
   return h;
 }
 function renderFile(fl){
@@ -457,6 +458,7 @@ async function createFile(folderId){
   const type=name.endsWith('.svg')?'svg':name.endsWith('.txt')?'txt':'md';
   const fl={id:uid(),name:name.trim(),type,folderId:folderId||null,content:'',createdAt:Date.now(),updatedAt:Date.now()};
   await dbPut('files',fl);
+  if(folderId)treeExpanded[folderId]=true;
   await loadTree();
   renderTree();
   selectFile(fl.id);
@@ -543,6 +545,7 @@ function onItemDragOver(e,folderId){
 }
 function onItemDragLeave(e){
   const el=e.currentTarget;
+  if(el.contains(e.relatedTarget))return;
   el.classList.remove('drag-over');
   if(dragOverNode===el)dragOverNode=null;
 }
@@ -558,12 +561,14 @@ async function onItemDrop(e,folderId){
   await dbPut('files',fl);
   if(currentFileId===dragFileId)currentFile=fl;
   dragFileId=null;
+  treeExpanded[folderId]=true;
   await loadTree();
   renderTree();
 }
 function onTreeDragOver(e){
   if(!dragFileId)return;
   e.preventDefault();
+  if(dragOverNode){dragOverNode.classList.remove('drag-over');dragOverNode=null;}
 }
 function onTreeDragLeave(e){}
 async function onTreeDrop(e){
