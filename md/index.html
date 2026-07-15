@@ -8,8 +8,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 *,::before,::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#1a1b1e;--surface:#232428;--surface2:#2a2b30;--border:#35363b;--border-h:#4a4b50;
@@ -18,8 +16,8 @@
   --accent2:#f472b6;--warn:#fbbf24;--warn-soft:rgba(251,191,36,.1);
   --shadow:0 2px 8px rgba(0,0,0,.25);--shadow-lg:0 4px 24px rgba(0,0,0,.3);
   --radius-sm:6px;--radius:10px;
-  --font:"Inter","Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
-  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Fira Code","Cascadia Code",monospace;
   --transition:.15s cubic-bezier(.4,0,.2,1);
 }
 
@@ -784,7 +782,7 @@ function onResize(e){
     editorPanel.style.flex='none';
     editorPanel.style.width=ew+'px';
     previewPanel.style.flex='none';
-    previewPanel.style.width=(startW.total-ew-3)+'px';
+    previewPanel.style.width=(startW.total-ew)+'px';
   }
 }
 async function stopResize(){
@@ -792,8 +790,6 @@ async function stopResize(){
   document.removeEventListener('mousemove',onResize);
   document.removeEventListener('mouseup',stopResize);
   document.querySelectorAll('.drag-bar-tree,.drag-bar-main').forEach(b=>b.classList.remove('active'));
-  // Restore flex on main bar
-  if(resizing==='main'){editorPanel.style.flex='';editorPanel.style.width='';previewPanel.style.flex='';previewPanel.style.width=''}
   resizing=null;
 }
 
