@@ -63,10 +63,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
 
 .sb-tree{flex:1;overflow-y:auto;padding:4px 0}
 
-.tree-item{display:flex;align-items:center;padding:3px 8px;cursor:grab;font-size:11px;gap:4px;color:var(--text-s);transition:var(--transition);border-radius:4px;margin:1px 4px;position:relative;user-select:none;-webkit-user-drag:element}
+.tree-item{display:flex;align-items:center;padding:3px 8px;cursor:pointer;font-size:11px;gap:4px;color:var(--text-s);transition:var(--transition);border-radius:4px;margin:1px 4px;position:relative;user-select:none;-webkit-user-drag:element}
 .tree-item:hover{background:var(--surface2);color:var(--text)}
 .tree-item.act{background:var(--accent-soft);color:var(--accent)}
-.tree-item.drag-over,.tree-group.drag-over{outline:2px solid var(--accent);outline-offset:-1px;border-radius:4px}
+.tree-item.file{cursor:grab}
+.tree-group.drag-over{background:var(--accent-soft);border-radius:var(--radius-sm)}
+.tree-item.drag-over{outline:2px solid var(--accent);outline-offset:-1px;border-radius:4px}
 .tree-item .ti-icon{width:14px;text-align:center;flex-shrink:0;font-size:11px;line-height:1}
 .tree-item .ti-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}
 .tree-item .ti-actions{display:none;gap:2px;flex-shrink:0}
@@ -78,6 +80,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
 
 .tree-item.folder{padding-left:4px}
 .tree-item.file{padding-left:20px}
+.tree-children .tree-item.folder{padding-left:18px}
+.tree-children .tree-item.file{padding-left:34px}
+.tree-children .tree-children .tree-item.folder{padding-left:32px}
+.tree-children .tree-children .tree-item.file{padding-left:48px}
+.tree-children .tree-children .tree-children .tree-item.folder{padding-left:46px}
+.tree-children .tree-children .tree-children .tree-item.file{padding-left:62px}
 .tree-item .arrow{width:12px;text-align:center;flex-shrink:0;font-size:8px;transition:transform .15s;line-height:1}
 .tree-item .arrow.open{transform:rotate(90deg)}
 
