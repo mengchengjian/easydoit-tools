@@ -591,7 +591,6 @@ function onTreeDragOver(e){
   console.log('tree dragover');
   if(!dragFileId)return;
   e.preventDefault();
-  if(dragOverNode){dragOverNode.classList.remove('drag-over');dragOverNode=null;}
 }
 function onTreeDragLeave(e){}
 async function onTreeDrop(e){
