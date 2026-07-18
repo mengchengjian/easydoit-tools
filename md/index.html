@@ -8,189 +8,611 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
 <style>
+/* ============================================
+   Design System — Dark Glass Developer Tool
+   ============================================ */
 *,::before,::after{margin:0;padding:0;box-sizing:border-box}
+
 :root{
-  --bg:#1a1b1e;--surface:#232428;--surface2:#2a2b30;--border:#35363b;--border-h:#4a4b50;
-  --text:#e4e4e7;--text-s:#9a9ba0;--text-xs:#65666b;
-  --accent:#60a5fa;--accent-l:#93bbfd;--accent-soft:rgba(96,165,250,.1);
-  --accent2:#f472b6;--warn:#fbbf24;--warn-soft:rgba(251,191,36,.1);
-  --shadow:0 2px 8px rgba(0,0,0,.25);--shadow-lg:0 4px 24px rgba(0,0,0,.3);
-  --radius-sm:6px;--radius:10px;
-  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
-  --mono:"SF Mono","JetBrains Mono","Fira Code","Cascadia Code",monospace;
-  --transition:.15s cubic-bezier(.4,0,.2,1);
+  /* Core palette */
+  --bg-base:#09090d;
+  --bg-elevated:#111118;
+  --bg-surface:#16161f;
+  --bg-surface2:#1c1c27;
+  --bg-glass:rgba(22,22,31,0.85);
+
+  /* Borders */
+  --border-subtle:rgba(255,255,255,0.04);
+  --border-default:rgba(255,255,255,0.06);
+  --border-strong:rgba(255,255,255,0.10);
+  --border-accent:rgba(99,102,241,0.35);
+
+  /* Text */
+  --text-primary:rgba(255,255,255,0.92);
+  --text-secondary:rgba(255,255,255,0.55);
+  --text-tertiary:rgba(255,255,255,0.30);
+  --text-disabled:rgba(255,255,255,0.15);
+
+  /* Accent */
+  --accent:#818cf8;
+  --accent-strong:#6366f1;
+  --accent-soft:rgba(99,102,241,0.12);
+  --accent-glow:rgba(99,102,241,0.25);
+  --accent-gradient:linear-gradient(135deg,#818cf8,#6366f1,#8b5cf6);
+
+  /* Semantic */
+  --success:#34d399;
+  --warning:#fbbf24;
+  --danger:#f87171;
+  --danger-soft:rgba(248,113,113,0.12);
+  --info:#38bdf8;
+
+  /* Surfaces */
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.5);
+  --shadow-glow:0 0 20px rgba(99,102,241,0.15);
+
+  /* Radii */
+  --radius-xs:4px;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --radius-xl:20px;
+
+  /* Spacing */
+  --space-xs:4px;
+  --space-sm:8px;
+  --space-md:12px;
+  --space-lg:16px;
+  --space-xl:24px;
+
+  /* Typography */
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Fira Code","Cascadia Code","Menlo",monospace;
+
+  /* Motion */
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.65,0,0.35,1);
+  --duration-fast:120ms;
+  --duration-base:200ms;
+  --duration-slow:350ms;
 }
 
-body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+/* ============================================
+   Base
+   ============================================ */
+body{
+  font-family:var(--font);
+  background:var(--bg-base);
+  color:var(--text-primary);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
 ::selection{background:var(--accent-soft);color:var(--accent)}
-::-webkit-scrollbar{width:5px;height:5px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border-h);border-radius:10px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:20px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.14)}
+::-webkit-scrollbar-corner{background:transparent}
 
-/* === Header === */
-.hdr{background:var(--surface);border-bottom:1px solid var(--border);height:42px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:30;gap:6px}
-.hl{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.hl-logo{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:var(--mono)}
-.hl-t{font-size:13px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
-.hl-t span{color:var(--text-s);font-weight:400}
+/* ============================================
+   Header
+   ============================================ */
+.hdr{
+  background:var(--bg-glass);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border-subtle);
+  height:48px;
+  padding:0 var(--space-lg);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  z-index:30;
+  gap:var(--space-md);
+  position:relative;
+}
 
-.hm{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;justify-content:center}
+.hdr::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border-accent),transparent);
+  opacity:0.5;
+}
+
+.hl{display:flex;align-items:center;gap:var(--space-md);flex-shrink:0}
+.hl-logo{
+  width:28px;height:28px;
+  border-radius:var(--radius-sm);
+  background:var(--accent-gradient);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:12px;font-weight:700;
+  font-family:var(--mono);
+  box-shadow:0 2px 12px rgba(99,102,241,0.3);
+}
+.hl-t{font-size:13px;font-weight:600;letter-spacing:-0.3px;white-space:nowrap}
+.hl-t span{color:var(--text-tertiary);font-weight:400;margin-left:2px}
+
+/* Toolbar */
+.hm{
+  display:flex;align-items:center;gap:var(--space-xs);
+  overflow-x:auto;scrollbar-width:none;
+  flex:1;justify-content:center;
+}
 .hm::-webkit-scrollbar{display:none}
-.btn{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-s);cursor:pointer;font-size:10px;font-family:var(--font);font-weight:500;transition:var(--transition);white-space:nowrap;display:inline-flex;align-items:center;gap:2px;line-height:1.5}
-.btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border-h)}
-.btn:active{transform:scale(.97)}
-.btn-p{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-.btn-p:hover{background:var(--accent-l);border-color:var(--accent-l);color:#fff}
-.btn-s{font-size:10px;padding:3px 7px}
-.hr{display:flex;align-items:center;gap:4px;flex-shrink:0}
 
-/* === Mobile tabs === */
-.mb{display:none;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.mb-t{flex:1;padding:9px;text-align:center;font-size:11px;font-weight:500;color:var(--text-s);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition)}
-.mb-t.act{color:var(--accent);border-bottom-color:var(--accent)}
+.btn{
+  padding:5px 10px;
+  border:1px solid var(--border-default);
+  border-radius:var(--radius-xs);
+  background:rgba(255,255,255,0.03);
+  color:var(--text-secondary);
+  cursor:pointer;
+  font-size:11px;font-family:var(--font);font-weight:500;
+  transition:all var(--duration-fast) var(--ease-out);
+  white-space:nowrap;
+  display:inline-flex;align-items:center;gap:3px;
+  line-height:1.4;height:30px;
+  position:relative;
+}
+.btn:hover{
+  background:rgba(255,255,255,0.06);
+  color:var(--text-primary);
+  border-color:var(--border-strong);
+}
+.btn:active{transform:scale(0.96)}
+.btn-p{
+  background:var(--accent-gradient);
+  border-color:transparent;
+  color:#fff;
+  font-weight:600;
+  box-shadow:0 2px 8px var(--accent-glow);
+}
+.btn-p:hover{
+  color:#fff;
+  box-shadow:0 4px 16px var(--accent-glow);
+  transform:translateY(-1px);
+}
+.btn-p:active{transform:scale(0.96) translateY(0)}
+.btn-s{font-size:11px;padding:4px 8px}
+.btn-gh{
+  background:transparent;
+  border-color:transparent;
+  padding:4px 6px;
+  color:var(--text-secondary);
+}
+.btn-gh:hover{background:rgba(255,255,255,0.05);color:var(--text-primary);border-color:transparent}
 
-/* === Main content === */
+.hr{display:flex;align-items:center;gap:var(--space-xs);flex-shrink:0}
+
+.divider{width:1px;height:20px;background:var(--border-default);margin:0 2px}
+
+/* ============================================
+   Mobile tabs
+   ============================================ */
+.mb{display:none;border-bottom:1px solid var(--border-subtle);background:var(--bg-elevated);flex-shrink:0}
+.mb-t{flex:1;padding:11px;text-align:center;font-size:12px;font-weight:500;color:var(--text-tertiary);cursor:pointer;border-bottom:2px solid transparent;transition:all var(--duration-base) var(--ease-out)}
+.mb-t.act{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-soft)}
+
+/* ============================================
+   Main layout
+   ============================================ */
 .ct{display:flex;flex:1;overflow:hidden}
 
-/* === Sidebar (file tree) === */
-.sb{width:220px;min-width:50px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;transition:width .2s}
+/* ============================================
+   Sidebar (File Tree)
+   ============================================ */
+.sb{
+  width:240px;min-width:50px;
+  background:var(--bg-elevated);
+  border-right:1px solid var(--border-subtle);
+  display:flex;flex-direction:column;
+  overflow:hidden;flex-shrink:0;
+  transition:width var(--duration-slow) var(--ease-out);
+}
 .sb.collapsed{width:0;min-width:0;border-right:none}
-.sb-header{height:34px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;gap:4px}
-.sb-header-t{font-size:10px;font-weight:600;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px}
+
+.sb-header{
+  height:40px;padding:0 var(--space-md);
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border-subtle);
+  flex-shrink:0;gap:var(--space-xs);
+}
+.sb-header-t{
+  font-size:11px;font-weight:600;color:var(--text-tertiary);
+  text-transform:uppercase;letter-spacing:0.8px;
+}
 .sb-header-acts{display:flex;gap:2px}
-.sb-header-acts button{padding:2px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text-xs);cursor:pointer;font-size:10px;transition:var(--transition);line-height:1.4}
-.sb-header-acts button:hover{background:var(--surface2);color:var(--text);border-color:var(--border-h)}
+.sb-header-acts button{
+  width:26px;height:26px;
+  border:1px solid transparent;
+  border-radius:var(--radius-xs);
+  background:transparent;
+  color:var(--text-tertiary);
+  cursor:pointer;font-size:12px;
+  transition:all var(--duration-fast) var(--ease-out);
+  display:flex;align-items:center;justify-content:center;
+}
+.sb-header-acts button:hover{background:rgba(255,255,255,0.05);color:var(--text-primary);border-color:var(--border-default)}
 
-.sb-tree{flex:1;overflow-y:auto;padding:4px 0}
+.sb-tree{flex:1;overflow-y:auto;padding:var(--space-xs) 0}
 
-.tree-item{display:flex;align-items:center;padding:3px 8px;cursor:pointer;font-size:11px;gap:4px;color:var(--text-s);transition:var(--transition);border-radius:4px;margin:1px 4px;position:relative;user-select:none;-webkit-user-drag:element}
-.tree-item:hover{background:var(--surface2);color:var(--text)}
+/* Tree items */
+.tree-group{margin:0}
+
+.tree-item{
+  display:flex;align-items:center;
+  padding:5px var(--space-sm);
+  cursor:pointer;font-size:12px;gap:var(--space-xs);
+  color:var(--text-secondary);
+  transition:all var(--duration-fast) var(--ease-out);
+  border-radius:var(--radius-xs);
+  margin:1px var(--space-sm);
+  position:relative;user-select:none;
+  -webkit-user-drag:element;
+}
+.tree-item:hover{background:rgba(255,255,255,0.04);color:var(--text-primary)}
 .tree-item.act{background:var(--accent-soft);color:var(--accent)}
-.tree-item.file{cursor:grab}
+.tree-item.act .ti-icon{color:var(--accent)!important}
+.tree-group.drag-over>.tree-item,
 .tree-group.drag-over{background:var(--accent-soft);border-radius:var(--radius-sm)}
-.tree-item.drag-over{outline:2px solid var(--accent);outline-offset:-1px;border-radius:4px}
-.tree-item .ti-icon{width:14px;text-align:center;flex-shrink:0;font-size:11px;line-height:1}
-.tree-item .ti-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}
+.tree-item.drag-over{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs)}
+
+.tree-item .ti-icon{width:16px;text-align:center;flex-shrink:0;font-size:12px;line-height:1}
+.tree-item .ti-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5;font-size:12px}
+
 .tree-item .ti-actions{display:none;gap:2px;flex-shrink:0}
 .tree-item:hover .ti-actions{display:flex}
-.tree-item .ti-act{padding:0 3px;border:none;background:none;color:var(--text-xs);cursor:pointer;font-size:10px;border-radius:3px;line-height:1.6}
-.tree-item .ti-act:hover{color:var(--text);background:var(--border)}
-.tree-item .ti-act.del:hover{color:#f87171}
+.tree-item .ti-act{
+  width:22px;height:22px;padding:0;
+  border:none;background:none;
+  color:var(--text-tertiary);cursor:pointer;
+  font-size:11px;border-radius:var(--radius-xs);
+  transition:all var(--duration-fast) var(--ease-out);
+  display:flex;align-items:center;justify-content:center;
+}
+.tree-item .ti-act:hover{background:rgba(255,255,255,0.08);color:var(--text-primary)}
+.tree-item .ti-act.del:hover{background:var(--danger-soft);color:var(--danger)}
 .tree-item .ti-act.rename:hover{color:var(--accent)}
 
-.tree-item.folder{padding-left:4px}
-.tree-item.file{padding-left:20px}
-.tree-children .tree-item.folder{padding-left:18px}
-.tree-children .tree-item.file{padding-left:34px}
-.tree-children .tree-children .tree-item.folder{padding-left:32px}
-.tree-children .tree-children .tree-item.file{padding-left:48px}
-.tree-children .tree-children .tree-children .tree-item.folder{padding-left:46px}
-.tree-children .tree-children .tree-children .tree-item.file{padding-left:62px}
-.tree-item .arrow{width:12px;text-align:center;flex-shrink:0;font-size:8px;transition:transform .15s;line-height:1}
-.tree-item .arrow.open{transform:rotate(90deg)}
+/* Tree indentation */
+.tree-item.folder{padding-left:var(--space-xs)}
+.tree-item.file{padding-left:28px}
+.tree-children .tree-item.folder{padding-left:20px}
+.tree-children .tree-item.file{padding-left:40px}
+.tree-children .tree-children .tree-item.folder{padding-left:36px}
+.tree-children .tree-children .tree-item.file{padding-left:56px}
+.tree-children .tree-children .tree-children .tree-item.folder{padding-left:52px}
+.tree-children .tree-children .tree-children .tree-item.file{padding-left:72px}
+
+.tree-item .arrow{
+  width:14px;text-align:center;flex-shrink:0;
+  font-size:8px;transition:transform var(--duration-fast) var(--ease-out);
+  line-height:1;color:var(--text-tertiary);
+}
+.tree-item .arrow.open{transform:rotate(90deg);color:var(--text-secondary)}
 
 .tree-children{overflow:hidden}
 .tree-children.collapsed{display:none}
 
-.tree-inline-input{flex:1;background:var(--surface2);border:1px solid var(--accent);border-radius:3px;color:var(--text);font-size:11px;padding:2px 4px;outline:none;font-family:var(--font)}
+.tree-inline-input{
+  flex:1;
+  background:var(--bg-surface2);
+  border:1px solid var(--accent);
+  border-radius:var(--radius-xs);
+  color:var(--text-primary);
+  font-size:12px;padding:3px 6px;
+  outline:none;font-family:var(--font);
+}
 
-/* === Drag bar (tree resize) === */
-.drag-bar-tree{width:3px;background:var(--border);cursor:col-resize;flex-shrink:0;z-index:5;transition:background .1s}
-.drag-bar-tree:hover,.drag-bar-tree.active{background:var(--accent)}
+/* Drag bar tree */
+.drag-bar-tree{
+  width:4px;background:transparent;
+  cursor:col-resize;flex-shrink:0;z-index:5;
+  transition:background var(--duration-fast) var(--ease-out);
+  position:relative;
+}
+.drag-bar-tree::after{
+  content:'';position:absolute;inset:0 -2px;
+}
+.drag-bar-tree:hover,.drag-bar-tree.active{
+  background:var(--accent);
+  box-shadow:0 0 8px var(--accent-glow);
+}
 
-/* === Editor panel === */
-.ep{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--surface)}
-.ep-header{height:28px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:5px;flex-shrink:0}
-.ep-dot{width:7px;height:7px;border-radius:50%;background:var(--border-h)}
+/* ============================================
+   Editor Panel
+   ============================================ */
+.ep{
+  flex:1;display:flex;flex-direction:column;
+  min-width:0;background:var(--bg-surface);
+}
+
+.ep-header{
+  height:36px;
+  background:var(--bg-surface2);
+  border-bottom:1px solid var(--border-subtle);
+  display:flex;align-items:center;
+  padding:0 var(--space-md);gap:var(--space-sm);
+  flex-shrink:0;
+}
+.ep-dot{width:8px;height:8px;border-radius:50%;background:var(--border-strong)}
 .ep-dot:nth-child(1){background:#ff5f57}.ep-dot:nth-child(2){background:#febc2e}.ep-dot:nth-child(3){background:#28c840}
-.ep-title{font-size:10px;color:var(--text-xs);margin-left:6px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ep-cm{display:flex;align-items:center;gap:3px;margin-left:auto}
-.ep-cmb{padding:1px 5px;border:1px solid var(--border);border-radius:3px;background:var(--surface);color:var(--text-s);cursor:pointer;font-size:9px;transition:var(--transition);line-height:1.5}
-.ep-cmb:hover{border-color:var(--border-h);color:var(--text)}
-.ep-cmb.act{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.ep-title{
+  font-size:11px;color:var(--text-tertiary);margin-left:var(--space-xs);
+  font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ep-cm{display:flex;align-items:center;gap:var(--space-xs);margin-left:auto}
+.ep-cmb{
+  width:26px;height:26px;
+  border:1px solid transparent;border-radius:var(--radius-xs);
+  background:transparent;
+  color:var(--text-tertiary);cursor:pointer;
+  font-size:12px;
+  transition:all var(--duration-fast) var(--ease-out);
+  display:flex;align-items:center;justify-content:center;
+}
+.ep-cmb:hover{background:rgba(255,255,255,0.05);color:var(--text-primary);border-color:var(--border-default)}
+.ep-cmb.act{background:var(--accent-soft);border-color:var(--border-accent);color:var(--accent)}
 
 .ep-edit{flex:1;position:relative;overflow:hidden}
-.ep-edit textarea{width:100%;height:100%;background:var(--surface);border:none;outline:none;resize:none;padding:14px 16px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text);tab-size:2}
-.ep-edit textarea::placeholder{color:var(--text-xs)}
-.ep-edit .ln{position:absolute;left:0;top:0;bottom:0;width:36px;background:var(--surface2);border-right:1px solid var(--border);overflow:hidden;pointer-events:none;padding:14px 0}
-.ep-edit .ln span{display:block;text-align:right;padding-right:6px;font-size:10px;font-family:var(--mono);color:var(--text-xs);line-height:1.7}
-.ep-edit.show-ln textarea{padding-left:52px}
+.ep-edit textarea{
+  width:100%;height:100%;
+  background:var(--bg-surface);
+  border:none;outline:none;resize:none;
+  padding:var(--space-lg) 20px;
+  font-family:var(--mono);
+  font-size:13.5px;line-height:1.75;
+  color:var(--text-primary);
+  tab-size:2;
+  caret-color:var(--accent);
+}
+.ep-edit textarea::placeholder{color:var(--text-disabled)}
 
-.ep-st{height:20px;background:var(--surface2);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 10px;font-size:9px;color:var(--text-xs);gap:10px;flex-shrink:0}
-.ep-st span{display:flex;align-items:center;gap:2px}
-.ep-st b{color:var(--text-s);font-weight:500}
+.ep-edit .ln{
+  position:absolute;left:0;top:0;bottom:0;
+  width:44px;
+  background:var(--bg-elevated);
+  border-right:1px solid var(--border-subtle);
+  overflow:hidden;pointer-events:none;
+  padding:var(--space-lg) 0;
+}
+.ep-edit .ln span{
+  display:block;text-align:right;
+  padding-right:10px;
+  font-size:11.5px;font-family:var(--mono);
+  color:var(--text-disabled);line-height:1.75;
+  font-variant-numeric:tabular-nums;
+}
+.ep-edit.show-ln textarea{padding-left:60px}
 
-/* === Drag bar (editor-preview resize) === */
-.drag-bar-main{width:3px;background:var(--border);cursor:col-resize;flex-shrink:0;z-index:5;transition:background .1s}
-.drag-bar-main:hover,.drag-bar-main.active{background:var(--accent)}
+.ep-st{
+  height:24px;
+  background:var(--bg-surface2);
+  border-top:1px solid var(--border-subtle);
+  display:flex;align-items:center;
+  padding:0 var(--space-md);
+  font-size:10px;color:var(--text-tertiary);
+  gap:var(--space-lg);flex-shrink:0;
+}
+.ep-st span{display:flex;align-items:center;gap:var(--space-xs)}
+.ep-st b{color:var(--text-secondary);font-weight:500}
 
-/* === Preview === */
-.pp{flex:1;overflow-y:auto;background:var(--bg);min-width:0}
-.pp-inner{padding:24px 28px;max-width:860px;margin:0 auto}
-.md-body{font-size:14px;line-height:1.8;color:var(--text)}
-.md-body h1,.md-body h2,.md-body h3,.md-body h4,.md-body h5,.md-body h6{margin:1.4em 0 .5em;line-height:1.3;font-weight:700;letter-spacing:-.3px}
-.md-body h1{font-size:1.8em;border-bottom:2px solid var(--border);padding-bottom:.3em}
-.md-body h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.25em}
-.md-body h3{font-size:1.25em}
-.md-body p{margin:.8em 0}
-.md-body a{color:var(--accent)}
-.md-body strong{font-weight:700;color:#e8e8ec}
-.md-body em{font-style:italic}
-.md-body del{color:var(--text-xs)}
-.md-body ul,.md-body ol{padding-left:1.5em;margin:.6em 0}
-.md-body li{margin:.2em 0}
-.md-body li::marker{color:var(--text-xs)}
-.md-body blockquote{margin:.8em 0;padding:4px 14px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0;color:var(--text-s)}
-.md-body code{font-family:var(--mono);font-size:.88em;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--accent2)}
-.md-body pre{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;overflow-x:auto;margin:.8em 0}
-.md-body pre code{background:none;padding:0;color:var(--text);font-size:.85em;line-height:1.6}
-.md-body table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:.92em}
-.md-body th,.md-body td{border:1px solid var(--border);padding:7px 10px;text-align:left}
-.md-body th{background:var(--surface2);font-weight:600}
-.md-body tr:nth-child(even){background:var(--surface)}
-.md-body img{max-width:100%;border-radius:var(--radius-sm);margin:.6em 0}
-.md-body hr{border:none;border-top:1px solid var(--border);margin:1.5em 0}
-.md-body input[type="checkbox"]{margin-right:6px;accent-color:var(--accent)}
-.pp-svg{display:flex;align-items:flex-start;justify-content:center;padding:24px}
+/* ============================================
+   Drag bar main
+   ============================================ */
+.drag-bar-main{
+  width:4px;background:transparent;
+  cursor:col-resize;flex-shrink:0;z-index:5;
+  transition:background var(--duration-fast) var(--ease-out);
+}
+.drag-bar-main:hover,.drag-bar-main.active{
+  background:var(--accent);
+  box-shadow:0 0 8px var(--accent-glow);
+}
+
+/* ============================================
+   Preview Panel
+   ============================================ */
+.pp{
+  flex:1;overflow-y:auto;
+  background:var(--bg-base);
+  min-width:0;
+}
+.pp-inner{padding:32px 36px;max-width:860px;margin:0 auto}
+
+.md-body{
+  font-size:14.5px;line-height:1.85;
+  color:var(--text-primary);
+}
+.md-body h1,.md-body h2,.md-body h3,.md-body h4,.md-body h5,.md-body h6{
+  margin:1.6em 0 .6em;line-height:1.3;font-weight:700;
+  letter-spacing:-0.4px;color:#fff;
+}
+.md-body h1{font-size:1.9em;border-bottom:1px solid var(--border-default);padding-bottom:.35em}
+.md-body h2{font-size:1.55em;border-bottom:1px solid var(--border-subtle);padding-bottom:.3em}
+.md-body h3{font-size:1.3em}
+.md-body h4{font-size:1.15em}
+.md-body p{margin:.85em 0}
+.md-body a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)}
+.md-body a:hover{color:var(--info)}
+.md-body strong{font-weight:700;color:rgba(255,255,255,0.96)}
+.md-body em{font-style:italic;color:var(--text-secondary)}
+.md-body del{color:var(--text-tertiary)}
+.md-body ul,.md-body ol{padding-left:1.6em;margin:.65em 0}
+.md-body li{margin:.25em 0}
+.md-body li::marker{color:var(--text-tertiary)}
+.md-body blockquote{
+  margin:.85em 0;padding:var(--space-md) var(--space-lg);
+  border-left:3px solid var(--accent);
+  background:var(--accent-soft);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  color:var(--text-secondary);
+}
+.md-body code{
+  font-family:var(--mono);font-size:.88em;
+  background:var(--bg-surface2);
+  padding:2px 7px;border-radius:var(--radius-xs);
+  color:var(--accent);
+}
+.md-body pre{
+  background:var(--bg-elevated);
+  border:1px solid var(--border-default);
+  border-radius:var(--radius-sm);
+  padding:var(--space-lg);
+  overflow-x:auto;margin:.85em 0;
+}
+.md-body pre code{background:none;padding:0;color:var(--text-primary);font-size:.85em;line-height:1.65}
+.md-body table{
+  border-collapse:collapse;width:100%;
+  margin:.85em 0;font-size:.92em;
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+}
+.md-body th,.md-body td{
+  border:1px solid var(--border-default);
+  padding:9px 14px;text-align:left;
+}
+.md-body th{background:var(--bg-surface2);font-weight:600;color:var(--text-primary)}
+.md-body tr:nth-child(even){background:rgba(255,255,255,0.02)}
+.md-body tr:hover{background:rgba(255,255,255,0.03)}
+.md-body img{max-width:100%;border-radius:var(--radius-sm);margin:.65em 0}
+.md-body hr{border:none;border-top:1px solid var(--border-default);margin:2em 0}
+.md-body input[type="checkbox"]{margin-right:8px;accent-color:var(--accent)}
+
+.pp-svg{display:flex;align-items:flex-start;justify-content:center;padding:var(--space-xl)}
 .pp-svg svg{max-width:100%;max-height:70vh;height:auto}
-.pp-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-xs);font-size:13px;flex-direction:column;gap:8px}
+.pp-empty{
+  display:flex;align-items:center;justify-content:center;
+  height:100%;color:var(--text-tertiary);font-size:13px;
+  flex-direction:column;gap:var(--space-md);
+}
 
-/* Context menu */
-.cmenu{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 0;z-index:100;min-width:140px;box-shadow:var(--shadow-lg);display:none}
-.cmenu-item{padding:6px 12px;font-size:11px;cursor:pointer;color:var(--text-s);transition:var(--transition)}
-.cmenu-item:hover{background:var(--surface2);color:var(--text)}
-.cmenu-sep{height:1px;background:var(--border);margin:3px 0}
+/* ============================================
+   Context menu
+   ============================================ */
+.cmenu{
+  position:fixed;
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm);
+  padding:var(--space-xs) 0;
+  z-index:100;min-width:160px;
+  box-shadow:var(--shadow-lg);
+  display:none;
+}
+.cmenu-item{
+  padding:7px 14px;font-size:12px;cursor:pointer;
+  color:var(--text-secondary);
+  transition:all var(--duration-fast) var(--ease-out);
+}
+.cmenu-item:hover{background:rgba(255,255,255,0.05);color:var(--text-primary)}
+.cmenu-sep{height:1px;background:var(--border-default);margin:var(--space-xs) 0}
 
-/* === Modal overlay === */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:none;align-items:center;justify-content:center}
+/* ============================================
+   Modal
+   ============================================ */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  z-index:50;display:none;
+  align-items:center;justify-content:center;
+}
 .modal-overlay.show{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;min-width:280px;max-width:400px;box-shadow:var(--shadow-lg)}
-.modal-title{font-size:13px;font-weight:600;margin-bottom:10px}
-.modal-input{width:100%;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;font-family:var(--font);outline:none;margin-bottom:10px}
-.modal-input:focus{border-color:var(--accent)}
-.modal-acts{display:flex;gap:6px;justify-content:flex-end}
-.modal-acts button{padding:5px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-family:var(--font);font-weight:500;transition:var(--transition);border:1px solid var(--border);background:var(--surface);color:var(--text-s)}
-.modal-acts button:hover{background:var(--surface2);color:var(--text)}
-.modal-acts button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.modal-acts button.primary:hover{background:var(--accent-l)}
-.modal-acts button.danger{color:#f87171;border-color:#f8717122}
-.modal-acts button.danger:hover{background:rgba(248,113,113,.1)}
+.modal{
+  background:var(--bg-glass);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg);
+  padding:var(--space-xl);
+  min-width:320px;max-width:440px;
+  box-shadow:var(--shadow-lg);
+}
+.modal-title{font-size:14px;font-weight:600;margin-bottom:var(--space-md);color:var(--text-primary)}
+.modal-input{
+  width:100%;padding:8px 12px;
+  background:var(--bg-surface2);
+  border:1px solid var(--border-default);
+  border-radius:var(--radius-sm);
+  color:var(--text-primary);font-size:13px;
+  font-family:var(--font);outline:none;
+  margin-bottom:var(--space-md);
+  transition:border-color var(--duration-fast) var(--ease-out);
+}
+.modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.modal-input::placeholder{color:var(--text-tertiary)}
+.modal-acts{display:flex;gap:var(--space-sm);justify-content:flex-end}
+.modal-acts button{
+  padding:7px 18px;border-radius:var(--radius-sm);
+  cursor:pointer;font-size:12px;font-family:var(--font);font-weight:500;
+  transition:all var(--duration-fast) var(--ease-out);
+  border:1px solid var(--border-default);
+  background:rgba(255,255,255,0.03);color:var(--text-secondary);
+}
+.modal-acts button:hover{background:rgba(255,255,255,0.06);color:var(--text-primary)}
+.modal-acts button.primary{
+  background:var(--accent-gradient);
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 2px 8px var(--accent-glow);
+}
+.modal-acts button.primary:hover{box-shadow:0 4px 16px var(--accent-glow)}
+.modal-acts button.danger{color:var(--danger);border-color:var(--danger-soft)}
+.modal-acts button.danger:hover{background:var(--danger-soft)}
 
-/* === Toast === */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);padding:8px 18px;border-radius:20px;font-size:11px;color:var(--text-s);z-index:60;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:var(--shadow)}
+/* ============================================
+   Toast
+   ============================================ */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border:1px solid var(--border-strong);
+  padding:9px 22px;border-radius:24px;
+  font-size:12px;color:var(--text-secondary);
+  z-index:60;opacity:0;
+  transition:opacity var(--duration-slow) var(--ease-out);
+  pointer-events:none;
+  box-shadow:var(--shadow-md);
+}
 .toast.show{opacity:1}
 
+/* ============================================
+   Responsive
+   ============================================ */
 @media(max-width:768px){
   .hm{display:none}
-  .sb{position:fixed;left:0;top:42px;bottom:0;z-index:25;width:260px;transform:translateX(-100%);transition:transform .2s}
-  .sb.open{transform:translateX(0)}
+  .sb{
+    position:fixed;left:0;top:48px;bottom:0;z-index:25;
+    width:280px;transform:translateX(-100%);
+    transition:transform var(--duration-slow) var(--ease-out);
+  }
+  .sb.open{transform:translateX(0);box-shadow:var(--shadow-lg)}
   .drag-bar-tree{display:none}
   .ep{border-right:none}
   .pp{display:none}
   .pp.act{display:block}
   .ep.hide{display:none}
   .mb{display:flex}
-  .pp-inner{padding:14px 16px}
+  .pp-inner{padding:var(--space-lg) var(--space-lg)}
+  .drag-bar-main{display:none}
 }
 </style>
 </head>
@@ -206,43 +628,42 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
     <button class="btn btn-s" onclick="ins('**','**')" title="Bold"><b>B</b></button>
     <button class="btn btn-s" onclick="ins('*','*')" title="Italic"><i>I</i></button>
     <button class="btn btn-s" onclick="ins('~~','~~')" title="Strikethrough"><s>S</s></button>
-    <span style="color:var(--border)">|</span>
+    <span class="divider"></span>
     <button class="btn btn-s" onclick="insH()" title="Heading">H</button>
     <button class="btn btn-s" onclick="insL('ul')" title="Unordered List">•</button>
     <button class="btn btn-s" onclick="insL('ol')" title="Ordered List">1.</button>
     <button class="btn btn-s" onclick="ins('> ','')" title="Blockquote">&ldquo;</button>
-    <span style="color:var(--border)">|</span>
+    <span class="divider"></span>
     <button class="btn btn-s" onclick="ins('`','`')" title="Inline Code">&lt;/&gt;</button>
     <button class="btn btn-s" onclick="ins('\n```\n\n```\n','')" title="Code Block">▯</button>
     <button class="btn btn-s" onclick="ins('[','](url)')" title="Link">🔗</button>
     <button class="btn btn-s" onclick="ins('![alt](','')" title="Image">🖼</button>
-    <span style="color:var(--border)">|</span>
+    <span class="divider"></span>
     <button class="btn btn-s" onclick="insTable()" title="Table">⊞</button>
     <button class="btn btn-s" onclick="ins('---\n','')" title="HR">—</button>
   </div>
   <div class="hr">
-    <button class="btn btn-s" onclick="toggleLineNum()" id="btn-ln">#</button>
-    <button class="btn btn-s" onclick="downloadCurrent()">💾</button>
-    <button class="btn btn-s btn-p" onclick="copyHTML()">📋</button>
+    <button class="btn btn-s btn-gh" onclick="toggleLineNum()" id="btn-ln">#</button>
+    <button class="btn btn-s" onclick="downloadCurrent()">Export</button>
+    <button class="btn btn-s btn-p" onclick="copyHTML()">Copy HTML</button>
   </div>
 </header>
 
 <div class="mb">
-  <div class="mb-t act" id="tab-files" onclick="mobileTab('files')">文件</div>
-  <div class="mb-t" id="tab-edit" onclick="mobileTab('edit')">编辑</div>
-  <div class="mb-t" id="tab-preview" onclick="mobileTab('preview')">预览</div>
+  <div class="mb-t act" id="tab-files" onclick="mobileTab('files')">Files</div>
+  <div class="mb-t" id="tab-edit" onclick="mobileTab('edit')">Edit</div>
+  <div class="mb-t" id="tab-preview" onclick="mobileTab('preview')">Preview</div>
 </div>
 
 <div class="ct" id="main-container">
-  <!-- Sidebar -->
   <div class="sb" id="sidebar">
     <div class="sb-header">
-      <span class="sb-header-t">文件浏览器</span>
+      <span class="sb-header-t">Files</span>
       <div class="sb-header-acts">
-        <button onclick="createFolder(null)" title="新建文件夹">📁+</button>
-        <button onclick="createFile(null)" title="新建文件">📄+</button>
+        <button onclick="createFolder(null)" title="New Folder">+</button>
+        <button onclick="createFile(null)" title="New File">N</button>
         <input type="file" id="fileUpload" accept=".md,.txt,.svg,.markdown" style="display:none" multiple onchange="uploadFiles(event)">
-        <button onclick="document.getElementById('fileUpload').click()" title="导入文件">↑</button>
+        <button onclick="document.getElementById('fileUpload').click()" title="Import">↑</button>
       </div>
     </div>
     <div class="sb-tree" id="file-tree"
@@ -252,22 +673,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
     </div>
   </div>
 
-  <!-- Tree resize bar -->
   <div class="drag-bar-tree" id="dragBarTree" onmousedown="startResize('tree',event)"></div>
 
-  <!-- Editor -->
   <div class="ep" id="editor-panel">
     <div class="ep-header">
       <div class="ep-dot"></div><div class="ep-dot"></div><div class="ep-dot"></div>
       <div class="ep-title" id="file-name"></div>
       <div class="ep-cm">
-        <button class="ep-cmb" onclick="toggleWrap()" id="btn-wrap" title="换行">↩</button>
-        <button class="ep-cmb" onclick="toggleMonospace()" id="btn-mono" title="字体">A</button>
+        <button class="ep-cmb" onclick="toggleWrap()" id="btn-wrap" title="Word Wrap">↩</button>
+        <button class="ep-cmb" onclick="toggleMonospace()" id="btn-mono" title="Font">A</button>
       </div>
     </div>
     <div class="ep-edit" id="editor-area">
       <div class="ln" id="line-nums"><span></span></div>
-      <textarea id="editor" placeholder="从左侧选择或创建文件开始编辑..."></textarea>
+      <textarea id="editor" placeholder="Open or create a file to start editing..."></textarea>
     </div>
     <div class="ep-st">
       <span id="stat-lines"><b>0</b> lines</span>
@@ -277,24 +696,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
     </div>
   </div>
 
-  <!-- Editor-preview resize bar -->
   <div class="drag-bar-main" id="dragBarMain" onmousedown="startResize('main',event)"></div>
 
-  <!-- Preview -->
   <div class="pp" id="preview-panel">
     <div class="pp-inner md-body" id="preview"></div>
   </div>
 </div>
 
-<!-- Context menu -->
 <div class="cmenu" id="context-menu"></div>
 
-<!-- Modal -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal" id="modal"></div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -370,7 +784,7 @@ function renderTree(){
   let h='';
   for(const fd of rootFolders) h+=renderFolder(fd,folders,files);
   for(const fl of rootFiles) h+=renderFile(fl);
-  if(!h) h='<div style="padding:16px;text-align:center;font-size:10px;color:var(--text-xs)">暂无文件<br>点击上方按钮创建或导入</div>';
+  if(!h) h='<div style="padding:20px;text-align:center;font-size:11px;color:var(--text-tertiary);line-height:1.8">No files yet<br><span style="font-size:10px">Create or import to start</span></div>';
   fileTree.innerHTML=h;
 }
 function renderFolder(fd,folders,files){
@@ -388,8 +802,8 @@ function renderFolder(fd,folders,files){
     <span class="ti-icon" style="color:#fbbf24">📁</span>
     <span class="ti-name" onclick="toggleFolder('${fd.id}')">${esc(fd.name)}</span>
     <span class="ti-actions">
-      <button class="ti-act rename" onclick="event.stopPropagation();renameFolder('${fd.id}','${esc(fd.name)}')" title="重命名">✎</button>
-      <button class="ti-act del" onclick="event.stopPropagation();deleteFolder('${fd.id}')" title="删除">×</button>
+      <button class="ti-act rename" onclick="event.stopPropagation();renameFolder('${fd.id}','${esc(fd.name)}')" title="Rename">&#9998;</button>
+      <button class="ti-act del" onclick="event.stopPropagation();deleteFolder('${fd.id}')" title="Delete">&times;</button>
     </span>
   </div>`;
   h+=`<div class="tree-children${expanded?'':' collapsed'}">`;
@@ -400,7 +814,7 @@ function renderFolder(fd,folders,files){
 }
 function renderFile(fl){
   const icon=fl.type==='svg'?'🖼':fl.type==='txt'?'📝':'📄';
-  const color=fl.type==='svg'?'#a78bfa':'var(--text-s)';
+  const color=fl.type==='svg'?'#a78bfa':'var(--text-tertiary)';
   const cls=fl.id===currentFileId?'tree-item file act':'tree-item file';
   return `<div class="${cls}" data-file-id="${fl.id}" draggable="true"
     onclick="selectFile('${fl.id}')"
@@ -409,8 +823,8 @@ function renderFile(fl){
     <span class="ti-icon" style="color:${color}">${icon}</span>
     <span class="ti-name">${esc(fl.name)}</span>
     <span class="ti-actions">
-      <button class="ti-act rename" onclick="event.stopPropagation();renameFile('${fl.id}','${esc(fl.name)}')" title="重命名">✎</button>
-      <button class="ti-act del" onclick="event.stopPropagation();deleteFile('${fl.id}')" title="删除">×</button>
+      <button class="ti-act rename" onclick="event.stopPropagation();renameFile('${fl.id}','${esc(fl.name)}')" title="Rename">&#9998;</button>
+      <button class="ti-act del" onclick="event.stopPropagation();deleteFile('${fl.id}')" title="Delete">&times;</button>
     </span>
   </div>`;
 }
@@ -421,9 +835,7 @@ async function toggleFolder(id){
   renderTree();
 }
 async function selectFile(id){
-  if(currentFileId){
-    await saveCurrentFileSilent();
-  }
+  if(currentFileId) await saveCurrentFileSilent();
   const fl=await dbGet('files',id);
   if(!fl)return;
   currentFileId=id;
@@ -446,13 +858,13 @@ async function saveCurrentFileSilent(){
 }
 async function saveCurrent(){
   await saveCurrentFileSilent();
-  statSave.textContent='保存于 '+new Date().toLocaleTimeString();
+  statSave.textContent='Saved '+new Date().toLocaleTimeString();
   setTimeout(()=>{statSave.textContent=''},2000);
 }
 
 // === File ops ===
 async function createFolder(parentId){
-  const name=prompt('文件夹名称:','新建文件夹');
+  const name=prompt('Folder name:','New Folder');
   if(!name||!name.trim())return;
   const fd={id:uid(),name:name.trim(),parentId:parentId||null,sortOrder:0,createdAt:Date.now()};
   await dbPut('folders',fd);
@@ -461,7 +873,7 @@ async function createFolder(parentId){
   renderTree();
 }
 async function createFile(folderId){
-  const name=prompt('文件名称 (含后缀):','untitled.md');
+  const name=prompt('File name (with extension):','untitled.md');
   if(!name||!name.trim())return;
   const type=name.endsWith('.svg')?'svg':name.endsWith('.txt')?'txt':'md';
   const fl={id:uid(),name:name.trim(),type,folderId:folderId||null,content:'',createdAt:Date.now(),updatedAt:Date.now()};
@@ -492,11 +904,11 @@ async function uploadFiles(e){
   }
   await loadTree();
   renderTree();
-  toast('已导入 '+files.length+' 个文件');
+  toast('Imported '+files.length+' file(s)');
   e.target.value='';
 }
 async function renameFile(id,oldName){
-  const newName=prompt('重命名:',oldName);
+  const newName=prompt('Rename:',oldName);
   if(!newName||!newName.trim()||newName.trim()===oldName)return;
   const fl=await dbGet('files',id);
   if(!fl)return;
@@ -508,7 +920,7 @@ async function renameFile(id,oldName){
   renderTree();
 }
 async function renameFolder(id,oldName){
-  const newName=prompt('重命名文件夹:',oldName);
+  const newName=prompt('Rename folder:',oldName);
   if(!newName||!newName.trim()||newName.trim()===oldName)return;
   const fd=await dbGet('folders',id);
   if(!fd)return;
@@ -518,7 +930,7 @@ async function renameFolder(id,oldName){
   renderTree();
 }
 async function deleteFile(id){
-  if(!confirm('确定删除此文件？'))return;
+  if(!confirm('Delete this file?'))return;
   const fl=await dbGet('files',id);
   await dbDelete('files',id);
   if(currentFileId===id){currentFileId=null;currentFile=null;editor.value='';fileName.textContent='';updatePreview();}
@@ -526,7 +938,7 @@ async function deleteFile(id){
   renderTree();
 }
 async function deleteFolder(id){
-  if(!confirm('确定删除此文件夹及其所有内容？'))return;
+  if(!confirm('Delete this folder and all its contents?'))return;
   const folders=await dbGetAll('folders');
   const files=await dbGetAll('files');
   async function delRecursive(folderId){
@@ -549,16 +961,13 @@ function onFileDragStart(e,fileId){
   e.dataTransfer.setData('text/plain',fileId);
   const img=new Image();img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   e.dataTransfer.setDragImage(img,0,0);
-  console.log('dragstart fire',fileId);
   e.target.addEventListener('dragend',function dragEndCleanup(){
     if(dragOverNode){dragOverNode.classList.remove('drag-over');dragOverNode=null;}
     dragFileId=null;
     e.target.removeEventListener('dragend',dragEndCleanup);
-    console.log('dragend cleanup');
   });
 }
 function onItemDragOver(e,folderId){
-  console.log('dragover fire',folderId,'dragFileId:',dragFileId);
   if(!dragFileId){e.dataTransfer.dropEffect='none';return;}
   e.preventDefault();
   e.dataTransfer.dropEffect='move';
@@ -574,27 +983,22 @@ function onItemDragLeave(e){
 }
 async function onItemDrop(e,folderId){
   e.stopPropagation();
-  console.log('drop fire',folderId,'dragFileId:',dragFileId);
   e.preventDefault();
   const el=e.currentTarget;
   el.classList.remove('drag-over');
   dragOverNode=null;
-  if(!dragFileId){console.log('drop: dragFileId null');return;}
+  if(!dragFileId)return;
   const fl=await dbGet('files',dragFileId);
-  console.log('drop: dbGet result',fl);
-  if(!fl){console.log('drop: file not found in DB');return;}
+  if(!fl)return;
   fl.folderId=folderId;fl.updatedAt=Date.now();
   await dbPut('files',fl);
-  console.log('drop: dbPut done, folderId now',fl.folderId);
   if(currentFileId===dragFileId)currentFile=fl;
   dragFileId=null;
   treeExpanded[folderId]=true;
   await loadTree();
-  console.log('drop: renderTree done, files:',treeData.files.map(f=>f.name+'/'+f.folderId).join(', '));
   renderTree();
 }
 function onTreeDragOver(e){
-  console.log('tree dragover');
   if(!dragFileId)return;
   e.preventDefault();
 }
@@ -603,7 +1007,6 @@ function onTreeDragLeave(e){
 }
 async function onTreeDrop(e){
   e.preventDefault();
-  console.log('tree drop fire, dragOverNode:',dragOverNode);
   if(!dragFileId)return;
   let targetFolderId=null;
   if(dragOverNode){
@@ -612,16 +1015,13 @@ async function onTreeDrop(e){
     dragOverNode=null;
   }
   const fl=await dbGet('files',dragFileId);
-  console.log('tree drop: dbGet result',fl,'target:',targetFolderId);
   if(!fl)return;
   fl.folderId=targetFolderId;fl.updatedAt=Date.now();
   await dbPut('files',fl);
-  console.log('tree drop: dbPut done, folderId now',fl.folderId);
   if(currentFileId===dragFileId)currentFile=fl;
   dragFileId=null;
   if(targetFolderId) treeExpanded[targetFolderId]=true;
   await loadTree();
-  console.log('tree drop: renderTree done, files:',treeData.files.map(f=>f.name+'/'+f.folderId).join(', '));
   renderTree();
 }
 
@@ -631,21 +1031,21 @@ function onContextMenu(e,type,id){
   const cm=document.getElementById('context-menu');
   let h='';
   if(type==='folder'){
-    h+=`<div class="cmenu-item" onclick="createFile('${id}');hideCmenu()">新建文件</div>`;
-    h+=`<div class="cmenu-item" onclick="createFolder('${id}');hideCmenu()">新建子文件夹</div>`;
+    h+=`<div class="cmenu-item" onclick="createFile('${id}');hideCmenu()">New File</div>`;
+    h+=`<div class="cmenu-item" onclick="createFolder('${id}');hideCmenu()">New Subfolder</div>`;
     h+=`<div class="cmenu-sep"></div>`;
-    h+=`<div class="cmenu-item" onclick="renameFolder('${id}','');hideCmenu()">重命名</div>`;
-    h+=`<div class="cmenu-item" onclick="deleteFolder('${id}');hideCmenu()" style="color:#f87171">删除</div>`;
+    h+=`<div class="cmenu-item" onclick="renameFolder('${id}','');hideCmenu()">Rename</div>`;
+    h+=`<div class="cmenu-item" onclick="deleteFolder('${id}');hideCmenu()" style="color:var(--danger)">Delete</div>`;
   }else{
-    h+=`<div class="cmenu-item" onclick="renameFile('${id}','');hideCmenu()">重命名</div>`;
+    h+=`<div class="cmenu-item" onclick="renameFile('${id}','');hideCmenu()">Rename</div>`;
     h+=`<div class="cmenu-sep"></div>`;
-    h+=`<div class="cmenu-item" onclick="downloadFile('${id}');hideCmenu()">下载</div>`;
-    h+=`<div class="cmenu-item" onclick="deleteFile('${id}');hideCmenu()" style="color:#f87171">删除</div>`;
+    h+=`<div class="cmenu-item" onclick="downloadFile('${id}');hideCmenu()">Download</div>`;
+    h+=`<div class="cmenu-item" onclick="deleteFile('${id}');hideCmenu()" style="color:var(--danger)">Delete</div>`;
   }
   cm.innerHTML=h;
   cm.style.display='block';
-  cm.style.left=Math.min(e.clientX,window.innerWidth-160)+'px';
-  cm.style.top=Math.min(e.clientY,window.innerHeight-200)+'px';
+  cm.style.left=Math.min(e.clientX,window.innerWidth-180)+'px';
+  cm.style.top=Math.min(e.clientY,window.innerHeight-220)+'px';
   setTimeout(()=>document.addEventListener('click',hideCmenu,{once:true}),0);
 }
 function hideCmenu(){document.getElementById('context-menu').style.display='none'}
@@ -679,7 +1079,7 @@ function updatePreview(){
     return;
   }
   const text=editor.value;
-  preview.innerHTML=text?marked.parse(text):'<div class="pp-empty" style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-xs);font-size:13px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px;opacity:.3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>预览区域</span></div>';
+  preview.innerHTML=text?marked.parse(text):'<div class="pp-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="width:40px;height:40px;opacity:0.15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="font-size:12px">Preview will appear here</span></div>';
   updateStats();
 }
 function updateStats(){
@@ -712,8 +1112,6 @@ async function loadSettings(){
 async function saveLastFileId(){
   await dbPut('settings',{key:'lastFileId',value:currentFileId||''});
 }
-
-// === Load last file ===
 async function loadLastFile(){
   const lastId=await loadSettings();
   if(lastId){
@@ -741,7 +1139,7 @@ editor.addEventListener('input',()=>{
   },800);
 });
 editor.addEventListener('scroll',()=>{
-  lineNums.style.transform='translateY('+(-editor.scrollTop+14)+'px)';
+  lineNums.style.transform='translateY('+(-editor.scrollTop+16)+'px)';
 });
 editor.addEventListener('keydown',e=>{
   if(e.key==='Tab'){e.preventDefault();const s=editor.selectionStart,ed=editor.selectionEnd;editor.value=editor.value.substring(0,s)+'  '+editor.value.substring(ed);editor.selectionStart=editor.selectionEnd=s+2;updatePreview();updateLineNums()}
@@ -785,7 +1183,7 @@ function toggleMonospace(){monoFont=!monoFont;const b=document.getElementById('b
 function copyHTML(){
   updatePreview();
   const html='<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.8;color:#333;background:#fff}pre{background:#f5f5f5;padding:16px;border-radius:8px;overflow-x:auto}code{background:#f5f5f5;padding:2px 6px;border-radius:4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}th{background:#f9f9f9}img{max-width:100%}</style></head>\n<body>\n'+preview.innerHTML+'\n</body>\n</html>';
-  navigator.clipboard.writeText(html).then(()=>toast('HTML 已复制到剪贴板'));
+  navigator.clipboard.writeText(html).then(()=>toast('HTML copied to clipboard'));
 }
 
 // === Sidebar toggle ===
@@ -855,7 +1253,6 @@ function toast(msg){
   setTimeout(()=>t.classList.remove('show'),2000);
 }
 
-// Close sidebar on click outside (mobile)
 document.addEventListener('click',e=>{
   if(window.innerWidth<=768&&sidebar.classList.contains('open')){
     if(!sidebar.contains(e.target)&&!e.target.closest('#btn-sb')){
