@@ -573,6 +573,7 @@ function onItemDragLeave(e){
   el.classList.remove('drag-over');
 }
 async function onItemDrop(e,folderId){
+  e.stopPropagation();
   console.log('drop fire',folderId,'dragFileId:',dragFileId);
   e.preventDefault();
   const el=e.currentTarget;
