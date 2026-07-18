@@ -550,6 +550,12 @@ function onFileDragStart(e,fileId){
   const img=new Image();img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   e.dataTransfer.setDragImage(img,0,0);
   console.log('dragstart fire',fileId);
+  e.target.addEventListener('dragend',function dragEndCleanup(){
+    if(dragOverNode){dragOverNode.classList.remove('drag-over');dragOverNode=null;}
+    dragFileId=null;
+    e.target.removeEventListener('dragend',dragEndCleanup);
+    console.log('dragend cleanup');
+  });
 }
 function onItemDragOver(e,folderId){
   console.log('dragover fire',folderId,'dragFileId:',dragFileId);
@@ -565,7 +571,6 @@ function onItemDragLeave(e){
   const el=e.currentTarget;
   if(el.contains(e.relatedTarget))return;
   el.classList.remove('drag-over');
-  if(dragOverNode===el)dragOverNode=null;
 }
 async function onItemDrop(e,folderId){
   console.log('drop fire',folderId,'dragFileId:',dragFileId);
@@ -592,17 +597,30 @@ function onTreeDragOver(e){
   if(!dragFileId)return;
   e.preventDefault();
 }
-function onTreeDragLeave(e){}
+function onTreeDragLeave(e){
+  if(dragOverNode){dragOverNode.classList.remove('drag-over');dragOverNode=null;}
+}
 async function onTreeDrop(e){
   e.preventDefault();
+  console.log('tree drop fire, dragOverNode:',dragOverNode);
   if(!dragFileId)return;
+  let targetFolderId=null;
+  if(dragOverNode){
+    targetFolderId=dragOverNode.getAttribute('data-folder-id');
+    dragOverNode.classList.remove('drag-over');
+    dragOverNode=null;
+  }
   const fl=await dbGet('files',dragFileId);
+  console.log('tree drop: dbGet result',fl,'target:',targetFolderId);
   if(!fl)return;
-  fl.folderId=null;fl.updatedAt=Date.now();
+  fl.folderId=targetFolderId;fl.updatedAt=Date.now();
   await dbPut('files',fl);
+  console.log('tree drop: dbPut done, folderId now',fl.folderId);
   if(currentFileId===dragFileId)currentFile=fl;
   dragFileId=null;
+  if(targetFolderId) treeExpanded[targetFolderId]=true;
   await loadTree();
+  console.log('tree drop: renderTree done, files:',treeData.files.map(f=>f.name+'/'+f.folderId).join(', '));
   renderTree();
 }
 
