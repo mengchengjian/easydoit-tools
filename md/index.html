@@ -573,15 +573,18 @@ async function onItemDrop(e,folderId){
   const el=e.currentTarget;
   el.classList.remove('drag-over');
   dragOverNode=null;
-  if(!dragFileId)return;
+  if(!dragFileId){console.log('drop: dragFileId null');return;}
   const fl=await dbGet('files',dragFileId);
-  if(!fl)return;
+  console.log('drop: dbGet result',fl);
+  if(!fl){console.log('drop: file not found in DB');return;}
   fl.folderId=folderId;fl.updatedAt=Date.now();
   await dbPut('files',fl);
+  console.log('drop: dbPut done, folderId now',fl.folderId);
   if(currentFileId===dragFileId)currentFile=fl;
   dragFileId=null;
   treeExpanded[folderId]=true;
   await loadTree();
+  console.log('drop: renderTree done, files:',treeData.files.map(f=>f.name+'/'+f.folderId).join(', '));
   renderTree();
 }
 function onTreeDragOver(e){
