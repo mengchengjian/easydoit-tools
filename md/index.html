@@ -547,8 +547,12 @@ function onFileDragStart(e,fileId){
   dragFileId=fileId;
   e.dataTransfer.effectAllowed='move';
   e.dataTransfer.setData('text/plain',fileId);
+  const img=new Image();img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  e.dataTransfer.setDragImage(img,0,0);
+  console.log('dragstart fire',fileId);
 }
 function onItemDragOver(e,folderId){
+  console.log('dragover fire',folderId,'dragFileId:',dragFileId);
   if(!dragFileId){e.dataTransfer.dropEffect='none';return;}
   e.preventDefault();
   e.dataTransfer.dropEffect='move';
@@ -564,6 +568,7 @@ function onItemDragLeave(e){
   if(dragOverNode===el)dragOverNode=null;
 }
 async function onItemDrop(e,folderId){
+  console.log('drop fire',folderId,'dragFileId:',dragFileId);
   e.preventDefault();
   const el=e.currentTarget;
   el.classList.remove('drag-over');
@@ -580,6 +585,7 @@ async function onItemDrop(e,folderId){
   renderTree();
 }
 function onTreeDragOver(e){
+  console.log('tree dragover');
   if(!dragFileId)return;
   e.preventDefault();
   if(dragOverNode){dragOverNode.classList.remove('drag-over');dragOverNode=null;}
