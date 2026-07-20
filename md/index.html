@@ -205,6 +205,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
 .md .mermaid-container svg{max-width:100%;height:auto}
 .md pre.mermaid-error{background:var(--red-bg);border:1px solid var(--red);color:var(--red);padding:12px;border-radius:var(--r6);font-size:.85em}
 
+.md [class*="language-echarts"],
+.md [class*="language-markmap"],
+.md [class*="language-mindmap"],
+.md [class*="language-graphviz"],
+.md [class*="language-flowchart"],
+.md .mermaid-container { min-height: 300px; margin: 1em 0; }
+.md .language-mermaid svg { max-width: 100%; height: auto; }
+.md pre.mermaid-error,
+.md .vditor-reset--error { background: var(--red-bg); border: 1px solid var(--red); color: var(--red); padding: 12px; border-radius: var(--r6); font-size: .85em; white-space: pre-wrap; word-break: break-all; }
+
 .md ul.task-list{list-style:none;padding-left:.5em}
 .md ul.task-list>li{display:flex;align-items:flex-start;gap:6px}
 .md ul.task-list>li>input[type="checkbox"]{margin-top:.38em;flex-shrink:0}
@@ -540,7 +550,7 @@ function toggleThemeDrop(){
 function setTheme(t){applyTheme(t);document.getElementById('themeDrop').classList.remove('open');toast('Theme: '+t)}
 (function(){const saved=localStorage.getItem(THEME_KEY)||'warm';applyTheme(saved)})();
 
-mermaid.initialize({startOnLoad:false,theme:'default',securityLevel:'loose'});
+mermaid.initialize({startOnLoad:false,securityLevel:'loose'});
 
 const DB='md-editor-db',DBV=1;let db;
 function opnDB(){return new Promise((ok,fail)=>{const r=indexedDB.open(DB,DBV);r.onupgradeneeded=e=>{const d=e.target.result;d.objectStoreNames.contains('folders')||d.createObjectStore('folders',{keyPath:'id'});d.objectStoreNames.contains('files')||d.createObjectStore('files',{keyPath:'id'});d.objectStoreNames.contains('settings')||d.createObjectStore('settings',{keyPath:'key'})};r.onsuccess=e=>{db=e.target.result;ok(db)};r.onerror=e=>fail(e)})}
@@ -566,8 +576,13 @@ renderer.link=function(href,title,text){
   return origLink(href,title,text);
 };
 
+const SPECIAL_LANGS=new Set(['mermaid','echarts','flowchart','graphviz','abc','mindmap','markmap','plantuml','smiles','math']);
+
 marked.setOptions({gfm:true,breaks:true,
-  highlight:(c,l)=>{try{return l&&hljs.getLanguage(l)?hljs.highlight(c,{language:l}).value:hljs.highlightAuto(c).value}catch{return c}},
+  highlight:(c,l)=>{
+    if(!l||SPECIAL_LANGS.has(l))return c;
+    try{return hljs.getLanguage(l)?hljs.highlight(c,{language:l}).value:hljs.highlightAuto(c).value}catch{return c}
+  },
   renderer:renderer
 });
 
@@ -601,26 +616,165 @@ function replaceEmoji(text){
   return text.replace(/:([a-z0-9_+-]+):/gi,(m,name)=>EMOJI[name.toLowerCase()]||EMOJI[name]||m);
 }
 
-function postProcess(html){
-  const mermaidBlocks=[];
-  html=html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,(m,code)=>{
-    const i=mermaidBlocks.length;mermaidBlocks.push(code);
-    return '<div class="mermaid-container" id="mermaid-'+i+'"><pre class="mermaid-raw" data-idx="'+i+'">'+escHtml(code)+'</pre></div>';
-  });
-  html=html.replace(/\$\$([\s\S]*?)\$\$/g,(m,f)=>{try{return katex.renderToString(f.trim(),{displayMode:true,throwOnError:false})}catch(e){return m}});
-  html=html.replace(/\$(?!\$)([^$]+?)\$(?!\$)/g,(m,f)=>{try{return katex.renderToString(f.trim(),{displayMode:false,throwOnError:false})}catch(e){return m}});
-  return {html,mermaidBlocks};
-}
-
-async function renderMermaid(blocks){
-  for(let i=0;i<blocks.length;i++){
-    const el=document.getElementById('mermaid-'+i);if(!el)continue;
-    try{const id='msvg-'+Date.now()+'-'+i;const{svg}=await mermaid.render(id,blocks[i]);el.innerHTML=svg}
-    catch(e){el.innerHTML='<pre class="mermaid-error">Mermaid error: '+escHtml(e.message)+'</pre>'}
-  }
-}
-
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// === vditor-style dynamic script loader ===
+const loadedScripts={};
+function addScript(url, id) {
+  if (loadedScripts[id]) return loadedScripts[id];
+  if (document.getElementById(id)) return Promise.resolve();
+  loadedScripts[id] = new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.id = id; s.src = url;
+    s.onload = () => resolve();
+    document.head.appendChild(s);
+  });
+  return loadedScripts[id];
+}
+
+// === vditor-style render functions ===
+function genUUID() {
+  return 'xxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function mermaidRender(element) {
+  const els = element.querySelectorAll('.language-mermaid');
+  if (!els.length) return;
+  addScript('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js', 'vditorMermaidScript').then(() => {
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose'});
+    els.forEach(async (el) => {
+      const code = el.textContent;
+      if (el.getAttribute('data-processed') === 'true' || !code.trim()) return;
+      const id = 'mermaid' + genUUID();
+      try {
+        const { svg } = await mermaid.render(id, code);
+        el.innerHTML = svg;
+      } catch (e) {
+        el.innerHTML = '<pre class="vditor-reset--error">Mermaid error: ' + escHtml(e.message) + '</pre>';
+      }
+      el.setAttribute('data-processed', 'true');
+    });
+  });
+}
+
+function chartRender(element) {
+  const els = element.querySelectorAll('.language-echarts');
+  if (!els.length) return;
+  addScript('https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js', 'vditorEchartsScript').then(() => {
+    els.forEach((el) => {
+      const code = el.textContent.trim();
+      if (!code || el.getAttribute('data-processed') === 'true') return;
+      try {
+        const option = JSON.parse(code);
+        echarts.init(el).setOption(option);
+        el.setAttribute('data-processed', 'true');
+      } catch (e) {
+        el.className = 'vditor-reset--error';
+        el.innerHTML = 'echarts render error: ' + escHtml(e.message);
+      }
+    });
+  });
+}
+
+function flowchartRender(element) {
+  const els = element.querySelectorAll('.language-flowchart');
+  if (!els.length) return;
+  addScript('https://cdn.jsdelivr.net/npm/flowchart.js@1/flowchart.min.js', 'vditorFlowchartScript').then(() => {
+    els.forEach((el) => {
+      if (el.getAttribute('data-processed') === 'true') return;
+      const code = el.textContent;
+      el.innerHTML = '';
+      try {
+        flowchart.parse(code).drawSVG(el);
+      } catch (e) {
+        el.className = 'vditor-reset--error';
+        el.innerHTML = 'flowchart render error: ' + escHtml(e.message);
+      }
+      el.setAttribute('data-processed', 'true');
+    });
+  });
+}
+
+function graphvizRender(element) {
+  const els = element.querySelectorAll('.language-graphviz');
+  if (!els.length) return;
+  addScript('https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@2/dist/graphviz.umd.js', 'vditorGraphvizScript').then(async () => {
+    const { Graphviz } = await import('https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@2/dist/graphviz.umd.js');
+    const g = await Graphviz.load();
+    els.forEach((el) => {
+      if (el.getAttribute('data-processed') === 'true') return;
+      try {
+        el.innerHTML = g.dot(el.textContent);
+      } catch (e) {
+        el.className = 'vditor-reset--error';
+        el.innerHTML = 'graphviz render error: ' + escHtml(e.message);
+      }
+      el.setAttribute('data-processed', 'true');
+    });
+  });
+}
+
+function abcRender(element) {
+  const els = element.querySelectorAll('.language-abc');
+  if (!els.length) return;
+  addScript('https://cdn.jsdelivr.net/npm/abcjs@6/dist/abcjs-basic-min.js', 'vditorAbcScript').then(() => {
+    els.forEach((el) => {
+      if (el.getAttribute('data-processed') === 'true') return;
+      try {
+        ABCJS.renderAbc(el, el.textContent, { responsive: 'resize' });
+      } catch (e) {
+        el.className = 'vditor-reset--error';
+        el.innerHTML = 'abc render error: ' + escHtml(e.message);
+      }
+      el.setAttribute('data-processed', 'true');
+    });
+  });
+}
+
+function markmapRender(element) {
+  const els = element.querySelectorAll('.language-markmap');
+  if (!els.length) return;
+  addScript('https://cdn.jsdelivr.net/npm/markmap-view@0.18/dist/markmap-view.min.js', 'vditorMarkmapScript').then(() => {
+    els.forEach((el) => {
+      if (el.getAttribute('data-processed') === 'true') return;
+      try {
+        window.markmap.Markmap.create(el, null, { content: el.textContent });
+      } catch (e) {
+        el.className = 'vditor-reset--error';
+        el.innerHTML = 'markmap render error: ' + escHtml(e.message);
+      }
+      el.setAttribute('data-processed', 'true');
+    });
+  });
+}
+
+function mathRender(element) {
+  const els = element.querySelectorAll('.language-math');
+  els.forEach((el) => {
+    if (el.getAttribute('data-processed') === 'true') return;
+    try {
+      const display = el.parentElement && el.parentElement.tagName === 'P';
+      katex.render(el.textContent, el, { displayMode: display, throwOnError: false });
+    } catch (e) {
+      el.className = 'vditor-reset--error';
+      el.innerHTML = 'math render error: ' + escHtml(e.message);
+    }
+    el.setAttribute('data-processed', 'true');
+  });
+}
+
+function afterRender(element) {
+  mermaidRender(element);
+  chartRender(element);
+  flowchartRender(element);
+  graphvizRender(element);
+  abcRender(element);
+  markmapRender(element);
+  mathRender(element);
+}
 
 const ed=document.getElementById('editor'),pr=document.getElementById('preview');
 const edPanel=document.getElementById('edPanel'),prPanel=document.getElementById('prevPanel');
@@ -699,14 +853,39 @@ async function downloadCur(){if(!cfile){const b=new Blob([ed.value],{type:'text/
 async function updPrev(){
   if(cfile&&cfile.type==='svg'){pr.innerHTML='<div class="pr-svg">'+cfile.content+'</div>';updStat();return}
   if(!ed.value){pr.innerHTML='<div class="pr-empty"><div style="opacity:0.1"><svg width="36" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>Preview</span></div>';updStat();return}
+
   let text=ed.value;
   text=replaceEmoji(text);
   text=parseFootnotes(text);
+
+  // Math formula protection (prevent marked from escaping $)
+  const mathBlocks=[];
+  text=text.replace(/\$\$([\s\S]*?)\$\$/g,(_,f)=>{
+    const i=mathBlocks.length;
+    mathBlocks.push({formula:f.trim(),display:true});
+    return '\x00MATHBLOCK'+i+'\x00';
+  });
+  text=text.replace(/(?<!\$)\$(?!\$)([^$]+?)\$(?!\$)/g,(_,f)=>{
+    const i=mathBlocks.length;
+    mathBlocks.push({formula:f.trim(),display:false});
+    return '\x00MATHINLINE'+i+'\x00';
+  });
+
   let html=marked.parse(text);
   html+=renderFootnotes();
-  const{html:processed,mermaidBlocks}=postProcess(html);
-  pr.innerHTML=processed;
-  if(mermaidBlocks.length)await renderMermaid(mermaidBlocks);
+
+  // Restore math formulas
+  html=html.replace(/\x00MATHBLOCK(\d+)\x00/g,(_,i)=>{
+    try{return katex.renderToString(mathBlocks[i].formula,{displayMode:true,throwOnError:false})}
+    catch(e){return '<code>'+escHtml(mathBlocks[i].formula)+'</code>'}
+  });
+  html=html.replace(/\x00MATHINLINE(\d+)\x00/g,(_,i)=>{
+    try{return katex.renderToString(mathBlocks[i].formula,{displayMode:false,throwOnError:false})}
+    catch(e){return '<code>'+escHtml(mathBlocks[i].formula)+'</code>'}
+  });
+
+  pr.innerHTML=html;
+  afterRender(pr);
   updStat();
 }
 
