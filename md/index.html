@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="warm">
+<html lang="zh-CN" data-theme="apple">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,78 +13,83 @@
 <style>
 *,::before,::after{margin:0;padding:0;box-sizing:border-box}
 
-/* ===== THEME: Warm Amber Dark ===== */
-:root,[data-theme="warm"]{
-  --bg:#121210;--bg2:#1a1a17;--bg3:#21211d;
-  --bdr:rgba(255,255,255,0.06);--bdr2:rgba(255,255,255,0.10);
-  --tx1:rgba(255,255,255,0.87);--tx2:rgba(255,255,255,0.50);
-  --tx3:rgba(255,255,255,0.28);--tx4:rgba(255,255,255,0.14);
-  --accent:#d4a574;--accent-bg:rgba(212,165,116,0.10);--accent-bdr:rgba(212,165,116,0.2);
-  --red:#e05555;--red-bg:rgba(224,85,85,0.10);
-  --h-color:#fff;--strong-color:#fff;
-  --svg-ico:#a099d4;--overlay:rgba(0,0,0,0.5);
-  --shadow:rgba(0,0,0,0.4);--shadow-sm:rgba(0,0,0,0.35);
-  --btn-hover:rgba(255,255,255,0.04);--btn-active:rgba(255,255,255,0.08);
-  --item-hover:rgba(255,255,255,0.03);--table-stripe:rgba(255,255,255,0.015);
-  --scroll-thumb:rgba(255,255,255,0.06);--scroll-thumb-hover:rgba(255,255,255,0.12);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Noto Sans SC",sans-serif;
-  --mono:"SF Mono","JetBrains Mono","Fira Code","Cascadia Code",monospace;
-  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--fw-title:600;--fw-btn:500;color-scheme:dark;
+/* ===== THEME: Apple ===== */
+:root,[data-theme="apple"]{
+  --bg:oklch(97% 0.003 60);--bg2:oklch(93% 0.006 60);--bg3:oklch(88% 0.01 60);
+  --bdr:oklch(0% 0 0 / 0.06);--bdr2:oklch(0% 0 0 / 0.10);
+  --tx1:oklch(18% 0.01 60);--tx2:oklch(40% 0.01 60);
+  --tx3:oklch(65% 0.005 60);--tx4:oklch(82% 0.005 60);
+  --accent:oklch(52% 0.18 250);--accent-bg:oklch(52% 0.18 250 / 0.08);--accent-bdr:oklch(52% 0.18 250 / 0.18);
+  --red:oklch(50% 0.18 25);--red-bg:oklch(50% 0.18 25 / 0.07);
+  --h-color:oklch(12% 0.01 60);--strong-color:oklch(15% 0.01 60);
+  --svg-ico:oklch(45% 0.06 250);--overlay:oklch(0% 0 0 / 0.2);
+  --shadow:oklch(0% 0 0 / 0.08);--shadow-sm:oklch(0% 0 0 / 0.05);
+  --btn-hover:oklch(0% 0 0 / 0.04);--btn-active:oklch(0% 0 0 / 0.07);
+  --item-hover:oklch(0% 0 0 / 0.03);--table-stripe:oklch(0% 0 0 / 0.015);
+  --scroll-thumb:oklch(0% 0 0 / 0.08);--scroll-thumb-hover:oklch(0% 0 0 / 0.15);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC",sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
+  --r4:8px;--r6:10px;--r8:12px;--r12:16px;--fw-title:600;--fw-btn:500;color-scheme:light;
 }
 
-/* ===== THEME: Brutalist Raw ===== */
-[data-theme="brutalist"]{
-  --bg:#f4f1ec;--bg2:#ebe7e0;--bg3:#e0dbd3;
-  --bdr:rgba(0,0,0,0.10);--bdr2:rgba(0,0,0,0.18);
-  --tx1:#13110e;--tx2:#5c554a;--tx3:#968e82;--tx4:#c7bfb2;
-  --accent:#1a1a1a;--accent-bg:rgba(0,0,0,0.05);--accent-bdr:rgba(0,0,0,0.15);
-  --red:#b33025;--red-bg:rgba(179,48,37,0.08);
-  --h-color:#0a0806;--strong-color:#0a0806;
-  --svg-ico:#4a4440;--overlay:rgba(0,0,0,0.25);
-  --shadow:rgba(0,0,0,0.15);--shadow-sm:rgba(0,0,0,0.10);
-  --btn-hover:rgba(0,0,0,0.04);--btn-active:rgba(0,0,0,0.08);
-  --item-hover:rgba(0,0,0,0.02);--table-stripe:rgba(0,0,0,0.02);
-  --scroll-thumb:rgba(0,0,0,0.10);--scroll-thumb-hover:rgba(0,0,0,0.18);
-  --font:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC",sans-serif;
+/* ===== THEME: Obsidian ===== */
+[data-theme="obsidian"]{
+  --bg:oklch(13% 0.008 285);--bg2:oklch(17% 0.008 285);--bg3:oklch(22% 0.01 285);
+  --bdr:oklch(100% 0 0 / 0.06);--bdr2:oklch(100% 0 0 / 0.10);
+  --tx1:oklch(92% 0 0);--tx2:oklch(72% 0.005 285);--tx3:oklch(52% 0.005 285);--tx4:oklch(35% 0.005 285);
+  --accent:oklch(65% 0.13 280);--accent-bg:oklch(65% 0.13 280 / 0.10);--accent-bdr:oklch(65% 0.13 280 / 0.18);
+  --red:oklch(55% 0.16 20);--red-bg:oklch(55% 0.16 20 / 0.10);
+  --h-color:oklch(95% 0 0);--strong-color:oklch(95% 0 0);
+  --svg-ico:oklch(65% 0.06 280);--overlay:oklch(0% 0 0 / 0.5);
+  --shadow:oklch(0% 0 0 / 0);--shadow-sm:oklch(0% 0 0 / 0);
+  --btn-hover:oklch(100% 0 0 / 0.04);--btn-active:oklch(100% 0 0 / 0.08);
+  --item-hover:oklch(100% 0 0 / 0.03);--table-stripe:oklch(100% 0 0 / 0.015);
+  --scroll-thumb:oklch(100% 0 0 / 0.06);--scroll-thumb-hover:oklch(100% 0 0 / 0.12);
+  --font:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC",sans-serif;
   --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
-  --r4:0;--r6:0;--r8:0;--r12:0;--fw-title:700;--fw-btn:600;color-scheme:light;
+  --r4:6px;--r6:8px;--r8:10px;--r12:12px;--fw-title:600;--fw-btn:500;color-scheme:dark;
 }
 
-/* ===== THEME: Nordic Light ===== */
-[data-theme="nordic"]{
-  --bg:#f5f7fa;--bg2:#ebeff5;--bg3:#dde3ed;
-  --bdr:rgba(0,0,0,0.05);--bdr2:rgba(0,0,0,0.10);
-  --tx1:#1a2533;--tx2:#54677d;--tx3:#8498ae;--tx4:#bfcad7;
-  --accent:#3568a6;--accent-bg:rgba(53,104,166,0.08);--accent-bdr:rgba(53,104,166,0.18);
-  --red:#c0392b;--red-bg:rgba(192,57,43,0.06);
-  --h-color:#0c1520;--strong-color:#0c1520;
-  --svg-ico:#5577a5;--overlay:rgba(0,0,0,0.18);
-  --shadow:rgba(0,0,0,0.08);--shadow-sm:rgba(0,0,0,0.06);
-  --btn-hover:rgba(0,0,0,0.03);--btn-active:rgba(0,0,0,0.06);
-  --item-hover:rgba(0,0,0,0.02);--table-stripe:rgba(0,0,0,0.015);
-  --scroll-thumb:rgba(0,0,0,0.08);--scroll-thumb-hover:rgba(0,0,0,0.15);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;
-  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
-  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--fw-title:600;--fw-btn:500;color-scheme:light;
+/* ===== THEME: Linear ===== */
+[data-theme="linear"]{
+  --bg:oklch(12% 0.006 240);--bg2:oklch(16% 0.008 240);--bg3:oklch(22% 0.01 240);
+  --bdr:oklch(100% 0 0 / 0.04);--bdr2:oklch(100% 0 0 / 0.06);
+  --tx1:oklch(94% 0 0);--tx2:oklch(72% 0.003 240);--tx3:oklch(48% 0.003 240);--tx4:oklch(30% 0.003 240);
+  --accent:oklch(72% 0.16 210);--accent-bg:oklch(72% 0.16 210 / 0.10);--accent-bdr:oklch(72% 0.16 210 / 0.18);
+  --red:oklch(58% 0.16 20);--red-bg:oklch(58% 0.16 20 / 0.10);
+  --h-color:oklch(96% 0 0);--strong-color:oklch(96% 0 0);
+  --svg-ico:oklch(72% 0.08 210);--overlay:oklch(0% 0 0 / 0.55);
+  --shadow:oklch(0% 0 0 / 0);--shadow-sm:oklch(0% 0 0 / 0);
+  --btn-hover:oklch(100% 0 0 / 0.05);--btn-active:oklch(100% 0 0 / 0.10);
+  --item-hover:oklch(100% 0 0 / 0.04);--table-stripe:oklch(100% 0 0 / 0.02);
+  --scroll-thumb:oklch(100% 0 0 / 0.05);--scroll-thumb-hover:oklch(100% 0 0 / 0.10);
+  --font:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC",sans-serif;
+  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --r4:6px;--r6:8px;--r8:10px;--r12:14px;--fw-title:550;--fw-btn:500;color-scheme:dark;
 }
 
-/* ===== THEME: Editorial Classic ===== */
-[data-theme="editorial"]{
-  --bg:#fcfaf5;--bg2:#f5f0e7;--bg3:#ede6d9;
-  --bdr:rgba(0,0,0,0.07);--bdr2:rgba(0,0,0,0.13);
-  --tx1:#2a2014;--tx2:#6b5d44;--tx3:#9b8d72;--tx4:#c7baa3;
-  --accent:#8b4513;--accent-bg:rgba(139,69,19,0.07);--accent-bdr:rgba(139,69,19,0.15);
-  --red:#a23b2e;--red-bg:rgba(162,59,46,0.06);
-  --h-color:#1a1004;--strong-color:#1a1004;
-  --svg-ico:#6b5d44;--overlay:rgba(0,0,0,0.20);
-  --shadow:rgba(0,0,0,0.12);--shadow-sm:rgba(0,0,0,0.08);
-  --btn-hover:rgba(0,0,0,0.03);--btn-active:rgba(0,0,0,0.06);
-  --item-hover:rgba(0,0,0,0.02);--table-stripe:rgba(0,0,0,0.015);
-  --scroll-thumb:rgba(0,0,0,0.08);--scroll-thumb-hover:rgba(0,0,0,0.15);
-  --font:"Georgia","Songti SC","Noto Serif SC","PingFang SC",serif;
-  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
-  --r4:3px;--r6:5px;--r8:7px;--r12:10px;--fw-title:700;--fw-btn:500;color-scheme:light;
+/* ===== THEME: VSCode ===== */
+[data-theme="vscode"]{
+  --bg:oklch(14% 0.004 220);--bg2:oklch(17% 0.004 220);--bg3:oklch(21% 0.006 220);
+  --bdr:oklch(100% 0 0 / 0.04);--bdr2:oklch(100% 0 0 / 0.08);
+  --tx1:oklch(88% 0 0);--tx2:oklch(68% 0.003 220);--tx3:oklch(48% 0.003 220);--tx4:oklch(32% 0.003 220);
+  --accent:oklch(65% 0.16 150);--accent-bg:oklch(65% 0.16 150 / 0.08);--accent-bdr:oklch(65% 0.16 150 / 0.15);
+  --red:oklch(55% 0.16 25);--red-bg:oklch(55% 0.16 25 / 0.10);
+  --h-color:oklch(92% 0 0);--strong-color:oklch(92% 0 0);
+  --svg-ico:oklch(58% 0.06 150);--overlay:oklch(0% 0 0 / 0.5);
+  --shadow:oklch(0% 0 0 / 0);--shadow-sm:oklch(0% 0 0 / 0);
+  --btn-hover:oklch(100% 0 0 / 0.04);--btn-active:oklch(100% 0 0 / 0.08);
+  --item-hover:oklch(100% 0 0 / 0.03);--table-stripe:oklch(100% 0 0 / 0.015);
+  --scroll-thumb:oklch(100% 0 0 / 0.05);--scroll-thumb-hover:oklch(100% 0 0 / 0.10);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;
+  --mono:"Cascadia Code","JetBrains Mono","SF Mono","Fira Code",monospace;
+  --r4:2px;--r6:3px;--r8:4px;--r12:6px;--fw-title:600;--fw-btn:500;color-scheme:dark;
 }
+
+[data-theme="apple"] .top{background:oklch(93% 0.006 60 / 0.75);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid oklch(0% 0 0 / 0.08)}
+[data-theme="linear"] .top,[data-theme="linear"] .sidebar{backdrop-filter:blur(24px) saturate(120%);-webkit-backdrop-filter:blur(24px) saturate(120%)}
+[data-theme="linear"] .top{border-bottom-width:0.5px}
+[data-theme="vscode"] .sidebar .tree-item.sel{border-left:2px solid var(--accent);border-radius:0}
 
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
@@ -110,7 +115,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
 .top-r .btn{padding:0 6px;font-size:11px}
 .top-r .btn.theme-btn{padding:0 8px;font-size:11px;gap:4px}
 .theme-btn .th-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid var(--bdr2)}
-.th-dot.th-warm{background:#d4a574}.th-dot.th-brutalist{background:#1a1a1a}.th-dot.th-nordic{background:#3568a6}.th-dot.th-editorial{background:#8b4513}
+.th-dot.th-apple{background:oklch(52% 0.18 250)}.th-dot.th-obsidian{background:oklch(65% 0.13 280)}.th-dot.th-linear{background:oklch(72% 0.16 210)}.th-dot.th-vscode{background:oklch(65% 0.16 150)}
 
 .main{display:flex;flex:1;overflow:hidden}
 .sidebar{width:240px;min-width:50px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;transition:width .25s cubic-bezier(0.16,1,0.3,1)}
@@ -301,10 +306,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
     <div style="position:relative">
       <button class="btn theme-btn" onclick="toggleThemeDrop()" id="btn-theme"><span class="th-dot" id="th-dot-cur"></span>Theme</button>
       <div class="theme-drop" id="themeDrop">
-        <div class="theme-opt" onclick="setTheme('warm')"><span class="th-dot th-warm"></span>Warm Amber</div>
-        <div class="theme-opt" onclick="setTheme('brutalist')"><span class="th-dot th-brutalist"></span>Brutalist</div>
-        <div class="theme-opt" onclick="setTheme('nordic')"><span class="th-dot th-nordic"></span>Nordic Light</div>
-        <div class="theme-opt" onclick="setTheme('editorial')"><span class="th-dot th-editorial"></span>Editorial</div>
+        <div class="theme-opt" onclick="setTheme('apple')"><span class="th-dot th-apple"></span>Apple</div>
+        <div class="theme-opt" onclick="setTheme('obsidian')"><span class="th-dot th-obsidian"></span>Obsidian</div>
+        <div class="theme-opt" onclick="setTheme('linear')"><span class="th-dot th-linear"></span>Linear</div>
+        <div class="theme-opt" onclick="setTheme('vscode')"><span class="th-dot th-vscode"></span>VSCode</div>
       </div>
     </div>
   </div>
@@ -528,10 +533,10 @@ const EMOJI={
 
 const THEME_KEY='md-theme';
 const HLJS_THEMES={
-  warm:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark-dimmed.min.css',
-  brutalist:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css',
-  nordic:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css',
-  editorial:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css'
+  apple:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css',
+  obsidian:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css',
+  linear:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css',
+  vscode:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css'
 };
 
 function applyTheme(t){
@@ -548,7 +553,7 @@ function toggleThemeDrop(){
   if(!was)setTimeout(()=>document.addEventListener('click',function cl(e){if(!e.target.closest('#btn-theme')&&!e.target.closest('.theme-drop')){d.classList.remove('open');document.removeEventListener('click',cl)}},0));
 }
 function setTheme(t){applyTheme(t);document.getElementById('themeDrop').classList.remove('open');toast('Theme: '+t)}
-(function(){const saved=localStorage.getItem(THEME_KEY)||'warm';applyTheme(saved)})();
+(function(){const saved=localStorage.getItem(THEME_KEY)||'apple';applyTheme(saved)})();
 
 mermaid.initialize({startOnLoad:false,securityLevel:'loose'});
 
