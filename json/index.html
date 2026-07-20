@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="apple">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON 格式化工具</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='78' font-size='80'>&#x1F4CB;</text></svg>">
+<style>
+*,::before,::after{margin:0;padding:0;box-sizing:border-box}
+
+/* ===== THEME: Apple ===== */
+:root,[data-theme="apple"]{
+  --bg:oklch(97% 0.003 60);--bg2:oklch(93% 0.006 60);--bg3:oklch(88% 0.01 60);
+  --bdr:oklch(0% 0 0 / 0.06);--bdr2:oklch(0% 0 0 / 0.10);
+  --tx1:oklch(18% 0.01 60);--tx2:oklch(40% 0.01 60);
+  --tx3:oklch(65% 0.005 60);--tx4:oklch(82% 0.005 60);
+  --accent:oklch(52% 0.18 250);--accent-bg:oklch(52% 0.18 250 / 0.08);--accent-bdr:oklch(52% 0.18 250 / 0.18);
+  --red:oklch(50% 0.18 25);--red-bg:oklch(50% 0.18 25 / 0.07);
+  --h-color:oklch(12% 0.01 60);--strong-color:oklch(15% 0.01 60);
+  --svg-ico:oklch(45% 0.06 250);--overlay:oklch(0% 0 0 / 0.2);
+  --shadow:oklch(0% 0 0 / 0.08);--shadow-sm:oklch(0% 0 0 / 0.05);
+  --btn-hover:oklch(0% 0 0 / 0.04);--btn-active:oklch(0% 0 0 / 0.07);
+  --item-hover:oklch(0% 0 0 / 0.03);--table-stripe:oklch(0% 0 0 / 0.015);
+  --scroll-thumb:oklch(0% 0 0 / 0.08);--scroll-thumb-hover:oklch(0% 0 0 / 0.15);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC",sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
+  --r4:8px;--r6:10px;--r8:12px;--r12:16px;--fw-title:600;--fw-btn:500;color-scheme:light;
+}
+
+/* ===== THEME: Obsidian ===== */
+[data-theme="obsidian"]{
+  --bg:oklch(13% 0.008 285);--bg2:oklch(17% 0.008 285);--bg3:oklch(22% 0.01 285);
+  --bdr:oklch(100% 0 0 / 0.06);--bdr2:oklch(100% 0 0 / 0.10);
+  --tx1:oklch(92% 0 0);--tx2:oklch(72% 0.005 285);--tx3:oklch(52% 0.005 285);--tx4:oklch(35% 0.005 285);
+  --accent:oklch(65% 0.13 280);--accent-bg:oklch(65% 0.13 280 / 0.10);--accent-bdr:oklch(65% 0.13 280 / 0.18);
+  --red:oklch(55% 0.16 20);--red-bg:oklch(55% 0.16 20 / 0.10);
+  --h-color:oklch(95% 0 0);--strong-color:oklch(95% 0 0);
+  --svg-ico:oklch(65% 0.06 280);--overlay:oklch(0% 0 0 / 0.5);
+  --shadow:oklch(0% 0 0 / 0);--shadow-sm:oklch(0% 0 0 / 0);
+  --btn-hover:oklch(100% 0 0 / 0.04);--btn-active:oklch(100% 0 0 / 0.08);
+  --item-hover:oklch(100% 0 0 / 0.03);--table-stripe:oklch(100% 0 0 / 0.015);
+  --scroll-thumb:oklch(100% 0 0 / 0.06);--scroll-thumb-hover:oklch(100% 0 0 / 0.12);
+  --font:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC",sans-serif;
+  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --r4:6px;--r6:8px;--r8:10px;--r12:12px;--fw-title:600;--fw-btn:500;color-scheme:dark;
+}
+
+/* ===== THEME: Linear ===== */
+[data-theme="linear"]{
+  --bg:oklch(12% 0.006 240);--bg2:oklch(16% 0.008 240);--bg3:oklch(22% 0.01 240);
+  --bdr:oklch(100% 0 0 / 0.04);--bdr2:oklch(100% 0 0 / 0.06);
+  --tx1:oklch(94% 0 0);--tx2:oklch(72% 0.003 240);--tx3:oklch(48% 0.003 240);--tx4:oklch(30% 0.003 240);
+  --accent:oklch(72% 0.16 210);--accent-bg:oklch(72% 0.16 210 / 0.10);--accent-bdr:oklch(72% 0.16 210 / 0.18);
+  --red:oklch(58% 0.16 20);--red-bg:oklch(58% 0.16 20 / 0.10);
+  --h-color:oklch(96% 0 0);--strong-color:oklch(96% 0 0);
+  --svg-ico:oklch(72% 0.08 210);--overlay:oklch(0% 0 0 / 0.55);
+  --shadow:oklch(0% 0 0 / 0);--shadow-sm:oklch(0% 0 0 / 0);
+  --btn-hover:oklch(100% 0 0 / 0.05);--btn-active:oklch(100% 0 0 / 0.10);
+  --item-hover:oklch(100% 0 0 / 0.04);--table-stripe:oklch(100% 0 0 / 0.02);
+  --scroll-thumb:oklch(100% 0 0 / 0.05);--scroll-thumb-hover:oklch(100% 0 0 / 0.10);
+  --font:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC",sans-serif;
+  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --r4:6px;--r6:8px;--r8:10px;--r12:14px;--fw-title:550;--fw-btn:500;color-scheme:dark;
+}
+
+/* ===== THEME: VSCode ===== */
+[data-theme="vscode"]{
+  --bg:oklch(14% 0.004 220);--bg2:oklch(17% 0.004 220);--bg3:oklch(21% 0.006 220);
+  --bdr:oklch(100% 0 0 / 0.04);--bdr2:oklch(100% 0 0 / 0.08);
+  --tx1:oklch(88% 0 0);--tx2:oklch(68% 0.003 220);--tx3:oklch(48% 0.003 220);--tx4:oklch(32% 0.003 220);
+  --accent:oklch(65% 0.16 150);--accent-bg:oklch(65% 0.16 150 / 0.08);--accent-bdr:oklch(65% 0.16 150 / 0.15);
+  --red:oklch(55% 0.16 25);--red-bg:oklch(55% 0.16 25 / 0.10);
+  --h-color:oklch(92% 0 0);--strong-color:oklch(92% 0 0);
+  --svg-ico:oklch(58% 0.06 150);--overlay:oklch(0% 0 0 / 0.5);
+  --shadow:oklch(0% 0 0 / 0);--shadow-sm:oklch(0% 0 0 / 0);
+  --btn-hover:oklch(100% 0 0 / 0.04);--btn-active:oklch(100% 0 0 / 0.08);
+  --item-hover:oklch(100% 0 0 / 0.03);--table-stripe:oklch(100% 0 0 / 0.015);
+  --scroll-thumb:oklch(100% 0 0 / 0.05);--scroll-thumb-hover:oklch(100% 0 0 / 0.10);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;
+  --mono:"Cascadia Code","JetBrains Mono","SF Mono","Fira Code",monospace;
+  --r4:2px;--r6:3px;--r8:4px;--r12:6px;--fw-title:600;--fw-btn:500;color-scheme:dark;
+}
+
+[data-theme="apple"] .top{background:oklch(93% 0.006 60 / 0.75);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid oklch(0% 0 0 / 0.08)}
+[data-theme="linear"] .top{backdrop-filter:blur(24px) saturate(120%);-webkit-backdrop-filter:blur(24px) saturate(120%);border-bottom-width:0.5px}
+
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+::selection{background:var(--accent-bg);color:var(--accent)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
+
+/* ===== Toolbar ===== */
+.top{height:44px;padding:0 16px;background:var(--bg2);border-bottom:1px solid var(--bdr);display:flex;align-items:center;flex-shrink:0;z-index:20;gap:12px}
+.top-l{display:flex;align-items:center;gap:10px}
+.top-l .logo{font-size:16px;font-weight:700;color:var(--accent);letter-spacing:-0.3px}
+.top-l span{font-size:14px;font-weight:500;color:var(--tx2);letter-spacing:0.3px}
+.top-r{display:flex;align-items:center;gap:4px;margin-left:auto}
+.sep{width:1px;height:16px;background:var(--bdr);margin:0 4px}
+.btn{height:28px;padding:0 9px;border-radius:var(--r6);font-size:11.5px;font-family:var(--font);color:var(--tx2);background:transparent;border:1px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s;display:inline-flex;align-items:center;gap:3px;letter-spacing:0.1px;font-weight:var(--fw-btn)}
+.btn:hover{background:var(--btn-hover);color:var(--tx1)}
+.btn:active{background:var(--btn-active)}
+.btn.primary{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-bdr);font-weight:500}
+.btn.primary:hover{background:color-mix(in srgb,var(--accent-bg) 100%,var(--tx1) 8%)}
+.theme-btn{padding:0 8px;font-size:11px;gap:4px}
+.th-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid var(--bdr2)}
+.th-dot.th-apple{background:oklch(52% 0.18 250)}.th-dot.th-obsidian{background:oklch(65% 0.13 280)}.th-dot.th-linear{background:oklch(72% 0.16 210)}.th-dot.th-vscode{background:oklch(65% 0.16 150)}
+
+/* ===== Main Layout ===== */
+.main{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ===== Left Panel: JSON Input ===== */
+.input-panel{flex:1;display:flex;flex-direction:column;min-width:200px;background:var(--bg);position:relative}
+.input-hd{height:28px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--bdr);background:var(--bg2)}
+.input-hd span{font-size:10.5px;color:var(--tx3);letter-spacing:0.3px;text-transform:uppercase;font-weight:500}
+.input-hd .btn-clear{width:22px;height:22px;border-radius:var(--r4);background:transparent;border:none;color:var(--tx3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.input-hd .btn-clear:hover{background:var(--btn-hover);color:var(--tx1)}
+.input-area{flex:1;position:relative;overflow:hidden}
+.input-area textarea{display:block;width:100%;height:100%;background:var(--bg);border:none;outline:none;resize:none;padding:12px 12px 12px 52px;font-family:"SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;font-size:14px;line-height:1.6;color:var(--tx1);caret-color:var(--accent);tab-size:2;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+.input-area textarea::placeholder{color:var(--tx4)}
+.json-ln{position:absolute;left:0;top:0;bottom:0;width:42px;padding:12px 0;background:var(--bg);pointer-events:none;border-right:1px solid var(--bdr);overflow:hidden;text-align:right}
+.json-ln span{display:block;padding-right:6px;font:11px/1.6 "SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;color:var(--tx4);font-variant-numeric:tabular-nums}
+.json-err{display:none;padding:8px 12px;background:var(--red-bg);border-top:1px solid oklch(50% 0.18 25 / 0.15);font-size:11.5px;color:var(--red);flex-shrink:0;font-family:var(--mono);line-height:1.5}
+.json-err.show{display:block}
+.json-err .err-type{font-weight:600}
+.json-err .err-pos{color:var(--tx3);margin-left:8px}
+
+/* ===== Splitter ===== */
+.splitter{width:4px;cursor:col-resize;flex-shrink:0;background:transparent;transition:background .15s,width .15s;position:relative;z-index:10}
+.splitter:hover,.splitter.active{background:var(--accent);width:6px}
+
+/* ===== Right Panel: JSON Tree ===== */
+.tree-panel{flex:1;display:flex;flex-direction:column;min-width:200px;background:var(--bg);overflow:hidden}
+.tree-hd{height:28px;padding:0 10px;display:flex;align-items:center;flex-shrink:0;border-bottom:1px solid var(--bdr);background:var(--bg2)}
+.tree-hd span{font-size:10.5px;color:var(--tx3);letter-spacing:0.3px;text-transform:uppercase;font-weight:500}
+.tree-wrap{flex:1;overflow:auto;padding:8px 0}
+.tree-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx4);font-size:13px;font-family:var(--font)}
+
+/* ===== JSON Tree Nodes ===== */
+.json-tree{font-family:"SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;font-size:13px;line-height:1.8;white-space:nowrap;min-width:max-content}
+.json-node{cursor:default;user-select:none;transition:background .08s}
+.json-node:hover{background:var(--item-hover)}
+.json-node .node-row{display:flex;align-items:baseline;padding:0 8px;min-height:23px}
+.json-toggle{width:16px;height:16px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);font-size:10px;transition:transform .15s;margin-right:2px;border-radius:var(--r4)}
+.json-toggle:hover{color:var(--tx1);background:var(--btn-hover)}
+.json-toggle.collapsed{transform:rotate(-90deg)}
+.json-toggle.leaf{visibility:hidden}
+.json-key{color:oklch(55% 0.06 30);margin-right:4px;flex-shrink:0}
+.json-val{margin-right:4px}
+.json-val.val-str{color:oklch(60% 0.14 145)}
+.json-val.val-num{color:oklch(65% 0.16 250)}
+.json-val.val-bool{color:oklch(60% 0.12 45)}
+.json-val.val-null{color:oklch(60% 0.004 260)}
+.json-val.val-bool.purple{color:oklch(55% 0.12 300)}
+.json-bracket{color:var(--tx3)}
+.json-count{color:var(--tx4);font-size:11px;font-style:italic;margin-left:4px}
+.json-ellipsis{color:var(--accent);cursor:pointer;font-size:12px;padding:2px 8px;margin-left:4px}
+.json-ellipsis:hover{text-decoration:underline}
+.json-depth-warn{color:var(--red);font-size:11px;padding:4px 8px;font-style:italic}
+.json-children{margin-left:20px;border-left:1px solid var(--bdr)}
+.json-children.folded{display:none}
+.json-node.root>.json-children{margin-left:0;border-left:none}
+.json-str-trunc{position:relative}
+.json-str-trunc .str-tooltip{display:none;position:absolute;left:0;bottom:100%;margin-bottom:4px;background:var(--bg3);color:var(--tx1);border:1px solid var(--bdr2);border-radius:var(--r6);padding:6px 10px;font-size:12px;max-width:420px;white-space:pre-wrap;word-break:break-all;z-index:100;box-shadow:0 4px 16px var(--shadow);line-height:1.5}
+.json-str-trunc:hover .str-tooltip{display:block}
+
+/* ===== Status Bar ===== */
+.st{height:22px;padding:0 14px;background:var(--bg2);border-top:1px solid var(--bdr);display:flex;align-items:center;gap:20px;font-size:10px;color:var(--tx3);flex-shrink:0}
+.st b{font-weight:500;color:var(--tx2)}
+.st-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.st-dot.green{background:oklch(55% 0.16 145)}
+.st-dot.red{background:var(--red)}
+.st-dot.gray{background:var(--tx4)}
+.st-status{display:flex;align-items:center;gap:6px}
+.st-stats{margin-left:auto;display:flex;gap:16px}
+
+/* ===== Responsive ===== */
+@media (max-width:767px){
+  .main{flex-direction:column}
+  .splitter{width:100%;height:4px;cursor:row-resize}
+  .splitter:hover,.splitter.active{width:100%;height:6px}
+  .input-panel,.tree-panel{min-width:0;min-height:150px}
+  .top-l span{display:none}
+  .btn .btn-label{display:none}
+  .top{justify-content:space-between}
+  .top-r{gap:2px}
+}
+</style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="top">
+  <div class="top-l">
+    <span class="logo">JSON</span>
+    <span>JSON 格式化工具</span>
+  </div>
+  <div class="top-r">
+    <button class="btn" onclick="JsonFmt.format()" title="格式化（美化缩进）"><span class="btn-label">格式化</span></button>
+    <button class="btn" onclick="JsonFmt.compress()" title="压缩（移除空白）"><span class="btn-label">压缩</span></button>
+    <button class="btn" onclick="JsonFmt.sort()" title="按 Key 字母排序"><span class="btn-label">排序</span></button>
+    <button class="btn" onclick="JsonFmt.copy()" title="复制到剪贴板"><span class="btn-label">复制</span></button>
+    <button class="btn" onclick="JsonFmt.download()" title="下载为 .json 文件"><span class="btn-label">下载</span></button>
+    <span class="sep"></span>
+    <button class="btn theme-btn" id="themeBtn" title="切换主题">
+      <span class="th-dot th-apple" id="thDot"></span>
+      <span id="thName">Apple</span>
+    </button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main" id="mainWrap">
+  <!-- Left: Input -->
+  <div class="input-panel" id="inputPanel">
+    <div class="input-hd">
+      <span>JSON 输入</span>
+      <button class="btn-clear" onclick="JsonFmt.clear()" title="清空">×</button>
+    </div>
+    <div class="input-area">
+      <div class="json-ln" id="jsonLn"></div>
+      <textarea id="jsonInput" placeholder='粘贴 JSON 到此处，例如：&#10;{"name":"JSON工具","version":"1.0"}'></textarea>
+    </div>
+    <div class="json-err" id="jsonErr"></div>
+  </div>
+
+  <!-- Splitter -->
+  <div class="splitter" id="splitter"></div>
+
+  <!-- Right: Tree -->
+  <div class="tree-panel" id="treePanel">
+    <div class="tree-hd">
+      <span>JSON 树形预览</span>
+    </div>
+    <div class="tree-wrap" id="treeWrap">
+      <div class="tree-empty" id="treeEmpty">在左侧输入 JSON 即可预览</div>
+      <div class="json-tree" id="jsonTree"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Status Bar -->
+<div class="st">
+  <div class="st-status">
+    <span class="st-dot gray" id="stDot"></span>
+    <span id="stMsg">等待输入</span>
+  </div>
+  <div class="st-stats">
+    <span id="stLines">0 行</span>
+    <span id="stChars">0 字符</span>
+    <span id="stNodes">0 个节点</span>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+const LS_KEY = 'json-formatter-input';
+const DEBOUNCE_MS = 500;
+const MAX_NODES_FIRST = 5000;
+const STR_TRUNC_LEN = 80;
+const MAX_DEPTH = 20;
+const THEMES = ['apple','obsidian','linear','vscode'];
+const THEME_LABELS = {apple:'Apple',obsidian:'Obsidian',linear:'Linear',vscode:'VSCode'};
+
+const $ = id => document.getElementById(id);
+
+const els = {
+  input: $('jsonInput'),
+  ln: $('jsonLn'),
+  err: $('jsonErr'),
+  tree: $('jsonTree'),
+  treeWrap: $('treeWrap'),
+  treeEmpty: $('treeEmpty'),
+  stDot: $('stDot'),
+  stMsg: $('stMsg'),
+  stLines: $('stLines'),
+  stChars: $('stChars'),
+  stNodes: $('stNodes'),
+  splitter: $('splitter'),
+  mainWrap: $('mainWrap'),
+  inputPanel: $('inputPanel'),
+  treePanel: $('treePanel'),
+  themeBtn: $('themeBtn'),
+  thDot: $('thDot'),
+  thName: $('thName'),
+};
+
+let parsedData = null;
+let totalNodes = 0;
+let allNodesExpanded = false;
+let debounceTimer = null;
+let errorLine = -1;
+
+// ===== Theme =====
+function getTheme(){ return localStorage.getItem('easydoit-theme') || 'apple'; }
+function setTheme(t){
+  localStorage.setItem('easydoit-theme', t);
+  document.documentElement.setAttribute('data-theme', t);
+  els.thDot.className = 'th-dot th-'+t;
+  els.thName.textContent = THEME_LABELS[t];
+}
+function cycleTheme(){
+  const cur = getTheme();
+  const idx = THEMES.indexOf(cur);
+  const next = THEMES[(idx+1)%THEMES.length];
+  setTheme(next);
+}
+setTheme(getTheme());
+els.themeBtn.addEventListener('click', cycleTheme);
+
+// ===== Splitter Drag =====
+let dragging = false;
+let startX = 0;
+let startY = 0;
+let startLeftW = 0;
+let startTopH = 0;
+
+function isMobile(){ return window.innerWidth < 768; }
+
+els.splitter.addEventListener('mousedown', function(e){
+  e.preventDefault();
+  dragging = true;
+  els.splitter.classList.add('active');
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor = isMobile() ? 'row-resize' : 'col-resize';
+  if(isMobile()){
+    startY = e.clientY;
+    startTopH = els.inputPanel.getBoundingClientRect().height;
+  } else {
+    startX = e.clientX;
+    startLeftW = els.inputPanel.getBoundingClientRect().width;
+  }
+});
+
+document.addEventListener('mousemove', function(e){
+  if(!dragging) return;
+  const mainRect = els.mainWrap.getBoundingClientRect();
+  if(isMobile()){
+    const dy = e.clientY - startY;
+    const newH = Math.max(150, Math.min(mainRect.height - 154, startTopH + dy));
+    els.inputPanel.style.flex = 'none';
+    els.inputPanel.style.height = newH + 'px';
+    els.treePanel.style.flex = '1';
+  } else {
+    const dx = e.clientX - startX;
+    const totalW = mainRect.width - 4;
+    const newW = Math.max(200, Math.min(totalW - 204, startLeftW + dx));
+    els.inputPanel.style.flex = 'none';
+    els.inputPanel.style.width = newW + 'px';
+    els.treePanel.style.flex = '1';
+  }
+});
+
+document.addEventListener('mouseup', function(){
+  if(!dragging) return;
+  dragging = false;
+  els.splitter.classList.remove('active');
+  document.body.style.userSelect = '';
+  document.body.style.cursor = '';
+});
+
+// ===== Line Numbers =====
+function updateLineNumbers(){
+  const text = els.input.value;
+  const lines = text.split('\n');
+  const n = lines.length;
+  let html = '';
+  for(let i=1;i<=n;i++) html += '<span>'+i+'</span>';
+  els.ln.innerHTML = html;
+  // Highlight error line
+  if(errorLine >= 0 && errorLine < n){
+    // Adjust color of error line span
+    const spans = els.ln.querySelectorAll('span');
+    for(let i=0;i<spans.length;i++){
+      if(i === errorLine){
+        spans[i].style.color = 'var(--red)';
+        spans[i].style.fontWeight = '600';
+      }
+    }
+  }
+}
+
+els.input.addEventListener('scroll', function(){
+  els.ln.scrollTop = els.input.scrollTop;
+});
+
+// ===== Error Display =====
+function showError(msg, line, col){
+  els.err.classList.add('show');
+  let html = '<span class="err-type">'+escapeHtml(msg)+'</span>';
+  if(line !== undefined && col !== undefined){
+    html += '<span class="err-pos">位置：第 '+(line+1)+' 行，第 '+(col+1)+' 列</span>';
+  }
+  els.err.innerHTML = html;
+  errorLine = line !== undefined ? line : -1;
+  updateLineNumbers();
+}
+
+function hideError(){
+  els.err.classList.remove('show');
+  els.err.innerHTML = '';
+  errorLine = -1;
+  updateLineNumbers();
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ===== Status Bar =====
+function setStatus(state, msg){
+  els.stDot.className = 'st-dot ' + state;
+  els.stMsg.textContent = msg;
+}
+
+function updateStats(text){
+  const lines = text ? text.split('\n').length : 0;
+  els.stLines.textContent = lines + ' 行';
+  els.stChars.textContent = text.length + ' 字符';
+  els.stNodes.textContent = totalNodes + ' 个节点';
+}
+
+// ===== Node Counting =====
+function countNodes(data){
+  let count = 0;
+  function walk(v){
+    count++;
+    if(v && typeof v === 'object'){
+      const keys = Array.isArray(v) ? v : Object.keys(v);
+      for(let i=0;i<keys.length;i++){
+        walk(Array.isArray(v) ? keys[i] : v[keys[i]]);
+      }
+    }
+  }
+  if(data !== null && data !== undefined) walk(data);
+  return count;
+}
+
+// ===== JSON Path Building =====
+function buildPath(prefix, key, isArray){
+  if(prefix === '$') return isArray ? '$['+key+']' : '$.'+key;
+  return isArray ? prefix+'['+key+']' : prefix+'.'+key;
+}
+
+// ===== Tree Rendering =====
+function valueType(val){
+  if(val === null) return 'null';
+  if(Array.isArray(val)) return 'array';
+  return typeof val;
+}
+
+function formatValue(val, type){
+  if(type === 'string') return '"'+val+'"';
+  if(type === 'number') return String(val);
+  if(type === 'boolean') return String(val);
+  if(type === 'null') return 'null';
+  return '';
+}
+
+function renderNode(key, val, path, depth, fragment, nodesRendered){
+  if(nodesRendered.count >= MAX_NODES_FIRST && !allNodesExpanded){
+    const ellipsisRow = document.createElement('div');
+    ellipsisRow.className = 'json-node';
+    ellipsisRow.style.paddingLeft = (depth*20)+'px';
+    ellipsisRow.innerHTML = '<span class="json-ellipsis" onclick="JsonFmt.expandAll()">还有 '+(totalNodes-MAX_NODES_FIRST)+' 个节点，点击展开全部</span>';
+    fragment.appendChild(ellipsisRow);
+    nodesRendered.stopped = true;
+    return;
+  }
+  nodesRendered.count++;
+
+  const nodeDiv = document.createElement('div');
+  nodeDiv.className = 'json-node';
+  nodeDiv.setAttribute('data-path', path);
+  nodeDiv.style.paddingLeft = '0px';
+
+  const row = document.createElement('div');
+  row.className = 'node-row';
+
+  const type = valueType(val);
+  const isContainer = type === 'object' || type === 'array';
+
+  // Toggle
+  const toggle = document.createElement('span');
+  toggle.className = 'json-toggle' + (isContainer ? '' : ' leaf');
+  toggle.textContent = '▼';
+  if(isContainer){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      toggle.classList.toggle('collapsed');
+      const children = nodeDiv.querySelector('.json-children');
+      if(children) children.classList.toggle('folded');
+    });
+  }
+  row.appendChild(toggle);
+
+  // Key
+  if(key !== null && key !== undefined){
+    const keySpan = document.createElement('span');
+    keySpan.className = 'json-key';
+    keySpan.textContent = '"'+key+'": ';
+    row.appendChild(keySpan);
+  }
+
+  if(!isContainer){
+    // Leaf value
+    const valSpan = document.createElement('span');
+    valSpan.className = 'json-val val-'+type;
+    if(type === 'boolean' && val === false) valSpan.classList.add('purple');
+    const fullStr = formatValue(val, type);
+
+    if(type === 'string' && fullStr.length > STR_TRUNC_LEN + 2){
+      const truncSpan = document.createElement('span');
+      truncSpan.className = 'json-str-trunc';
+      truncSpan.textContent = fullStr.substring(0, STR_TRUNC_LEN) + '…"';
+      const tooltip = document.createElement('span');
+      tooltip.className = 'str-tooltip';
+      tooltip.textContent = fullStr;
+      truncSpan.appendChild(tooltip);
+      valSpan.appendChild(truncSpan);
+    } else {
+      valSpan.textContent = fullStr;
+    }
+    row.appendChild(valSpan);
+    nodeDiv.appendChild(row);
+
+    // Click to copy path
+    row.addEventListener('click', function(e){
+      if(e.target.closest('.json-toggle')) return;
+      copyToClipboard(path);
+    });
+    row.title = '点击复制路径: ' + path;
+
+    fragment.appendChild(nodeDiv);
+  } else {
+    // Container
+    const bracketSpan = document.createElement('span');
+    bracketSpan.className = 'json-bracket';
+    const isArr = type === 'array';
+    bracketSpan.textContent = isArr ? '[ ]' : '{ }';
+    row.appendChild(bracketSpan);
+
+    const countSpan = document.createElement('span');
+    countSpan.className = 'json-count';
+    const len = isArr ? val.length : Object.keys(val).length;
+    countSpan.textContent = len + (isArr ? ' items' : ' props');
+    row.appendChild(countSpan);
+
+    row.addEventListener('click', function(e){
+      if(e.target.closest('.json-toggle')) return;
+      copyToClipboard(path);
+    });
+    row.title = '点击复制路径: ' + path;
+
+    nodeDiv.appendChild(row);
+
+    if(depth >= MAX_DEPTH){
+      const warn = document.createElement('div');
+      warn.className = 'json-depth-warn';
+      warn.textContent = '⚠ 已达到最大展开深度（20 层）';
+      warn.style.paddingLeft = '20px';
+      nodeDiv.appendChild(warn);
+    } else {
+      const childrenDiv = document.createElement('div');
+      childrenDiv.className = 'json-children';
+
+      if(isArr){
+        for(let i=0;i<val.length;i++){
+          if(nodesRendered.stopped) break;
+          renderNode(i, val[i], buildPath(path, i, true), depth+1, childrenDiv, nodesRendered);
+        }
+      } else {
+        const keys = Object.keys(val);
+        for(let i=0;i<keys.length;i++){
+          if(nodesRendered.stopped) break;
+          renderNode(keys[i], val[keys[i]], buildPath(path, keys[i], false), depth+1, childrenDiv, nodesRendered);
+        }
+      }
+      nodeDiv.appendChild(childrenDiv);
+    }
+    fragment.appendChild(nodeDiv);
+  }
+}
+
+function renderTree(data){
+  els.tree.innerHTML = '';
+  els.treeEmpty.style.display = 'none';
+
+  if(data === null || data === undefined){
+    els.treeEmpty.style.display = 'flex';
+    return;
+  }
+
+  totalNodes = countNodes(data);
+  const fragment = document.createDocumentFragment();
+  const nodesRendered = { count: 0, stopped: false };
+
+  renderNode(null, data, '$', 1, fragment, nodesRendered);
+
+  // Root node gets special class
+  const rootNode = fragment.firstElementChild;
+  if(rootNode) rootNode.classList.add('root');
+
+  els.tree.appendChild(fragment);
+}
+
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text).then(function(){
+    // Brief flash feedback could be added
+  }).catch(function(){});
+}
+
+// ===== Parse & Render =====
+function parseAndRender(text, save){
+  if(save !== false){
+    try{ localStorage.setItem(LS_KEY, text); }catch(e){}
+  }
+
+  const trimmed = text.trim();
+  if(!trimmed){
+    hideError();
+    setStatus('gray','等待输入');
+    updateStats('');
+    parsedData = null;
+    totalNodes = 0;
+    allNodesExpanded = false;
+    els.tree.innerHTML = '';
+    els.treeEmpty.style.display = 'flex';
+    return;
+  }
+
+  try{
+    parsedData = JSON.parse(trimmed);
+    hideError();
+    setStatus('green','有效的 JSON');
+    updateStats(text);
+
+    if(countNodes(parsedData) > MAX_NODES_FIRST){
+      allNodesExpanded = false;
+    }
+
+    // Use requestIdleCallback for large JSON
+    if(text.length > 50000){
+      if(window.requestIdleCallback){
+        requestIdleCallback(function(){ renderTree(parsedData); });
+      } else {
+        setTimeout(function(){ renderTree(parsedData); }, 50);
+      }
+    } else {
+      renderTree(parsedData);
+    }
+  } catch(e){
+    parsedData = null;
+    totalNodes = 0;
+    allNodesExpanded = false;
+    setStatus('red','无效的 JSON');
+    updateStats(text);
+    els.tree.innerHTML = '';
+    els.treeEmpty.style.display = 'flex';
+
+    // Extract position info
+    const msg = e.message || 'JSON 解析错误';
+    let line = -1, col = -1;
+    // Chrome/V8: "Unexpected token ... at position N"
+    // Firefox: "expected ... at line N column M"
+    const posMatch = msg.match(/at position (\d+)/);
+    const lineColMatch = msg.match(/at line (\d+) column (\d+)/);
+    if(lineColMatch){
+      line = parseInt(lineColMatch[1]) - 1;
+      col = parseInt(lineColMatch[2]) - 1;
+    } else if(posMatch){
+      const pos = parseInt(posMatch[1]);
+      const before = trimmed.substring(0, pos);
+      line = before.split('\n').length - 1;
+      const lastLineStart = before.lastIndexOf('\n');
+      col = lastLineStart === -1 ? pos : pos - lastLineStart - 1;
+    }
+    showError(msg, line >= 0 ? line : undefined, col >= 0 ? col : undefined);
+  }
+}
+
+// ===== Debounced Input =====
+els.input.addEventListener('input', function(){
+  clearTimeout(debounceTimer);
+  updateLineNumbers();
+  debounceTimer = setTimeout(function(){
+    parseAndRender(els.input.value);
+  }, DEBOUNCE_MS);
+});
+
+// Sync scroll for line numbers on input resize
+els.input.addEventListener('scroll', function(){
+  els.ln.scrollTop = els.input.scrollTop;
+});
+
+// ===== Public API =====
+window.JsonFmt = {
+  format: function(){
+    if(!parsedData) return;
+    const formatted = JSON.stringify(parsedData, null, 2);
+    els.input.value = formatted;
+    updateLineNumbers();
+    parseAndRender(formatted);
+  },
+
+  compress: function(){
+    if(!parsedData) return;
+    const compressed = JSON.stringify(parsedData);
+    els.input.value = compressed;
+    updateLineNumbers();
+    parseAndRender(compressed);
+  },
+
+  sort: function(){
+    if(!parsedData) return;
+    function sortKeys(obj){
+      if(obj && typeof obj === 'object' && !Array.isArray(obj)){
+        const sorted = {};
+        Object.keys(obj).sort().forEach(function(k){
+          sorted[k] = sortKeys(obj[k]);
+        });
+        return sorted;
+      }
+      if(Array.isArray(obj)) return obj.map(sortKeys);
+      return obj;
+    }
+    const sorted = sortKeys(parsedData);
+    parsedData = sorted;
+    const text = JSON.stringify(sorted, null, 2);
+    els.input.value = text;
+    updateLineNumbers();
+    parseAndRender(text);
+  },
+
+  copy: function(){
+    if(!parsedData) return;
+    const text = JSON.stringify(parsedData, null, 2);
+    navigator.clipboard.writeText(text).then(function(){
+      setStatus('green','已复制到剪贴板');
+      setTimeout(function(){
+        if(parsedData) setStatus('green','有效的 JSON');
+        else if(els.input.value.trim()) setStatus('red','无效的 JSON');
+        else setStatus('gray','等待输入');
+      }, 2000);
+    }).catch(function(){
+      setStatus('red','复制失败');
+    });
+  },
+
+  download: function(){
+    if(!parsedData) return;
+    const text = JSON.stringify(parsedData, null, 2);
+    const blob = new Blob([text], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'formatted.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+
+  clear: function(){
+    els.input.value = '';
+    parsedData = null;
+    totalNodes = 0;
+    allNodesExpanded = false;
+    hideError();
+    setStatus('gray','等待输入');
+    updateStats('');
+    els.tree.innerHTML = '';
+    els.treeEmpty.style.display = 'flex';
+    updateLineNumbers();
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  },
+
+  expandAll: function(){
+    allNodesExpanded = true;
+    if(parsedData) renderTree(parsedData);
+  }
+};
+
+// ===== Init =====
+function init(){
+  // Restore from localStorage
+  let initialText = '';
+  try{
+    initialText = localStorage.getItem(LS_KEY) || '';
+  }catch(e){}
+
+  // Check URL param
+  const urlParams = new URLSearchParams(window.location.search);
+  const jsonParam = urlParams.get('json');
+  if(jsonParam){
+    try{
+      initialText = decodeURIComponent(jsonParam);
+      // Try to parse and format
+      const parsed = JSON.parse(initialText);
+      initialText = JSON.stringify(parsed, null, 2);
+    }catch(e){
+      // Keep as-is
+    }
+  }
+
+  if(initialText){
+    els.input.value = initialText;
+    updateLineNumbers();
+    parseAndRender(initialText);
+  } else {
+    updateLineNumbers();
+  }
+
+  // Save on unload
+  window.addEventListener('beforeunload', function(){
+    try{
+      localStorage.setItem(LS_KEY, els.input.value);
+    }catch(e){}
+  });
+
+  // Handle window resize for responsive
+  window.addEventListener('resize', function(){
+    if(!isMobile()){
+      els.inputPanel.style.height = '';
+      els.inputPanel.style.width = '';
+      els.treePanel.style.flex = '1';
+      els.inputPanel.style.flex = '1';
+    }
+  });
+}
+
+init();
+
+})();
+</script>
+
+</body>
+</html>
