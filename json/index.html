@@ -139,14 +139,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
 .panel-body{flex:1;overflow:hidden;position:relative}
 
 /* ===== Left: Editor ===== */
-.editor-wrap{flex:1;overflow:hidden;min-height:0}
+/* ===== Editor Container ===== */
+.editor-wrap{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column}
 .editor-wrap .CodeMirror{height:100%!important;font-family:var(--mono);font-size:14px;line-height:1.6}
+.editor-wrap .CodeMirror-scroll{min-height:100%}
+#editorContainer{flex:1;overflow:hidden;min-height:0;position:relative}
 .editor-wrap .CodeMirror-gutters{background:var(--bg2);border-right:1px solid var(--bdr)}
 .editor-wrap .CodeMirror-linenumbers{color:var(--tx3)}
 .editor-wrap .CodeMirror-activeline-background{background:var(--bg3)}
 .editor-wrap .CodeMirror-cursor{border-left-color:var(--accent)}
 .editor-wrap .CodeMirror-selected{background:var(--accent-bg)!important}
 .editor-wrap .CodeMirror-matchingbracket{background:var(--accent-bg);outline:1px solid var(--accent)}
+.editor-wrap .CodeMirror-vscrollbar::-webkit-scrollbar{width:6px}
+.editor-wrap .CodeMirror-vscrollbar::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:3px}
+.editor-wrap .CodeMirror-vscrollbar::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
 
 /* ===== Right: Preview ===== */
 .view-toggle{display:flex;align-items:center;gap:1px;border:1px solid var(--bdr);border-radius:var(--r6);overflow:hidden}
@@ -164,44 +170,46 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
 .preview-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx3);font-size:14px;font-family:var(--font)}
 
 /* ===== Tree View ===== */
-.json-tree{font-family:var(--mono);font-size:13px;line-height:1.8;white-space:nowrap;min-width:max-content;padding:8px 0;overflow-x:auto}
-.json-node{position:relative;cursor:default;user-select:none}
-.json-node .node-row{display:flex;align-items:baseline;padding:0 12px;min-height:23px}
-.json-node .node-row:hover{background:var(--item-hover)}
-.json-toggle{width:16px;height:16px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);font-size:10px;transition:transform .15s;margin-right:2px;border-radius:var(--r4);line-height:1}
-.json-toggle:hover{color:var(--tx1);background:var(--btn-hover)}
-.json-toggle.collapsed{transform:rotate(-90deg)}
-.json-toggle.leaf{visibility:hidden}
-.json-key{color:oklch(50% 0.18 310);margin-right:4px;flex-shrink:0}
-.json-val.val-str{color:oklch(60% 0.14 145)}
-.json-val.val-num{color:oklch(65% 0.16 250)}
-.json-val.val-bool{color:oklch(60% 0.12 45)}
-.json-val.val-bool.false{color:oklch(55% 0.12 300)}
-.json-val.val-null{color:oklch(55% 0.12 300)}
-.json-bracket{color:var(--tx3)}
-.json-count{color:var(--tx4);font-size:11px;font-style:italic;margin-left:4px}
-.json-children{margin-left:20px;border-left:1px solid var(--bdr);min-width:0}
+.json-tree{font-family:var(--mono);font-size:13px;line-height:1.9;padding:16px 0;overflow-x:auto;overflow-y:auto}
+.json-tree::-webkit-scrollbar{width:6px;height:6px}
+.json-tree::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:3px}
+.json-tree::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
+.jnode{position:relative;display:flex;align-items:baseline;padding-right:16px;border-radius:0 var(--r4) var(--r4) 0;margin:1px 0;cursor:default;transition:background .12s}
+.jnode:hover{background:var(--item-hover)}
+.jnode::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--bdr);opacity:0;transition:opacity .15s}
+.jnode:hover::before{opacity:1}
+.jtoggle{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:4px;flex-shrink:0;color:var(--tx3);font-size:10px;cursor:pointer;border-radius:var(--r4);transition:transform .18s cubic-bezier(.16,1,.3,1),color .12s,background .12s;user-select:none}
+.jtoggle:hover{color:var(--accent);background:var(--accent-bg)}
+.jtoggle.collapsed{transform:rotate(-90deg)}
+.jtoggle.leaf{visibility:hidden}
+.jkey{color:oklch(50% 0.18 310);margin-right:4px;flex-shrink:0}
+.jval{word-break:break-all}
+.jv-str{color:oklch(60% 0.14 145)}
+.jv-num{color:oklch(65% 0.16 250)}
+.jv-bool{color:oklch(60% 0.12 45)}
+.jv-null{color:oklch(55% 0.12 300)}
+.jv-brace{color:var(--tx3)}
+.jv-str.truncated{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom}
+.jv-str.truncated:hover{max-width:none;white-space:normal;background:var(--bg2);border-radius:var(--r4);padding:2px 6px;position:relative;z-index:2}
+.jbadge{display:inline-block;font-size:10px;color:var(--tx3);background:var(--bg2);border-radius:var(--r4);padding:0 6px;margin-left:8px;line-height:18px;flex-shrink:0;font-family:var(--font);opacity:0;transition:opacity .15s}
+.jnode:hover .jbadge{opacity:1}
+.jcomma{color:var(--tx2);margin-right:4px}
+.json-empty{color:var(--tx3);font-size:14px;font-family:var(--font);text-align:center;padding:60px 20px}
+.json-children{margin-left:0;min-width:0}
 .json-children.folded{display:none}
-.json-node.root>.json-children{margin-left:0;border-left:none}
-.json-str-trunc{position:relative;cursor:default}
-.json-str-trunc .str-tooltip{display:none;position:absolute;left:0;bottom:100%;margin-bottom:4px;background:var(--bg3);color:var(--tx1);border:1px solid var(--bdr2);border-radius:var(--r6);padding:6px 10px;font-size:12px;max-width:420px;white-space:pre-wrap;word-break:break-all;z-index:100;box-shadow:0 4px 16px var(--shadow);line-height:1.5}
-.json-str-trunc:hover .str-tooltip{display:block}
+.json-node.root>.json-children{margin-left:0}
 
-/* ===== Hover Actions ===== */
-.node-actions{position:absolute;right:8px;top:1px;opacity:0;transition:opacity 0.15s;display:flex;gap:1px;pointer-events:none}
-.json-node .node-row:hover .node-actions{opacity:0.6;pointer-events:auto}
-.node-actions:hover{opacity:1 !important}
-.node-act{width:18px;height:18px;border-radius:var(--r4);background:var(--bg);border:1px solid var(--bdr);color:var(--tx3);cursor:pointer;font-size:10px;display:inline-flex;align-items:center;justify-content:center;transition:all .1s}
-.node-act:hover{color:var(--tx1);border-color:var(--bdr2);background:var(--bg2)}
 
 /* ===== Text View ===== */
-.text-view{font-family:var(--mono);font-size:13px;line-height:1.7;padding:16px 20px;white-space:pre-wrap;word-break:break-all;overflow-x:auto}
-.text-view .t-str{color:oklch(60% 0.14 145)}
-.text-view .t-num{color:oklch(65% 0.16 250)}
-.text-view .t-bool{color:oklch(60% 0.12 45)}
-.text-view .t-null{color:oklch(55% 0.12 300)}
-.text-view .t-key{color:oklch(50% 0.18 310)}
-.text-view .t-punc{color:var(--tx3)}
+.text-view{font-family:var(--mono);font-size:13px;line-height:1.8;tab-size:2;white-space:pre-wrap;word-break:break-all;padding:16px 20px;color:var(--tx1);overflow:auto}
+.text-view::-webkit-scrollbar{width:6px;height:6px}
+.text-view::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:3px}
+.text-view::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
+.jh-key{color:oklch(50% 0.18 310)}
+.jh-str{color:oklch(60% 0.14 145)}
+.jh-num{color:oklch(65% 0.16 250)}
+.jh-bool{color:oklch(60% 0.12 45)}
+.jh-null{color:oklch(55% 0.12 300)}
 .text-actions{position:absolute;top:4px;right:8px;opacity:0;transition:opacity .15s;display:flex;gap:3px}
 .preview-body:hover .text-actions{opacity:1}
 
@@ -437,6 +445,9 @@ if(jsonParam){
   } catch(e) {}
 }
 
+// jsonlint compatibility stub
+window.jsonlint = JSON;
+
 const ta = document.createElement('textarea');
 ta.id = 'cm-textarea';
 $('editorContainer').appendChild(ta);
@@ -627,110 +638,76 @@ function buildPath(prefix, key, isArray){
 
 function renderNode(key, val, path, depth, parent){
   const node = document.createElement('div');
-  node.className = 'json-node';
+  node.className = 'jnode';
+  node.style.paddingLeft = (depth * 20) + 'px';
   node.setAttribute('data-path', path);
-
-  const row = document.createElement('div');
-  row.className = 'node-row';
 
   const type = val === null ? 'null' : Array.isArray(val) ? 'array' : typeof val;
   const isContainer = type === 'object' || type === 'array';
 
   // Toggle
   const toggle = document.createElement('span');
-  toggle.className = 'json-toggle' + (isContainer ? '' : ' leaf');
-  toggle.textContent = '▼';
+  toggle.className = 'jtoggle' + (isContainer ? '' : ' leaf');
+  toggle.textContent = '▾';
   if(isContainer){
     toggle.addEventListener('click', e => {
       e.stopPropagation();
       toggle.classList.toggle('collapsed');
-      const children = node.querySelector(':scope > .json-children');
-      if(children) children.classList.toggle('folded');
+      const children = node.nextElementSibling;
+      if(children && children.classList.contains('json-children')){
+        children.classList.toggle('folded');
+      }
     });
   }
-  row.appendChild(toggle);
+  node.appendChild(toggle);
 
   // Key
   if(key !== null && key !== undefined){
     const keySpan = document.createElement('span');
-    keySpan.className = 'json-key';
-    keySpan.textContent = '"' + key + '": ';
-    row.appendChild(keySpan);
+    keySpan.className = 'jkey';
+    keySpan.textContent = '"' + key + '":';
+    node.appendChild(keySpan);
   }
 
+  // Value or bracket
   if(!isContainer){
     const valSpan = document.createElement('span');
-    valSpan.className = 'json-val val-' + type;
-    if(type === 'boolean' && val === false) valSpan.classList.add('false');
+    const typeClassMap = {string:'jv-str', number:'jv-num', boolean:'jv-bool', null:'jv-null'};
+    const typeClass = typeClassMap[type];
+    valSpan.className = 'jval ' + typeClass;
     const fullStr = formatValue(val, type);
-
-    if(type === 'string' && fullStr.length > 82){
-      const trunc = document.createElement('span');
-      trunc.className = 'json-str-trunc';
-      trunc.textContent = fullStr.substring(0, 80) + '…"';
-      const tip = document.createElement('span');
-      tip.className = 'str-tooltip';
-      tip.textContent = fullStr;
-      trunc.appendChild(tip);
-      valSpan.appendChild(trunc);
-    } else {
-      valSpan.textContent = fullStr;
+    if(type === 'string' && fullStr.length > 90){
+      valSpan.classList.add('truncated');
     }
-    row.appendChild(valSpan);
+    valSpan.textContent = fullStr;
+    node.appendChild(valSpan);
   } else {
     const bracket = document.createElement('span');
-    bracket.className = 'json-bracket';
-    bracket.textContent = type === 'array' ? '[ ]' : '{ }';
-    row.appendChild(bracket);
+    bracket.className = 'jval jv-brace';
+    bracket.textContent = type === 'array' ? '[' : '{';
+    node.appendChild(bracket);
 
-    const count = document.createElement('span');
-    count.className = 'json-count';
+    // Badge
+    const badge = document.createElement('span');
+    badge.className = 'jbadge';
     const len = type === 'array' ? val.length : Object.keys(val).length;
-    count.textContent = len + (type === 'array' ? ' items' : ' props');
-    row.appendChild(count);
+    badge.textContent = len + ' ' + (type === 'array' ? 'items' : 'keys');
+    node.appendChild(badge);
   }
 
-  // Actions
-  const actions = document.createElement('span');
-  actions.className = 'node-actions';
-  const cpBtn = document.createElement('button');
-  cpBtn.className = 'node-act';
-  cpBtn.textContent = '📋';
-  cpBtn.title = '复制路径: ' + path;
-  cpBtn.addEventListener('click', e => {
-    e.stopPropagation();
+  // Click to copy path
+  node.addEventListener('click', e => {
+    if(e.target.closest('.jtoggle')) return;
     copyToClipboard(path);
     toast('路径已复制');
   });
-  actions.appendChild(cpBtn);
+  node.title = key !== null && key !== undefined
+    ? (path + ': ' + (isContainer ? (type + ', ' + (type==='array'?val.length:Object.keys(val).length) + ' items') : formatValue(val, type)))
+    : path;
 
-  if(isContainer){
-    const colBtn = document.createElement('button');
-    colBtn.className = 'node-act';
-    colBtn.textContent = '⊟';
-    colBtn.title = '折叠全部子节点';
-    colBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const children = node.querySelector(':scope > .json-children');
-      if(children){
-        children.classList.add('folded');
-        const tgl = node.querySelector('.json-toggle');
-        if(tgl) tgl.classList.add('collapsed');
-      }
-    });
-    actions.appendChild(colBtn);
-  }
-  row.appendChild(actions);
+  parent.appendChild(node);
 
-  row.addEventListener('click', e => {
-    if(e.target.closest('.json-toggle') || e.target.closest('.node-act')) return;
-    copyToClipboard(path);
-    toast('路径已复制');
-  });
-  row.title = '点击复制路径: ' + path;
-
-  node.appendChild(row);
-
+  // Children
   if(isContainer){
     const children = document.createElement('div');
     children.className = 'json-children';
@@ -738,18 +715,33 @@ function renderNode(key, val, path, depth, parent){
       for(let i = 0; i < val.length; i++){
         renderNode(i, val[i], buildPath(path, i, true), depth + 1, children);
       }
+      // Closing bracket row
+      const closeRow = document.createElement('div');
+      closeRow.className = 'jnode';
+      closeRow.style.paddingLeft = (depth * 20) + 'px';
+      const cb = document.createElement('span');
+      cb.className = 'jval jv-brace';
+      cb.textContent = ']';
+      closeRow.appendChild(cb);
+      children.appendChild(closeRow);
     } else {
       const keys = Object.keys(val);
       for(let i = 0; i < keys.length; i++){
         renderNode(keys[i], val[keys[i]], buildPath(path, keys[i], false), depth + 1, children);
       }
+      // Closing brace row
+      const closeRow = document.createElement('div');
+      closeRow.className = 'jnode';
+      closeRow.style.paddingLeft = (depth * 20) + 'px';
+      const cb = document.createElement('span');
+      cb.className = 'jval jv-brace';
+      cb.textContent = '}';
+      closeRow.appendChild(cb);
+      children.appendChild(closeRow);
     }
-    node.appendChild(children);
+    parent.appendChild(children);
   }
-
-  parent.appendChild(node);
 }
-
 function renderTree(){
   previewEmpty.style.display = 'none';
   jsonTree.style.display = 'block';
@@ -768,6 +760,20 @@ function renderTree(){
 }
 
 // ===== Text Render =====
+function syntaxHighlightJSON(json){
+  if(typeof json !== 'string') json = JSON.stringify(json, null, 2);
+  return json.replace(
+    /("(?:\\.|[^"\\])*")\s*(:)|(\b(?:true|false|null)\b)|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+    (match, str, colon, boolNull, num) => {
+      if(colon) return '<span class="jh-key">' + str + '</span>' + colon;
+      if(boolNull) return '<span class="' + (boolNull === 'null' ? 'jh-null' : 'jh-bool') + '">' + boolNull + '</span>';
+      if(num) return '<span class="jh-num">' + num + '</span>';
+      if(str) return '<span class="jh-str">' + str + '</span>';
+      return match;
+    }
+  );
+}
+
 function renderText(){
   previewEmpty.style.display = 'none';
   jsonTree.style.display = 'none';
@@ -782,13 +788,7 @@ function renderText(){
   }
 
   const raw = JSON.stringify(parsedData, null, 2);
-  const highlighted = raw
-    .replace(/("(?:\\.|[^"\\])*")\s*:/g, '<span class="t-key">$1</span>:')
-    .replace(/:(\s*)("(?:\\.|[^"\\])*")/g, ':$1<span class="t-str">$2</span>')
-    .replace(/:\s*\b(\d+\.?\d*(?:[eE][+-]?\d+)?)\b/g, ': <span class="t-num">$1</span>')
-    .replace(/:\s*\b(true|false)\b/g, ': <span class="t-bool">$1</span>')
-    .replace(/:\s*\b(null)\b/g, ': <span class="t-null">$1</span>')
-    .replace(/([{}\[\],])/g, '<span class="t-punc">$1</span>');
+  const highlighted = syntaxHighlightJSON(raw);
   textPreview.innerHTML = highlighted;
 }
 
