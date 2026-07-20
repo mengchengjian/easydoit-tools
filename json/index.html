@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JSON 格式化工具</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='78' font-size='80'>&#x1F4CB;</text></svg>">
+<title>JSON 格式化工具 - easydoit.tools</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><rect x='6' y='4' width='28' height='32' rx='4' fill='none' stroke='%23558AFF' stroke-width='3'/><text x='20' y='27' text-anchor='middle' font-family='monospace' font-size='16' font-weight='bold' fill='%23558AFF'>{ }</text></svg>">
 <style>
 *,::before,::after{margin:0;padding:0;box-sizing:border-box}
 
@@ -23,8 +23,9 @@
   --item-hover:oklch(0% 0 0 / 0.03);--table-stripe:oklch(0% 0 0 / 0.015);
   --scroll-thumb:oklch(0% 0 0 / 0.08);--scroll-thumb-hover:oklch(0% 0 0 / 0.15);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC",sans-serif;
-  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
+  --mono:"SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;
   --r4:8px;--r6:10px;--r8:12px;--r12:16px;--fw-title:600;--fw-btn:500;color-scheme:light;
+  --is-dark:0;
 }
 
 /* ===== THEME: Obsidian ===== */
@@ -41,8 +42,9 @@
   --item-hover:oklch(100% 0 0 / 0.03);--table-stripe:oklch(100% 0 0 / 0.015);
   --scroll-thumb:oklch(100% 0 0 / 0.06);--scroll-thumb-hover:oklch(100% 0 0 / 0.12);
   --font:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC",sans-serif;
-  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --mono:"JetBrains Mono","SF Mono","Cascadia Code","Fira Code",monospace;
   --r4:6px;--r6:8px;--r8:10px;--r12:12px;--fw-title:600;--fw-btn:500;color-scheme:dark;
+  --is-dark:1;
 }
 
 /* ===== THEME: Linear ===== */
@@ -59,8 +61,9 @@
   --item-hover:oklch(100% 0 0 / 0.04);--table-stripe:oklch(100% 0 0 / 0.02);
   --scroll-thumb:oklch(100% 0 0 / 0.05);--scroll-thumb-hover:oklch(100% 0 0 / 0.10);
   --font:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC",sans-serif;
-  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --mono:"JetBrains Mono","SF Mono","Cascadia Code","Fira Code",monospace;
   --r4:6px;--r6:8px;--r8:10px;--r12:14px;--fw-title:550;--fw-btn:500;color-scheme:dark;
+  --is-dark:1;
 }
 
 /* ===== THEME: VSCode ===== */
@@ -79,10 +82,15 @@
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;
   --mono:"Cascadia Code","JetBrains Mono","SF Mono","Fira Code",monospace;
   --r4:2px;--r6:3px;--r8:4px;--r12:6px;--fw-title:600;--fw-btn:500;color-scheme:dark;
+  --is-dark:1;
 }
 
-[data-theme="apple"] .top{background:oklch(93% 0.006 60 / 0.75);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid oklch(0% 0 0 / 0.08)}
-[data-theme="linear"] .top{backdrop-filter:blur(24px) saturate(120%);-webkit-backdrop-filter:blur(24px) saturate(120%);border-bottom-width:0.5px}
+[data-theme="apple"] .navbar-glass{
+  background:oklch(93% 0.006 60 / 0.75);
+  border-bottom:0.5px solid oklch(0% 0 0 / 0.08);
+}
+[data-theme="linear"] .navbar-glass{backdrop-filter:blur(24px) saturate(120%);-webkit-backdrop-filter:blur(24px) saturate(120%)}
+[data-theme="linear"] .navbar-glass{border-bottom-width:0.5px}
 
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
@@ -92,398 +100,629 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
 ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:10px}
 ::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
 
-/* ===== Toolbar ===== */
-.top{height:44px;padding:0 16px;background:var(--bg2);border-bottom:1px solid var(--bdr);display:flex;align-items:center;flex-shrink:0;z-index:20;gap:12px}
-.top-l{display:flex;align-items:center;gap:10px}
-.top-l .logo{font-size:16px;font-weight:700;color:var(--accent);letter-spacing:-0.3px}
-.top-l span{font-size:14px;font-weight:500;color:var(--tx2);letter-spacing:0.3px}
-.top-r{display:flex;align-items:center;gap:4px;margin-left:auto}
-.sep{width:1px;height:16px;background:var(--bdr);margin:0 4px}
+/* ===== Glass Navbar ===== */
+.navbar-glass{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  height:44px;padding:0 16px;flex-shrink:0;
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--bdr);
+}
+.nav-l{display:flex;align-items:center;gap:0}
+.nav-logo{font-weight:700;font-size:16px;color:var(--accent);letter-spacing:0.5px}
+.nav-divider{color:var(--tx3);margin:0 10px;font-weight:300}
+.nav-title{font-size:13px;color:var(--tx2)}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nav-sel{height:28px;padding:0 8px;border-radius:var(--r6);font-size:11px;font-family:var(--font);color:var(--tx2);background:transparent;border:1px solid var(--bdr);cursor:pointer;outline:none;transition:all .15s}
+.nav-sel:hover{border-color:var(--bdr2)}
+.nav-sel:focus{border-color:var(--accent-bdr)}
+
+/* ===== Buttons ===== */
 .btn{height:28px;padding:0 9px;border-radius:var(--r6);font-size:11.5px;font-family:var(--font);color:var(--tx2);background:transparent;border:1px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s;display:inline-flex;align-items:center;gap:3px;letter-spacing:0.1px;font-weight:var(--fw-btn)}
 .btn:hover{background:var(--btn-hover);color:var(--tx1)}
 .btn:active{background:var(--btn-active)}
 .btn.primary{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-bdr);font-weight:500}
 .btn.primary:hover{background:color-mix(in srgb,var(--accent-bg) 100%,var(--tx1) 8%)}
-.theme-btn{padding:0 8px;font-size:11px;gap:4px}
-.th-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid var(--bdr2)}
-.th-dot.th-apple{background:oklch(52% 0.18 250)}.th-dot.th-obsidian{background:oklch(65% 0.13 280)}.th-dot.th-linear{background:oklch(72% 0.16 210)}.th-dot.th-vscode{background:oklch(65% 0.16 150)}
+.btn-sm{height:24px;padding:0 8px;font-size:11px;border-radius:var(--r4)}
+.btn-xs{height:20px;padding:0 6px;font-size:10px;border-radius:var(--r4)}
+.sep-v{width:1px;height:14px;background:var(--bdr);margin:0 2px}
 
 /* ===== Main Layout ===== */
 .main{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* ===== Left Panel: JSON Input ===== */
-.input-panel{flex:1;display:flex;flex-direction:column;min-width:200px;background:var(--bg);position:relative}
-.input-hd{height:28px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--bdr);background:var(--bg2)}
-.input-hd span{font-size:10.5px;color:var(--tx3);letter-spacing:0.3px;text-transform:uppercase;font-weight:500}
-.input-hd .btn-clear{width:22px;height:22px;border-radius:var(--r4);background:transparent;border:none;color:var(--tx3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
-.input-hd .btn-clear:hover{background:var(--btn-hover);color:var(--tx1)}
-.input-area{flex:1;position:relative;overflow:hidden}
-.input-area textarea{display:block;width:100%;height:100%;background:var(--bg);border:none;outline:none;resize:none;padding:12px 12px 12px 52px;font-family:"SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;font-size:14px;line-height:1.6;color:var(--tx1);caret-color:var(--accent);tab-size:2;white-space:pre;overflow-wrap:normal;overflow-x:auto}
-.input-area textarea::placeholder{color:var(--tx4)}
-.json-ln{position:absolute;left:0;top:0;bottom:0;width:42px;padding:12px 0;background:var(--bg);pointer-events:none;border-right:1px solid var(--bdr);overflow:hidden;text-align:right}
-.json-ln span{display:block;padding-right:6px;font:11px/1.6 "SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;color:var(--tx4);font-variant-numeric:tabular-nums}
-.json-err{display:none;padding:8px 12px;background:var(--red-bg);border-top:1px solid oklch(50% 0.18 25 / 0.15);font-size:11.5px;color:var(--red);flex-shrink:0;font-family:var(--mono);line-height:1.5}
-.json-err.show{display:block}
-.json-err .err-type{font-weight:600}
-.json-err .err-pos{color:var(--tx3);margin-left:8px}
+/* ===== Panel ===== */
+.panel{display:flex;flex-direction:column;min-width:200px;overflow:hidden}
+.panel-hd{height:32px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--bdr)}
+.panel-label{font-size:12px;color:var(--tx1);font-weight:600;letter-spacing:0.2px}
+.panel-actions{display:flex;align-items:center;gap:3px}
+.panel-body{flex:1;overflow:hidden;position:relative}
+
+/* ===== Left: Editor ===== */
+.editor-wrap{flex:1;overflow:hidden}
+.editor-wrap .cm-editor{height:100%}
+.editor-wrap .cm-editor .cm-scroller{overflow:auto;font-family:var(--mono)}
+
+/* ===== Right: Preview ===== */
+.view-toggle{display:flex;align-items:center;gap:1px;border:1px solid var(--bdr);border-radius:var(--r6);overflow:hidden}
+.view-toggle button{height:22px;padding:0 8px;font-size:10.5px;font-family:var(--font);color:var(--tx3);background:transparent;border:none;cursor:pointer;transition:all .15s}
+.view-toggle button:hover{color:var(--tx1)}
+.view-toggle button.active{background:var(--bg);color:var(--accent);box-shadow:var(--shadow-sm);font-weight:500}
+
+.preview-body{flex:1;overflow:auto;position:relative}
+.preview-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx3);font-size:14px;font-family:var(--font)}
+
+/* ===== Tree View ===== */
+.json-tree{font-family:var(--mono);font-size:13px;line-height:1.8;white-space:nowrap;min-width:max-content;padding:8px 0}
+.json-node{position:relative;cursor:default;user-select:none}
+.json-node .node-row{display:flex;align-items:baseline;padding:0 12px;min-height:23px}
+.json-node .node-row:hover{background:var(--item-hover)}
+.json-toggle{width:16px;height:16px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);font-size:10px;transition:transform .15s;margin-right:2px;border-radius:var(--r4);line-height:1}
+.json-toggle:hover{color:var(--tx1);background:var(--btn-hover)}
+.json-toggle.collapsed{transform:rotate(-90deg)}
+.json-toggle.leaf{visibility:hidden}
+.json-key{color:oklch(50% 0.18 310);margin-right:4px;flex-shrink:0}
+.json-val.val-str{color:oklch(60% 0.14 145)}
+.json-val.val-num{color:oklch(65% 0.16 250)}
+.json-val.val-bool{color:oklch(60% 0.12 45)}
+.json-val.val-bool.false{color:oklch(55% 0.12 300)}
+.json-val.val-null{color:oklch(55% 0.12 300)}
+.json-bracket{color:var(--tx3)}
+.json-count{color:var(--tx4);font-size:11px;font-style:italic;margin-left:4px}
+.json-children{margin-left:20px;border-left:1px solid var(--bdr);min-width:0}
+.json-children.folded{display:none}
+.json-node.root>.json-children{margin-left:0;border-left:none}
+.json-str-trunc{position:relative;cursor:default}
+.json-str-trunc .str-tooltip{display:none;position:absolute;left:0;bottom:100%;margin-bottom:4px;background:var(--bg3);color:var(--tx1);border:1px solid var(--bdr2);border-radius:var(--r6);padding:6px 10px;font-size:12px;max-width:420px;white-space:pre-wrap;word-break:break-all;z-index:100;box-shadow:0 4px 16px var(--shadow);line-height:1.5}
+.json-str-trunc:hover .str-tooltip{display:block}
+
+/* ===== Hover Actions ===== */
+.node-actions{position:absolute;right:8px;top:1px;opacity:0;transition:opacity 0.15s;display:flex;gap:1px;pointer-events:none}
+.json-node .node-row:hover .node-actions{opacity:0.6;pointer-events:auto}
+.node-actions:hover{opacity:1 !important}
+.node-act{width:18px;height:18px;border-radius:var(--r4);background:var(--bg);border:1px solid var(--bdr);color:var(--tx3);cursor:pointer;font-size:10px;display:inline-flex;align-items:center;justify-content:center;transition:all .1s}
+.node-act:hover{color:var(--tx1);border-color:var(--bdr2);background:var(--bg2)}
+
+/* ===== Text View ===== */
+.text-view{font-family:var(--mono);font-size:13px;line-height:1.7;padding:16px 20px;white-space:pre-wrap;word-break:break-all;overflow-x:auto}
+.text-view .t-str{color:oklch(60% 0.14 145)}
+.text-view .t-num{color:oklch(65% 0.16 250)}
+.text-view .t-bool{color:oklch(60% 0.12 45)}
+.text-view .t-null{color:oklch(55% 0.12 300)}
+.text-view .t-key{color:oklch(50% 0.18 310)}
+.text-view .t-punc{color:var(--tx3)}
+.text-actions{position:absolute;top:4px;right:8px;opacity:0;transition:opacity .15s;display:flex;gap:3px}
+.preview-body:hover .text-actions{opacity:1}
 
 /* ===== Splitter ===== */
 .splitter{width:4px;cursor:col-resize;flex-shrink:0;background:transparent;transition:background .15s,width .15s;position:relative;z-index:10}
 .splitter:hover,.splitter.active{background:var(--accent);width:6px}
 
-/* ===== Right Panel: JSON Tree ===== */
-.tree-panel{flex:1;display:flex;flex-direction:column;min-width:200px;background:var(--bg);overflow:hidden}
-.tree-hd{height:28px;padding:0 10px;display:flex;align-items:center;flex-shrink:0;border-bottom:1px solid var(--bdr);background:var(--bg2)}
-.tree-hd span{font-size:10.5px;color:var(--tx3);letter-spacing:0.3px;text-transform:uppercase;font-weight:500}
-.tree-wrap{flex:1;overflow:auto;padding:8px 0}
-.tree-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tx4);font-size:13px;font-family:var(--font)}
-
-/* ===== JSON Tree Nodes ===== */
-.json-tree{font-family:"SF Mono","Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace;font-size:13px;line-height:1.8;white-space:nowrap;min-width:max-content}
-.json-node{cursor:default;user-select:none;transition:background .08s}
-.json-node:hover{background:var(--item-hover)}
-.json-node .node-row{display:flex;align-items:baseline;padding:0 8px;min-height:23px}
-.json-toggle{width:16px;height:16px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);font-size:10px;transition:transform .15s;margin-right:2px;border-radius:var(--r4)}
-.json-toggle:hover{color:var(--tx1);background:var(--btn-hover)}
-.json-toggle.collapsed{transform:rotate(-90deg)}
-.json-toggle.leaf{visibility:hidden}
-.json-key{color:oklch(55% 0.06 30);margin-right:4px;flex-shrink:0}
-.json-val{margin-right:4px}
-.json-val.val-str{color:oklch(60% 0.14 145)}
-.json-val.val-num{color:oklch(65% 0.16 250)}
-.json-val.val-bool{color:oklch(60% 0.12 45)}
-.json-val.val-null{color:oklch(60% 0.004 260)}
-.json-val.val-bool.purple{color:oklch(55% 0.12 300)}
-.json-bracket{color:var(--tx3)}
-.json-count{color:var(--tx4);font-size:11px;font-style:italic;margin-left:4px}
-.json-ellipsis{color:var(--accent);cursor:pointer;font-size:12px;padding:2px 8px;margin-left:4px}
-.json-ellipsis:hover{text-decoration:underline}
-.json-depth-warn{color:var(--red);font-size:11px;padding:4px 8px;font-style:italic}
-.json-children{margin-left:20px;border-left:1px solid var(--bdr)}
-.json-children.folded{display:none}
-.json-node.root>.json-children{margin-left:0;border-left:none}
-.json-str-trunc{position:relative}
-.json-str-trunc .str-tooltip{display:none;position:absolute;left:0;bottom:100%;margin-bottom:4px;background:var(--bg3);color:var(--tx1);border:1px solid var(--bdr2);border-radius:var(--r6);padding:6px 10px;font-size:12px;max-width:420px;white-space:pre-wrap;word-break:break-all;z-index:100;box-shadow:0 4px 16px var(--shadow);line-height:1.5}
-.json-str-trunc:hover .str-tooltip{display:block}
-
 /* ===== Status Bar ===== */
-.st{height:22px;padding:0 14px;background:var(--bg2);border-top:1px solid var(--bdr);display:flex;align-items:center;gap:20px;font-size:10px;color:var(--tx3);flex-shrink:0}
+.st{height:24px;padding:0 14px;background:var(--bg2);border-top:1px solid var(--bdr);display:flex;align-items:center;gap:20px;font-size:10.5px;color:var(--tx3);flex-shrink:0}
 .st b{font-weight:500;color:var(--tx2)}
 .st-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.st-dot.green{background:oklch(55% 0.16 145)}
-.st-dot.red{background:var(--red)}
-.st-dot.gray{background:var(--tx4)}
-.st-status{display:flex;align-items:center;gap:6px}
-.st-stats{margin-left:auto;display:flex;gap:16px}
+.st-dot.valid{background:oklch(60% 0.16 145)}
+.st-dot.invalid{background:var(--red)}
+.st-dot.empty{background:var(--tx3)}
+.st-left{display:flex;align-items:center;gap:6px}
+.st-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.st-fix{color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-size:10px;margin-left:4px}
+.st-fix:hover{color:var(--tx1)}
+
+/* ===== Toggle Switch ===== */
+.toggle-wrap{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--tx3)}
+.toggle{position:relative;width:28px;height:16px;flex-shrink:0}
+.toggle input{display:none}
+.toggle .slider{position:absolute;inset:0;background:var(--bg3);border-radius:10px;cursor:pointer;transition:all .2s;border:1px solid var(--bdr)}
+.toggle .slider::after{content:'';position:absolute;width:12px;height:12px;left:1px;top:1px;background:var(--tx3);border-radius:50%;transition:all .2s}
+.toggle input:checked+.slider{background:var(--accent);border-color:var(--accent)}
+.toggle input:checked+.slider::after{left:13px;background:#fff}
+
+/* ===== Example Dropdown ===== */
+.dropdown{position:relative}
+.dropdown-menu{display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r8);box-shadow:0 8px 24px var(--shadow);z-index:60;min-width:140px;padding:4px;overflow:hidden}
+.dropdown-menu.show{display:block}
+.dropdown-menu button{display:block;width:100%;padding:7px 12px;border:none;background:transparent;color:var(--tx2);font-size:12px;font-family:var(--font);cursor:pointer;text-align:left;border-radius:var(--r4);transition:all .1s}
+.dropdown-menu button:hover{background:var(--item-hover);color:var(--tx1)}
+
+/* ===== Toast ===== */
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--tx1);padding:8px 18px;border-radius:20px;font-size:12px;font-family:var(--font);box-shadow:0 4px 16px var(--shadow);z-index:100;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;border:1px solid var(--bdr)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
 
 /* ===== Responsive ===== */
 @media (max-width:767px){
   .main{flex-direction:column}
   .splitter{width:100%;height:4px;cursor:row-resize}
   .splitter:hover,.splitter.active{width:100%;height:6px}
-  .input-panel,.tree-panel{min-width:0;min-height:150px}
-  .top-l span{display:none}
-  .btn .btn-label{display:none}
-  .top{justify-content:space-between}
-  .top-r{gap:2px}
+  .panel{min-width:0;min-height:150px}
+  .nav-title{display:none}
+  .btn .btn-text{display:none}
+  .panel-label{font-size:11px}
 }
 </style>
 </head>
 <body>
 
-<!-- Toolbar -->
-<div class="top">
-  <div class="top-l">
-    <span class="logo">JSON</span>
-    <span>JSON 格式化工具</span>
+<!-- Glass Navbar -->
+<nav class="navbar-glass">
+  <div class="nav-l">
+    <span class="nav-logo">JSON</span>
+    <span class="nav-divider">|</span>
+    <span class="nav-title">JSON 格式化工具</span>
   </div>
-  <div class="top-r">
-    <button class="btn" onclick="JsonFmt.format()" title="格式化（美化缩进）"><span class="btn-label">格式化</span></button>
-    <button class="btn" onclick="JsonFmt.compress()" title="压缩（移除空白）"><span class="btn-label">压缩</span></button>
-    <button class="btn" onclick="JsonFmt.sort()" title="按 Key 字母排序"><span class="btn-label">排序</span></button>
-    <button class="btn" onclick="JsonFmt.copy()" title="复制到剪贴板"><span class="btn-label">复制</span></button>
-    <button class="btn" onclick="JsonFmt.download()" title="下载为 .json 文件"><span class="btn-label">下载</span></button>
-    <span class="sep"></span>
-    <button class="btn theme-btn" id="themeBtn" title="切换主题">
-      <span class="th-dot th-apple" id="thDot"></span>
-      <span id="thName">Apple</span>
-    </button>
+  <div class="nav-r">
+    <div class="dropdown" id="exampleDropdown">
+      <button class="btn btn-sm" id="btn-example" title="加载示例 JSON">示例</button>
+      <div class="dropdown-menu" id="exampleMenu"></div>
+    </div>
+    <select class="nav-sel" id="themeSelect">
+      <option value="apple">Apple</option>
+      <option value="obsidian">Obsidian</option>
+      <option value="linear">Linear</option>
+      <option value="vscode">VSCode</option>
+    </select>
   </div>
-</div>
+</nav>
 
 <!-- Main -->
 <div class="main" id="mainWrap">
-  <!-- Left: Input -->
-  <div class="input-panel" id="inputPanel">
-    <div class="input-hd">
-      <span>JSON 输入</span>
-      <button class="btn-clear" onclick="JsonFmt.clear()" title="清空">×</button>
+  <!-- Left: Editor -->
+  <div class="panel" id="leftPanel">
+    <div class="panel-hd">
+      <span class="panel-label">input.json</span>
+      <div class="panel-actions">
+        <button class="btn btn-sm primary" id="btnFormat" title="格式化">格式化</button>
+        <button class="btn btn-sm" id="btnCompress" title="压缩">压缩</button>
+        <button class="btn btn-sm" id="btnSort" title="排序">排序</button>
+        <button class="btn btn-sm" id="btnEscape" title="转义">转义</button>
+        <button class="btn btn-sm" id="btnUnescape" title="反转义">反转义</button>
+        <span class="sep-v"></span>
+        <div class="toggle-wrap">
+          <label class="toggle">
+            <input type="checkbox" id="autoSaveToggle">
+            <span class="slider"></span>
+          </label>
+          <span>自动保存</span>
+          <select class="nav-sel" id="autoSaveInterval" style="height:20px;font-size:10px;padding:0 4px;display:none">
+            <option value="10000">10s</option>
+            <option value="30000" selected>30s</option>
+            <option value="60000">60s</option>
+            <option value="120000">120s</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <div class="input-area">
-      <div class="json-ln" id="jsonLn"></div>
-      <textarea id="jsonInput" placeholder='粘贴 JSON 到此处，例如：&#10;{"name":"JSON工具","version":"1.0"}'></textarea>
+    <div class="panel-body">
+      <div class="editor-wrap" id="editorContainer"></div>
     </div>
-    <div class="json-err" id="jsonErr"></div>
   </div>
 
   <!-- Splitter -->
   <div class="splitter" id="splitter"></div>
 
-  <!-- Right: Tree -->
-  <div class="tree-panel" id="treePanel">
-    <div class="tree-hd">
-      <span>JSON 树形预览</span>
+  <!-- Right: Preview -->
+  <div class="panel" id="rightPanel">
+    <div class="panel-hd">
+      <span class="panel-label">preview.json</span>
+      <div class="view-toggle">
+        <button id="btnTreeView" class="active" title="树形视图">树形</button>
+        <button id="btnTextView" title="文本视图">文本</button>
+      </div>
     </div>
-    <div class="tree-wrap" id="treeWrap">
-      <div class="tree-empty" id="treeEmpty">在左侧输入 JSON 即可预览</div>
+    <div class="preview-body" id="previewBody">
+      <div class="preview-empty" id="previewEmpty">在左侧输入 JSON 即可预览</div>
       <div class="json-tree" id="jsonTree"></div>
+      <pre class="text-view" id="textPreview"></pre>
+      <div class="text-actions" id="textActions">
+        <button class="btn btn-xs" id="btnCopyText" title="复制">复制</button>
+        <button class="btn btn-xs" id="btnDownloadText" title="下载">下载</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Status Bar -->
 <div class="st">
-  <div class="st-status">
-    <span class="st-dot gray" id="stDot"></span>
+  <div class="st-left">
+    <span class="st-dot empty" id="stDot"></span>
     <span id="stMsg">等待输入</span>
+    <span class="st-fix" id="stFix" style="display:none">尝试自动修复</span>
   </div>
-  <div class="st-stats">
-    <span id="stLines">0 行</span>
+  <div class="st-right">
+    <span id="stKeys">0 键</span>
+    <span>|</span>
+    <span id="stDepth">深度 0</span>
+    <span>|</span>
     <span id="stChars">0 字符</span>
-    <span id="stNodes">0 个节点</span>
   </div>
 </div>
 
-<script>
-(function(){
-'use strict';
+<script type="module">
+import {EditorState, Compartment} from 'https://esm.sh/@codemirror/state@6.5.2';
+import {EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter} from 'https://esm.sh/@codemirror/view@6.36.5';
+import {defaultKeymap, history, historyKeymap} from 'https://esm.sh/@codemirror/commands@6.8.1';
+import {syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldGutter, indentOnInput} from 'https://esm.sh/@codemirror/language@6.11.0';
+import {json, jsonParseLinter} from 'https://esm.sh/@codemirror/lang-json@6.0.2';
+import {linter} from 'https://esm.sh/@codemirror/lint@6.8.5';
+
+// ===== DOM refs =====
+const $ = id => document.getElementById(id);
+const leftPanel = $('leftPanel');
+const rightPanel = $('rightPanel');
+const mainWrap = $('mainWrap');
+const splitter = $('splitter');
+const previewBody = $('previewBody');
+const previewEmpty = $('previewEmpty');
+const jsonTree = $('jsonTree');
+const textPreview = $('textPreview');
+const textActions = $('textActions');
+const stDot = $('stDot');
+const stMsg = $('stMsg');
+const stFix = $('stFix');
+const stKeys = $('stKeys');
+const stDepth = $('stDepth');
+const stChars = $('stChars');
+const autoSaveToggle = $('autoSaveToggle');
+const autoSaveInterval = $('autoSaveInterval');
+const themeSelect = $('themeSelect');
 
 const LS_KEY = 'json-formatter-input';
-const DEBOUNCE_MS = 500;
-const MAX_NODES_FIRST = 5000;
-const STR_TRUNC_LEN = 80;
-const MAX_DEPTH = 20;
+const LS_AUTOSAVE = 'json-auto-save';
+const LS_INTERVAL = 'json-save-interval';
+const MAX_CHARS_IDLE = 50000;
+let currentView = 'tree';
+let parsedData = null;
+let totalKeys = 0;
+let maxDepth = 0;
+let autoSaveTimer = null;
+let debounceTimer = null;
+
+// ===== Theme =====
 const THEMES = ['apple','obsidian','linear','vscode'];
 const THEME_LABELS = {apple:'Apple',obsidian:'Obsidian',linear:'Linear',vscode:'VSCode'};
 
-const $ = id => document.getElementById(id);
-
-const els = {
-  input: $('jsonInput'),
-  ln: $('jsonLn'),
-  err: $('jsonErr'),
-  tree: $('jsonTree'),
-  treeWrap: $('treeWrap'),
-  treeEmpty: $('treeEmpty'),
-  stDot: $('stDot'),
-  stMsg: $('stMsg'),
-  stLines: $('stLines'),
-  stChars: $('stChars'),
-  stNodes: $('stNodes'),
-  splitter: $('splitter'),
-  mainWrap: $('mainWrap'),
-  inputPanel: $('inputPanel'),
-  treePanel: $('treePanel'),
-  themeBtn: $('themeBtn'),
-  thDot: $('thDot'),
-  thName: $('thName'),
-};
-
-let parsedData = null;
-let totalNodes = 0;
-let allNodesExpanded = false;
-let debounceTimer = null;
-let errorLine = -1;
-
-// ===== Theme =====
 function getTheme(){ return localStorage.getItem('easydoit-theme') || 'apple'; }
 function setTheme(t){
   localStorage.setItem('easydoit-theme', t);
   document.documentElement.setAttribute('data-theme', t);
-  els.thDot.className = 'th-dot th-'+t;
-  els.thName.textContent = THEME_LABELS[t];
+  themeSelect.value = t;
+  if(window._cmView){
+    window._cmView.dispatch({
+      effects: window._cmThemeComp.reconfigure(getEditorTheme())
+    });
+  }
 }
-function cycleTheme(){
-  const cur = getTheme();
-  const idx = THEMES.indexOf(cur);
-  const next = THEMES[(idx+1)%THEMES.length];
-  setTheme(next);
+themeSelect.value = getTheme();
+themeSelect.addEventListener('change', e => setTheme(e.target.value));
+
+// ===== CodeMirror Theme per Theme =====
+function getEditorTheme(){
+  const t = getTheme();
+  const themes = {
+    apple: {
+      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
+      '.cm-content': { fontFamily: "'SF Mono','Cascadia Code','JetBrains Mono','Fira Code','Consolas',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
+      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
+      '.cm-activeLineGutter': { backgroundColor: 'var(--accent-bg)' },
+      '.cm-activeLine': { backgroundColor: 'var(--bg3)' },
+      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
+      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
+      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
+      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23d94f4f\\' stroke-width=\\'1\\'/></svg>")' },
+      '.cm-diagnostic': { color: 'var(--red)' },
+      '.cm-diagnosticText': { color: 'var(--red)' },
+      '.cm-lint-marker-error': { color: 'var(--red)' },
+      '.ͼo': { color: 'oklch(50% 0.18 310)' },
+      '.ͼp': { color: 'oklch(60% 0.14 145)' },
+      '.ͼq': { color: 'oklch(65% 0.16 250)' },
+      '.ͼr': { color: 'oklch(60% 0.12 45)' },
+      '.ͼs': { color: 'oklch(55% 0.12 300)' },
+      '.ͼu': { color: 'var(--tx3)' },
+    },
+    obsidian: {
+      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
+      '.cm-content': { fontFamily: "'JetBrains Mono','SF Mono','Cascadia Code','Fira Code',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
+      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
+      '.cm-activeLineGutter': { backgroundColor: 'transparent' },
+      '.cm-activeLine': { backgroundColor: 'transparent' },
+      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
+      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
+      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
+      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23e05555\\' stroke-width=\\'1\\'/></svg>")' },
+      '.cm-diagnostic': { color: 'var(--red)' },
+      '.cm-diagnosticText': { color: 'var(--red)' },
+      '.cm-lint-marker-error': { color: 'var(--red)' },
+      '.ͼo': { color: 'oklch(65% 0.16 310)' },
+      '.ͼp': { color: 'oklch(62% 0.14 145)' },
+      '.ͼq': { color: 'oklch(68% 0.16 250)' },
+      '.ͼr': { color: 'oklch(62% 0.12 45)' },
+      '.ͼs': { color: 'oklch(58% 0.12 300)' },
+      '.ͼu': { color: 'var(--tx2)' },
+    },
+    linear: {
+      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
+      '.cm-content': { fontFamily: "'JetBrains Mono','SF Mono','Cascadia Code','Fira Code',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
+      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
+      '.cm-activeLineGutter': { backgroundColor: 'var(--accent-bg)' },
+      '.cm-activeLine': { backgroundColor: 'var(--bg3)' },
+      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
+      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
+      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
+      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23e06060\\' stroke-width=\\'1\\'/></svg>")' },
+      '.cm-diagnostic': { color: 'var(--red)' },
+      '.cm-diagnosticText': { color: 'var(--red)' },
+      '.cm-lint-marker-error': { color: 'var(--red)' },
+      '.ͼo': { color: 'oklch(60% 0.16 310)' },
+      '.ͼp': { color: 'oklch(60% 0.14 210)' },
+      '.ͼq': { color: 'oklch(72% 0.16 210)' },
+      '.ͼr': { color: 'oklch(65% 0.14 70)' },
+      '.ͼs': { color: 'oklch(55% 0.08 260)' },
+      '.ͼu': { color: 'var(--tx3)' },
+    },
+    vscode: {
+      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
+      '.cm-content': { fontFamily: "'Cascadia Code','JetBrains Mono','SF Mono','Fira Code',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
+      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
+      '.cm-activeLineGutter': { backgroundColor: 'transparent' },
+      '.cm-activeLine': { backgroundColor: 'transparent' },
+      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
+      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
+      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
+      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
+      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
+      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23e05555\\' stroke-width=\\'1\\'/></svg>")' },
+      '.cm-diagnostic': { color: 'var(--red)' },
+      '.cm-diagnosticText': { color: 'var(--red)' },
+      '.cm-lint-marker-error': { color: 'var(--red)' },
+      '.ͼo': { color: 'oklch(65% 0.14 310)' },
+      '.ͼp': { color: 'oklch(65% 0.16 150)' },
+      '.ͼq': { color: 'oklch(70% 0.14 220)' },
+      '.ͼr': { color: 'oklch(62% 0.12 55)' },
+      '.ͼs': { color: 'oklch(55% 0.10 280)' },
+      '.ͼu': { color: 'var(--tx2)' },
+    },
+  };
+  return EditorView.theme(themes[t] || themes.apple, {dark: t !== 'apple'});
 }
-setTheme(getTheme());
-els.themeBtn.addEventListener('click', cycleTheme);
 
-// ===== Splitter Drag =====
-let dragging = false;
-let startX = 0;
-let startY = 0;
-let startLeftW = 0;
-let startTopH = 0;
+// ===== CodeMirror Init =====
+const themeComp = new Compartment();
+window._cmThemeComp = themeComp;
 
-function isMobile(){ return window.innerWidth < 768; }
+let initialText = '';
+try { initialText = localStorage.getItem(LS_KEY) || ''; } catch(e) {}
 
-els.splitter.addEventListener('mousedown', function(e){
-  e.preventDefault();
-  dragging = true;
-  els.splitter.classList.add('active');
-  document.body.style.userSelect = 'none';
-  document.body.style.cursor = isMobile() ? 'row-resize' : 'col-resize';
-  if(isMobile()){
-    startY = e.clientY;
-    startTopH = els.inputPanel.getBoundingClientRect().height;
+const urlParams = new URLSearchParams(window.location.search);
+const jsonParam = urlParams.get('json');
+if(jsonParam){
+  try {
+    const decoded = decodeURIComponent(jsonParam);
+    JSON.parse(decoded);
+    initialText = decoded;
+  } catch(e) {}
+}
+
+const editorState = EditorState.create({
+  doc: initialText,
+  extensions: [
+    lineNumbers(),
+    highlightActiveLineGutter(),
+    highlightActiveLine(),
+    foldGutter(),
+    bracketMatching(),
+    indentOnInput(),
+    json(),
+    linter(jsonParseLinter()),
+    history(),
+    keymap.of([...defaultKeymap, ...historyKeymap]),
+    syntaxHighlighting(defaultHighlightStyle),
+    themeComp.of(getEditorTheme()),
+    EditorView.updateListener.of(update => {
+      if(update.docChanged) handleDocChange();
+    }),
+  ],
+});
+
+const editorView = new EditorView({
+  state: editorState,
+  parent: $('editorContainer'),
+});
+window._cmView = editorView;
+
+function getDocText(){ return editorView.state.doc.toString(); }
+function setDocText(text){
+  editorView.dispatch({
+    changes: { from: 0, to: editorView.state.doc.length, insert: text }
+  });
+}
+
+// ===== Debounced Handler =====
+function handleDocChange(){
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const text = getDocText();
+    updatePreview(text);
+    triggerAutoSave();
+  }, 500);
+}
+
+// ===== Auto Save =====
+function triggerAutoSave(){
+  if(!autoSaveToggle.checked) return;
+  clearTimeout(autoSaveTimer);
+  const interval = parseInt(autoSaveInterval.value) || 30000;
+  autoSaveTimer = setTimeout(() => {
+    try { localStorage.setItem(LS_KEY, getDocText()); } catch(e) {}
+    toast('已自动保存。');
+  }, interval);
+}
+
+autoSaveToggle.addEventListener('change', () => {
+  autoSaveInterval.style.display = autoSaveToggle.checked ? 'inline-block' : 'none';
+  if(autoSaveToggle.checked){
+    try { localStorage.setItem(LS_AUTOSAVE, '1'); } catch(e) {}
+    triggerAutoSave();
   } else {
-    startX = e.clientX;
-    startLeftW = els.inputPanel.getBoundingClientRect().width;
+    clearTimeout(autoSaveTimer);
+    try { localStorage.removeItem(LS_AUTOSAVE); } catch(e) {}
   }
 });
 
-document.addEventListener('mousemove', function(e){
-  if(!dragging) return;
-  const mainRect = els.mainWrap.getBoundingClientRect();
-  if(isMobile()){
-    const dy = e.clientY - startY;
-    const newH = Math.max(150, Math.min(mainRect.height - 154, startTopH + dy));
-    els.inputPanel.style.flex = 'none';
-    els.inputPanel.style.height = newH + 'px';
-    els.treePanel.style.flex = '1';
-  } else {
-    const dx = e.clientX - startX;
-    const totalW = mainRect.width - 4;
-    const newW = Math.max(200, Math.min(totalW - 204, startLeftW + dx));
-    els.inputPanel.style.flex = 'none';
-    els.inputPanel.style.width = newW + 'px';
-    els.treePanel.style.flex = '1';
-  }
+autoSaveInterval.addEventListener('change', () => {
+  try { localStorage.setItem(LS_INTERVAL, autoSaveInterval.value); } catch(e) {}
+  triggerAutoSave();
 });
 
-document.addEventListener('mouseup', function(){
-  if(!dragging) return;
-  dragging = false;
-  els.splitter.classList.remove('active');
-  document.body.style.userSelect = '';
-  document.body.style.cursor = '';
+// Restore auto-save settings
+try {
+  if(localStorage.getItem(LS_AUTOSAVE) === '1'){
+    autoSaveToggle.checked = true;
+    autoSaveInterval.style.display = 'inline-block';
+    const savedInterval = localStorage.getItem(LS_INTERVAL);
+    if(savedInterval) autoSaveInterval.value = savedInterval;
+  }
+} catch(e) {}
+
+// Save on unload
+window.addEventListener('beforeunload', () => {
+  try { localStorage.setItem(LS_KEY, getDocText()); } catch(e) {}
 });
 
-// ===== Line Numbers =====
-function updateLineNumbers(){
-  const text = els.input.value;
-  const lines = text.split('\n');
-  const n = lines.length;
-  let html = '';
-  for(let i=1;i<=n;i++) html += '<span>'+i+'</span>';
-  els.ln.innerHTML = html;
-  // Highlight error line
-  if(errorLine >= 0 && errorLine < n){
-    // Adjust color of error line span
-    const spans = els.ln.querySelectorAll('span');
-    for(let i=0;i<spans.length;i++){
-      if(i === errorLine){
-        spans[i].style.color = 'var(--red)';
-        spans[i].style.fontWeight = '600';
-      }
-    }
-  }
-}
-
-els.input.addEventListener('scroll', function(){
-  els.ln.scrollTop = els.input.scrollTop;
-});
-
-// ===== Error Display =====
-function showError(msg, line, col){
-  els.err.classList.add('show');
-  let html = '<span class="err-type">'+escapeHtml(msg)+'</span>';
-  if(line !== undefined && col !== undefined){
-    html += '<span class="err-pos">位置：第 '+(line+1)+' 行，第 '+(col+1)+' 列</span>';
-  }
-  els.err.innerHTML = html;
-  errorLine = line !== undefined ? line : -1;
-  updateLineNumbers();
-}
-
-function hideError(){
-  els.err.classList.remove('show');
-  els.err.innerHTML = '';
-  errorLine = -1;
-  updateLineNumbers();
-}
-
-function escapeHtml(s){
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
+// ===== Toast =====
+function toast(msg){
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 300);
+  }, 2000);
 }
 
 // ===== Status Bar =====
-function setStatus(state, msg){
-  els.stDot.className = 'st-dot ' + state;
-  els.stMsg.textContent = msg;
+function setStatus(state, msg, fixable){
+  stDot.className = 'st-dot ' + state;
+  stMsg.textContent = msg;
+  stFix.style.display = fixable ? 'inline' : 'none';
 }
 
-function updateStats(text){
-  const lines = text ? text.split('\n').length : 0;
-  els.stLines.textContent = lines + ' 行';
-  els.stChars.textContent = text.length + ' 字符';
-  els.stNodes.textContent = totalNodes + ' 个节点';
+function updateStats(text, data){
+  stChars.textContent = (text ? text.length : 0) + ' 字符';
+  if(data !== null && data !== undefined){
+    stKeys.textContent = totalKeys + ' 键';
+    stDepth.textContent = '深度 ' + maxDepth;
+  } else {
+    stKeys.textContent = '0 键';
+    stDepth.textContent = '深度 0';
+  }
 }
 
-// ===== Node Counting =====
-function countNodes(data){
-  let count = 0;
-  function walk(v){
-    count++;
+// ===== Count Metrics =====
+function countMetrics(data){
+  let keys = 0;
+  let depth = 0;
+  function walk(v, d){
+    if(d > depth) depth = d;
     if(v && typeof v === 'object'){
-      const keys = Array.isArray(v) ? v : Object.keys(v);
-      for(let i=0;i<keys.length;i++){
-        walk(Array.isArray(v) ? keys[i] : v[keys[i]]);
+      if(Array.isArray(v)){
+        for(let i = 0; i < v.length; i++) walk(v[i], d + 1);
+      } else {
+        const ks = Object.keys(v);
+        keys += ks.length;
+        for(let i = 0; i < ks.length; i++) walk(v[ks[i]], d + 1);
       }
     }
   }
-  if(data !== null && data !== undefined) walk(data);
-  return count;
+  if(data !== null && data !== undefined) walk(data, 0);
+  totalKeys = keys;
+  maxDepth = depth;
 }
 
-// ===== JSON Path Building =====
-function buildPath(prefix, key, isArray){
-  if(prefix === '$') return isArray ? '$['+key+']' : '$.'+key;
-  return isArray ? prefix+'['+key+']' : prefix+'.'+key;
+// ===== Update Preview =====
+function updatePreview(text){
+  const trimmed = text.trim();
+  hideFix();
+
+  if(!trimmed){
+    parsedData = null;
+    totalKeys = 0; maxDepth = 0;
+    setStatus('empty', '等待输入', false);
+    updateStats('', null);
+    showEmpty();
+    return;
+  }
+
+  try{
+    parsedData = JSON.parse(trimmed);
+    setStatus('valid', '语法有效', false);
+    updateStats(text, parsedData);
+    countMetrics(parsedData);
+
+    if(currentView === 'tree') renderTree();
+    else renderText();
+  } catch(e){
+    parsedData = null;
+    setStatus('invalid', '语法错误：' + e.message, true);
+    updateStats(text, null);
+    showEmpty();
+  }
 }
 
-// ===== Tree Rendering =====
-function valueType(val){
-  if(val === null) return 'null';
-  if(Array.isArray(val)) return 'array';
-  return typeof val;
+function hideFix(){ stFix.style.display = 'none'; }
+
+function showEmpty(){
+  previewEmpty.style.display = 'flex';
+  jsonTree.innerHTML = '';
+  jsonTree.style.display = 'none';
+  textPreview.textContent = '';
+  textPreview.style.display = 'none';
+  textActions.style.display = 'none';
+}
+
+// ===== Tree Render =====
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text).then(() => {}).catch(() => {});
 }
 
 function formatValue(val, type){
-  if(type === 'string') return '"'+val+'"';
+  if(type === 'string') return '"' + val + '"';
   if(type === 'number') return String(val);
   if(type === 'boolean') return String(val);
   if(type === 'null') return 'null';
   return '';
 }
 
-function renderNode(key, val, path, depth, fragment, nodesRendered){
-  if(nodesRendered.count >= MAX_NODES_FIRST && !allNodesExpanded){
-    const ellipsisRow = document.createElement('div');
-    ellipsisRow.className = 'json-node';
-    ellipsisRow.style.paddingLeft = (depth*20)+'px';
-    ellipsisRow.innerHTML = '<span class="json-ellipsis" onclick="JsonFmt.expandAll()">还有 '+(totalNodes-MAX_NODES_FIRST)+' 个节点，点击展开全部</span>';
-    fragment.appendChild(ellipsisRow);
-    nodesRendered.stopped = true;
-    return;
-  }
-  nodesRendered.count++;
+function buildPath(prefix, key, isArray){
+  if(prefix === '$') return isArray ? '$[' + key + ']' : '$.' + key;
+  return isArray ? prefix + '[' + key + ']' : prefix + '.' + key;
+}
 
-  const nodeDiv = document.createElement('div');
-  nodeDiv.className = 'json-node';
-  nodeDiv.setAttribute('data-path', path);
-  nodeDiv.style.paddingLeft = '0px';
+function renderNode(key, val, path, depth, parent){
+  const node = document.createElement('div');
+  node.className = 'json-node';
+  node.setAttribute('data-path', path);
 
   const row = document.createElement('div');
   row.className = 'node-row';
 
-  const type = valueType(val);
+  const type = val === null ? 'null' : Array.isArray(val) ? 'array' : typeof val;
   const isContainer = type === 'object' || type === 'array';
 
   // Toggle
@@ -491,10 +730,10 @@ function renderNode(key, val, path, depth, fragment, nodesRendered){
   toggle.className = 'json-toggle' + (isContainer ? '' : ' leaf');
   toggle.textContent = '▼';
   if(isContainer){
-    toggle.addEventListener('click', function(e){
+    toggle.addEventListener('click', e => {
       e.stopPropagation();
       toggle.classList.toggle('collapsed');
-      const children = nodeDiv.querySelector('.json-children');
+      const children = node.querySelector(':scope > .json-children');
       if(children) children.classList.toggle('folded');
     });
   }
@@ -504,341 +743,455 @@ function renderNode(key, val, path, depth, fragment, nodesRendered){
   if(key !== null && key !== undefined){
     const keySpan = document.createElement('span');
     keySpan.className = 'json-key';
-    keySpan.textContent = '"'+key+'": ';
+    keySpan.textContent = '"' + key + '": ';
     row.appendChild(keySpan);
   }
 
   if(!isContainer){
-    // Leaf value
     const valSpan = document.createElement('span');
-    valSpan.className = 'json-val val-'+type;
-    if(type === 'boolean' && val === false) valSpan.classList.add('purple');
+    valSpan.className = 'json-val val-' + type;
+    if(type === 'boolean' && val === false) valSpan.classList.add('false');
     const fullStr = formatValue(val, type);
 
-    if(type === 'string' && fullStr.length > STR_TRUNC_LEN + 2){
-      const truncSpan = document.createElement('span');
-      truncSpan.className = 'json-str-trunc';
-      truncSpan.textContent = fullStr.substring(0, STR_TRUNC_LEN) + '…"';
-      const tooltip = document.createElement('span');
-      tooltip.className = 'str-tooltip';
-      tooltip.textContent = fullStr;
-      truncSpan.appendChild(tooltip);
-      valSpan.appendChild(truncSpan);
+    if(type === 'string' && fullStr.length > 82){
+      const trunc = document.createElement('span');
+      trunc.className = 'json-str-trunc';
+      trunc.textContent = fullStr.substring(0, 80) + '…"';
+      const tip = document.createElement('span');
+      tip.className = 'str-tooltip';
+      tip.textContent = fullStr;
+      trunc.appendChild(tip);
+      valSpan.appendChild(trunc);
     } else {
       valSpan.textContent = fullStr;
     }
     row.appendChild(valSpan);
-    nodeDiv.appendChild(row);
-
-    // Click to copy path
-    row.addEventListener('click', function(e){
-      if(e.target.closest('.json-toggle')) return;
-      copyToClipboard(path);
-    });
-    row.title = '点击复制路径: ' + path;
-
-    fragment.appendChild(nodeDiv);
   } else {
-    // Container
-    const bracketSpan = document.createElement('span');
-    bracketSpan.className = 'json-bracket';
-    const isArr = type === 'array';
-    bracketSpan.textContent = isArr ? '[ ]' : '{ }';
-    row.appendChild(bracketSpan);
+    const bracket = document.createElement('span');
+    bracket.className = 'json-bracket';
+    bracket.textContent = type === 'array' ? '[ ]' : '{ }';
+    row.appendChild(bracket);
 
-    const countSpan = document.createElement('span');
-    countSpan.className = 'json-count';
-    const len = isArr ? val.length : Object.keys(val).length;
-    countSpan.textContent = len + (isArr ? ' items' : ' props');
-    row.appendChild(countSpan);
+    const count = document.createElement('span');
+    count.className = 'json-count';
+    const len = type === 'array' ? val.length : Object.keys(val).length;
+    count.textContent = len + (type === 'array' ? ' items' : ' props');
+    row.appendChild(count);
+  }
 
-    row.addEventListener('click', function(e){
-      if(e.target.closest('.json-toggle')) return;
-      copyToClipboard(path);
+  // Actions
+  const actions = document.createElement('span');
+  actions.className = 'node-actions';
+  const cpBtn = document.createElement('button');
+  cpBtn.className = 'node-act';
+  cpBtn.textContent = '📋';
+  cpBtn.title = '复制路径: ' + path;
+  cpBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    copyToClipboard(path);
+    toast('路径已复制');
+  });
+  actions.appendChild(cpBtn);
+
+  if(isContainer){
+    const colBtn = document.createElement('button');
+    colBtn.className = 'node-act';
+    colBtn.textContent = '⊟';
+    colBtn.title = '折叠全部子节点';
+    colBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const children = node.querySelector(':scope > .json-children');
+      if(children){
+        children.classList.add('folded');
+        const tgl = node.querySelector('.json-toggle');
+        if(tgl) tgl.classList.add('collapsed');
+      }
     });
-    row.title = '点击复制路径: ' + path;
-
-    nodeDiv.appendChild(row);
-
-    if(depth >= MAX_DEPTH){
-      const warn = document.createElement('div');
-      warn.className = 'json-depth-warn';
-      warn.textContent = '⚠ 已达到最大展开深度（20 层）';
-      warn.style.paddingLeft = '20px';
-      nodeDiv.appendChild(warn);
-    } else {
-      const childrenDiv = document.createElement('div');
-      childrenDiv.className = 'json-children';
-
-      if(isArr){
-        for(let i=0;i<val.length;i++){
-          if(nodesRendered.stopped) break;
-          renderNode(i, val[i], buildPath(path, i, true), depth+1, childrenDiv, nodesRendered);
-        }
-      } else {
-        const keys = Object.keys(val);
-        for(let i=0;i<keys.length;i++){
-          if(nodesRendered.stopped) break;
-          renderNode(keys[i], val[keys[i]], buildPath(path, keys[i], false), depth+1, childrenDiv, nodesRendered);
-        }
-      }
-      nodeDiv.appendChild(childrenDiv);
-    }
-    fragment.appendChild(nodeDiv);
+    actions.appendChild(colBtn);
   }
+  row.appendChild(actions);
+
+  row.addEventListener('click', e => {
+    if(e.target.closest('.json-toggle') || e.target.closest('.node-act')) return;
+    copyToClipboard(path);
+    toast('路径已复制');
+  });
+  row.title = '点击复制路径: ' + path;
+
+  node.appendChild(row);
+
+  if(isContainer){
+    const children = document.createElement('div');
+    children.className = 'json-children';
+    if(type === 'array'){
+      for(let i = 0; i < val.length; i++){
+        renderNode(i, val[i], buildPath(path, i, true), depth + 1, children);
+      }
+    } else {
+      const keys = Object.keys(val);
+      for(let i = 0; i < keys.length; i++){
+        renderNode(keys[i], val[keys[i]], buildPath(path, keys[i], false), depth + 1, children);
+      }
+    }
+    node.appendChild(children);
+  }
+
+  parent.appendChild(node);
 }
 
-function renderTree(data){
-  els.tree.innerHTML = '';
-  els.treeEmpty.style.display = 'none';
+function renderTree(){
+  previewEmpty.style.display = 'none';
+  jsonTree.style.display = 'block';
+  textPreview.style.display = 'none';
+  textActions.style.display = 'none';
+  jsonTree.innerHTML = '';
 
-  if(data === null || data === undefined){
-    els.treeEmpty.style.display = 'flex';
+  if(parsedData === null || parsedData === undefined){
+    previewEmpty.style.display = 'flex';
     return;
   }
 
-  totalNodes = countNodes(data);
-  const fragment = document.createDocumentFragment();
-  const nodesRendered = { count: 0, stopped: false };
-
-  renderNode(null, data, '$', 1, fragment, nodesRendered);
-
-  // Root node gets special class
-  const rootNode = fragment.firstElementChild;
-  if(rootNode) rootNode.classList.add('root');
-
-  els.tree.appendChild(fragment);
+  renderNode(null, parsedData, '$', 1, jsonTree);
+  const root = jsonTree.firstElementChild;
+  if(root) root.classList.add('root');
 }
 
-function copyToClipboard(text){
-  navigator.clipboard.writeText(text).then(function(){
-    // Brief flash feedback could be added
-  }).catch(function(){});
-}
+// ===== Text Render =====
+function renderText(){
+  previewEmpty.style.display = 'none';
+  jsonTree.style.display = 'none';
+  textPreview.style.display = 'block';
+  textActions.style.display = 'flex';
 
-// ===== Parse & Render =====
-function parseAndRender(text, save){
-  if(save !== false){
-    try{ localStorage.setItem(LS_KEY, text); }catch(e){}
-  }
-
-  const trimmed = text.trim();
-  if(!trimmed){
-    hideError();
-    setStatus('gray','等待输入');
-    updateStats('');
-    parsedData = null;
-    totalNodes = 0;
-    allNodesExpanded = false;
-    els.tree.innerHTML = '';
-    els.treeEmpty.style.display = 'flex';
+  if(parsedData === null || parsedData === undefined){
+    previewEmpty.style.display = 'flex';
+    textPreview.style.display = 'none';
+    textActions.style.display = 'none';
     return;
   }
 
-  try{
-    parsedData = JSON.parse(trimmed);
-    hideError();
-    setStatus('green','有效的 JSON');
-    updateStats(text);
-
-    if(countNodes(parsedData) > MAX_NODES_FIRST){
-      allNodesExpanded = false;
-    }
-
-    // Use requestIdleCallback for large JSON
-    if(text.length > 50000){
-      if(window.requestIdleCallback){
-        requestIdleCallback(function(){ renderTree(parsedData); });
-      } else {
-        setTimeout(function(){ renderTree(parsedData); }, 50);
-      }
-    } else {
-      renderTree(parsedData);
-    }
-  } catch(e){
-    parsedData = null;
-    totalNodes = 0;
-    allNodesExpanded = false;
-    setStatus('red','无效的 JSON');
-    updateStats(text);
-    els.tree.innerHTML = '';
-    els.treeEmpty.style.display = 'flex';
-
-    // Extract position info
-    const msg = e.message || 'JSON 解析错误';
-    let line = -1, col = -1;
-    // Chrome/V8: "Unexpected token ... at position N"
-    // Firefox: "expected ... at line N column M"
-    const posMatch = msg.match(/at position (\d+)/);
-    const lineColMatch = msg.match(/at line (\d+) column (\d+)/);
-    if(lineColMatch){
-      line = parseInt(lineColMatch[1]) - 1;
-      col = parseInt(lineColMatch[2]) - 1;
-    } else if(posMatch){
-      const pos = parseInt(posMatch[1]);
-      const before = trimmed.substring(0, pos);
-      line = before.split('\n').length - 1;
-      const lastLineStart = before.lastIndexOf('\n');
-      col = lastLineStart === -1 ? pos : pos - lastLineStart - 1;
-    }
-    showError(msg, line >= 0 ? line : undefined, col >= 0 ? col : undefined);
-  }
+  const raw = JSON.stringify(parsedData, null, 2);
+  const highlighted = raw
+    .replace(/("(?:\\.|[^"\\])*")\s*:/g, '<span class="t-key">$1</span>:')
+    .replace(/:(\s*)("(?:\\.|[^"\\])*")/g, ':$1<span class="t-str">$2</span>')
+    .replace(/:\s*\b(\d+\.?\d*(?:[eE][+-]?\d+)?)\b/g, ': <span class="t-num">$1</span>')
+    .replace(/:\s*\b(true|false)\b/g, ': <span class="t-bool">$1</span>')
+    .replace(/:\s*\b(null)\b/g, ': <span class="t-null">$1</span>')
+    .replace(/([{}\[\],])/g, '<span class="t-punc">$1</span>');
+  textPreview.innerHTML = highlighted;
 }
 
-// ===== Debounced Input =====
-els.input.addEventListener('input', function(){
-  clearTimeout(debounceTimer);
-  updateLineNumbers();
-  debounceTimer = setTimeout(function(){
-    parseAndRender(els.input.value);
-  }, DEBOUNCE_MS);
+// ===== View Toggle =====
+const btnTreeView = $('btnTreeView');
+const btnTextView = $('btnTextView');
+
+btnTreeView.addEventListener('click', () => {
+  if(currentView === 'tree') return;
+  currentView = 'tree';
+  btnTreeView.classList.add('active');
+  btnTextView.classList.remove('active');
+  if(parsedData) renderTree();
+  else showEmpty();
 });
 
-// Sync scroll for line numbers on input resize
-els.input.addEventListener('scroll', function(){
-  els.ln.scrollTop = els.input.scrollTop;
+btnTextView.addEventListener('click', () => {
+  if(currentView === 'text') return;
+  currentView = 'text';
+  btnTextView.classList.add('active');
+  btnTreeView.classList.remove('active');
+  if(parsedData) renderText();
+  else showEmpty();
 });
 
-// ===== Public API =====
-window.JsonFmt = {
-  format: function(){
-    if(!parsedData) return;
-    const formatted = JSON.stringify(parsedData, null, 2);
-    els.input.value = formatted;
-    updateLineNumbers();
-    parseAndRender(formatted);
-  },
+// ===== Editor Actions =====
+$('btnFormat').addEventListener('click', () => {
+  try {
+    const parsed = JSON.parse(getDocText());
+    setDocText(JSON.stringify(parsed, null, 2));
+    toast('格式化完成。');
+  } catch(e) { /* invalid, ignore */ }
+});
 
-  compress: function(){
-    if(!parsedData) return;
-    const compressed = JSON.stringify(parsedData);
-    els.input.value = compressed;
-    updateLineNumbers();
-    parseAndRender(compressed);
-  },
+$('btnCompress').addEventListener('click', () => {
+  try {
+    const parsed = JSON.parse(getDocText());
+    setDocText(JSON.stringify(parsed));
+    toast('压缩完成。');
+  } catch(e) {}
+});
 
-  sort: function(){
-    if(!parsedData) return;
+$('btnSort').addEventListener('click', () => {
+  try {
+    const parsed = JSON.parse(getDocText());
     function sortKeys(obj){
       if(obj && typeof obj === 'object' && !Array.isArray(obj)){
         const sorted = {};
-        Object.keys(obj).sort().forEach(function(k){
-          sorted[k] = sortKeys(obj[k]);
-        });
+        Object.keys(obj).sort().forEach(k => { sorted[k] = sortKeys(obj[k]); });
         return sorted;
       }
       if(Array.isArray(obj)) return obj.map(sortKeys);
       return obj;
     }
-    const sorted = sortKeys(parsedData);
-    parsedData = sorted;
-    const text = JSON.stringify(sorted, null, 2);
-    els.input.value = text;
-    updateLineNumbers();
-    parseAndRender(text);
-  },
+    const sorted = sortKeys(parsed);
+    setDocText(JSON.stringify(sorted, null, 2));
+    toast('排序完成。');
+  } catch(e) {}
+});
 
-  copy: function(){
-    if(!parsedData) return;
-    const text = JSON.stringify(parsedData, null, 2);
-    navigator.clipboard.writeText(text).then(function(){
-      setStatus('green','已复制到剪贴板');
-      setTimeout(function(){
-        if(parsedData) setStatus('green','有效的 JSON');
-        else if(els.input.value.trim()) setStatus('red','无效的 JSON');
-        else setStatus('gray','等待输入');
-      }, 2000);
-    }).catch(function(){
-      setStatus('red','复制失败');
-    });
-  },
+$('btnEscape').addEventListener('click', () => {
+  const text = getDocText();
+  if(!text.trim()) return;
+  setDocText(JSON.stringify(text));
+});
 
-  download: function(){
-    if(!parsedData) return;
-    const text = JSON.stringify(parsedData, null, 2);
-    const blob = new Blob([text], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'formatted.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  },
+$('btnUnescape').addEventListener('click', () => {
+  const text = getDocText().trim();
+  if(!text) return;
+  try {
+    const unescaped = JSON.parse(text);
+    if(typeof unescaped === 'string'){
+      setDocText(unescaped);
+    }
+  } catch(e) {}
+});
 
-  clear: function(){
-    els.input.value = '';
-    parsedData = null;
-    totalNodes = 0;
-    allNodesExpanded = false;
-    hideError();
-    setStatus('gray','等待输入');
-    updateStats('');
-    els.tree.innerHTML = '';
-    els.treeEmpty.style.display = 'flex';
-    updateLineNumbers();
-    try{ localStorage.removeItem(LS_KEY); }catch(e){}
-  },
+// ===== Copy / Download (text view) =====
+$('btnCopyText').addEventListener('click', () => {
+  if(!parsedData) return;
+  navigator.clipboard.writeText(JSON.stringify(parsedData, null, 2)).then(() => {
+    toast('已复制到剪贴板');
+  });
+});
 
-  expandAll: function(){
-    allNodesExpanded = true;
-    if(parsedData) renderTree(parsedData);
+$('btnDownloadText').addEventListener('click', () => {
+  if(!parsedData) return;
+  const blob = new Blob([JSON.stringify(parsedData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'formatted.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// ===== Auto-Fix =====
+stFix.addEventListener('click', () => {
+  let text = getDocText().trim();
+  if(!text) return;
+  let fixed = false;
+
+  // Count brackets
+  const openCurly = (text.match(/\{/g)||[]).length;
+  const closeCurly = (text.match(/\}/g)||[]).length;
+  const openSquare = (text.match(/\[/g)||[]).length;
+  const closeSquare = (text.match(/\]/g)||[]).length;
+
+  // Try removing trailing comma
+  if(/,(\s*[}\]])/.test(text)){
+    text = text.replace(/,(\s*[}\]])/g, '$1');
+    fixed = true;
+  }
+
+  // Try closing missing brackets
+  if(closeCurly < openCurly){
+    text += '\n' + '}'.repeat(openCurly - closeCurly);
+    fixed = true;
+  }
+  if(closeSquare < openSquare){
+    text += '\n' + ']'.repeat(openSquare - closeSquare);
+    fixed = true;
+  }
+
+  // Try quoting unquoted keys (simple heuristic)
+  const unquotedKey = /(^|\n)\s*([a-zA-Z_$][\w$]*)\s*:/gm;
+  let unquotedFixed = false;
+  text = text.replace(unquotedKey, (m, prefix, key) => {
+    unquotedFixed = true;
+    return prefix + '"' + key + '":';
+  });
+  if(unquotedFixed) fixed = true;
+
+  if(!fixed){
+    toast('未找到可自动修复的问题。');
+    return;
+  }
+
+  setDocText(text);
+  try{
+    JSON.parse(text.trim());
+    toast('已自动修复，JSON 语法正确。');
+  } catch(e){
+    toast('已尝试修复，但仍有语法错误。');
+  }
+});
+
+// ===== Example JSON =====
+const examples = {
+  '关于本站': {
+    name: 'JSON 格式化工具',
+    version: '2.0.0',
+    author: { name: 'easydoit', email: 'hello@easydoit.tools' },
+    description: '一款简洁优雅的 JSON 在线编辑与浏览工具',
+    features: ['格式化与压缩', '树形可视化浏览', '语法实时校验', '自动保存', '四套主题切换'],
+    philosophy: 'Less is more. 让数据处理回归简单。',
+    stats: { users: 10240, rating: 4.8, launched: '2024-01-15' }
+  },
+  '用户数据': {
+    id: 10001,
+    name: '张三',
+    email: 'zhangsan@example.com',
+    age: 28,
+    verified: true,
+    tags: ['developer', 'open-source', 'typescript'],
+    address: {
+      country: '中国',
+      city: '杭州',
+      zip: '310000',
+      detail: '西湖区文三路 478 号'
+    },
+    settings: { theme: 'dark', notifications: true, language: 'zh-CN' },
+    createdAt: '2025-03-15T08:30:00Z'
+  },
+  'API 响应': {
+    code: 0,
+    message: 'success',
+    data: {
+      list: [
+        { id: 1, title: '文章一', author: 'Alice', views: 1520, tags: ['tech', 'ai'] },
+        { id: 2, title: '文章二', author: 'Bob', views: 980, tags: ['design'] },
+        { id: 3, title: '文章三', author: 'Charlie', views: 2100, tags: ['tech', 'web'] }
+      ],
+      total: 127,
+      page: 1,
+      pageSize: 10,
+      hasMore: true
+    },
+    timestamp: 1753000000
+  },
+  '复杂嵌套': {
+    company: {
+      name: 'TechCorp',
+      departments: [{
+        name: 'Engineering',
+        teams: [{
+          name: 'Frontend',
+          members: [
+            { name: 'Alice', role: 'Lead', skills: ['React', 'TypeScript', 'CSS'], level: 5 },
+            { name: 'Bob', role: 'Senior', skills: ['Vue', 'JavaScript'], level: 4 }
+          ]
+        }, {
+          name: 'Backend',
+          members: [
+            { name: 'Charlie', role: 'Lead', skills: ['Go', 'Python', 'K8s'], level: 5 },
+            { name: 'Diana', role: 'Junior', skills: ['Python'], level: 2, mentor: 'Charlie' }
+          ],
+          services: { 'user-service': { port: 8081, replicas: 3 }, 'order-service': { port: 8082, replicas: 2 } }
+        }],
+        headcount: 35,
+        budget: 1200000
+      }],
+      founded: 2020,
+      public: false,
+      revenue: null
+    }
   }
 };
 
-// ===== Init =====
-function init(){
-  // Restore from localStorage
-  let initialText = '';
-  try{
-    initialText = localStorage.getItem(LS_KEY) || '';
-  }catch(e){}
-
-  // Check URL param
-  const urlParams = new URLSearchParams(window.location.search);
-  const jsonParam = urlParams.get('json');
-  if(jsonParam){
-    try{
-      initialText = decodeURIComponent(jsonParam);
-      // Try to parse and format
-      const parsed = JSON.parse(initialText);
-      initialText = JSON.stringify(parsed, null, 2);
-    }catch(e){
-      // Keep as-is
-    }
-  }
-
-  if(initialText){
-    els.input.value = initialText;
-    updateLineNumbers();
-    parseAndRender(initialText);
-  } else {
-    updateLineNumbers();
-  }
-
-  // Save on unload
-  window.addEventListener('beforeunload', function(){
-    try{
-      localStorage.setItem(LS_KEY, els.input.value);
-    }catch(e){}
-  });
-
-  // Handle window resize for responsive
-  window.addEventListener('resize', function(){
-    if(!isMobile()){
-      els.inputPanel.style.height = '';
-      els.inputPanel.style.width = '';
-      els.treePanel.style.flex = '1';
-      els.inputPanel.style.flex = '1';
-    }
-  });
+function loadExample(name){
+  const data = examples[name];
+  if(!data) return;
+  setDocText(JSON.stringify(data, null, 2));
+  toast('已加载示例: ' + name);
+  $('exampleMenu').classList.remove('show');
 }
 
-init();
+const exampleMenu = $('exampleMenu');
+Object.keys(examples).forEach(name => {
+  const btn = document.createElement('button');
+  btn.textContent = name;
+  btn.addEventListener('click', () => loadExample(name));
+  exampleMenu.appendChild(btn);
+});
 
-})();
+$('btn-example').addEventListener('click', e => {
+  e.stopPropagation();
+  exampleMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('#exampleDropdown')){
+    exampleMenu.classList.remove('show');
+  }
+});
+
+// ===== Splitter Drag =====
+let dragging = false, startX = 0, startY = 0, startW = 0, startH = 0;
+function isMobile(){ return window.innerWidth < 768; }
+
+splitter.addEventListener('mousedown', e => {
+  e.preventDefault();
+  dragging = true;
+  splitter.classList.add('active');
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor = isMobile() ? 'row-resize' : 'col-resize';
+  if(isMobile()){
+    startY = e.clientY;
+    startH = leftPanel.getBoundingClientRect().height;
+  } else {
+    startX = e.clientX;
+    startW = leftPanel.getBoundingClientRect().width;
+  }
+});
+
+document.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  const mainRect = mainWrap.getBoundingClientRect();
+  if(isMobile()){
+    const dy = e.clientY - startY;
+    const h = Math.max(150, Math.min(mainRect.height - 156, startH + dy));
+    leftPanel.style.flex = 'none';
+    leftPanel.style.height = h + 'px';
+    rightPanel.style.flex = '1';
+  } else {
+    const dx = e.clientX - startX;
+    const tw = mainRect.width - 4;
+    const w = Math.max(200, Math.min(tw - 204, startW + dx));
+    leftPanel.style.flex = 'none';
+    leftPanel.style.width = w + 'px';
+    rightPanel.style.flex = '1';
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if(!dragging) return;
+  dragging = false;
+  splitter.classList.remove('active');
+  document.body.style.userSelect = '';
+  document.body.style.cursor = '';
+});
+
+window.addEventListener('resize', () => {
+  if(!isMobile()){
+    leftPanel.style.height = '';
+    leftPanel.style.width = '';
+    leftPanel.style.flex = '1';
+    rightPanel.style.flex = '1';
+  }
+});
+
+// ===== Init =====
+if(initialText){
+  updatePreview(initialText);
+  if(currentView === 'tree') renderTree();
+  else if(currentView === 'text') renderText();
+}
+
+// Load example if empty and no param
+if(!initialText.trim() && !jsonParam){
+  loadExample('关于本站');
+}
 </script>
-
 </body>
 </html>
