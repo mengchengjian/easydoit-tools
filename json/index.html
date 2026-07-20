@@ -338,13 +338,25 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
   </div>
 </div>
 
+<script type="importmap">
+{
+  "imports": {
+    "@codemirror/state": "https://cdn.jsdelivr.net/npm/@codemirror/state@6.5.2/+esm",
+    "@codemirror/view": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.35.5/+esm",
+    "@codemirror/commands": "https://cdn.jsdelivr.net/npm/@codemirror/commands@6.8.1/+esm",
+    "@codemirror/language": "https://cdn.jsdelivr.net/npm/@codemirror/language@6.10.8/+esm",
+    "@codemirror/lang-json": "https://cdn.jsdelivr.net/npm/@codemirror/lang-json@6.0.2/+esm",
+    "@codemirror/lint": "https://cdn.jsdelivr.net/npm/@codemirror/lint@6.8.5/+esm"
+  }
+}
+</script>
 <script type="module">
-import {EditorState, Compartment} from 'https://esm.sh/@codemirror/state@6.5.2';
-import {EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter} from 'https://esm.sh/@codemirror/view@6.36.5';
-import {defaultKeymap, history, historyKeymap} from 'https://esm.sh/@codemirror/commands@6.8.1';
-import {syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldGutter, indentOnInput} from 'https://esm.sh/@codemirror/language@6.11.0';
-import {json, jsonParseLinter} from 'https://esm.sh/@codemirror/lang-json@6.0.2';
-import {linter} from 'https://esm.sh/@codemirror/lint@6.8.5';
+import {EditorState, Compartment} from '@codemirror/state';
+import {EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter} from '@codemirror/view';
+import {defaultKeymap, history, historyKeymap} from '@codemirror/commands';
+import {syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldGutter, indentOnInput} from '@codemirror/language';
+import {json, jsonParseLinter} from '@codemirror/lang-json';
+import {linter} from '@codemirror/lint';
 
 // ===== DOM refs =====
 const $ = id => document.getElementById(id);
