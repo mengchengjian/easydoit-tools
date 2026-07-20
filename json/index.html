@@ -140,8 +140,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
 
 /* ===== Left: Editor ===== */
 .editor-wrap{flex:1;overflow:hidden}
-.editor-wrap .cm-editor{height:100%}
-.editor-wrap .cm-editor .cm-scroller{overflow:auto;font-family:var(--mono)}
+.editor-wrap .CodeMirror{height:100%!important;font-family:var(--mono);font-size:14px;line-height:1.6}
+.editor-wrap .CodeMirror-gutters{background:var(--bg2);border-right:1px solid var(--bdr)}
+.editor-wrap .CodeMirror-linenumbers{color:var(--tx3)}
+.editor-wrap .CodeMirror-activeline-background{background:var(--bg3)}
+.editor-wrap .CodeMirror-cursor{border-left-color:var(--accent)}
+.editor-wrap .CodeMirror-selected{background:var(--accent-bg)!important}
+.editor-wrap .CodeMirror-matchingbracket{background:var(--accent-bg);outline:1px solid var(--accent)}
 
 /* ===== Right: Preview ===== */
 .view-toggle{display:flex;align-items:center;gap:1px;border:1px solid var(--bdr);border-radius:var(--r6);overflow:hidden}
@@ -241,6 +246,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
   .panel-label{font-size:11px}
 }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/fold/foldgutter.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/lint/lint.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/monokai.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/material.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/dracula.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/fold/foldcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/fold/foldgutter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/fold/brace-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/lint/lint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/lint/json-lint.min.js"></script>
 </head>
 <body>
 
@@ -350,14 +369,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx1);-webkit-font-
   }
 }
 </script>
-<script type="module">
-import {EditorState, Compartment} from '@codemirror/state';
-import {EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter} from '@codemirror/view';
-import {defaultKeymap, history, historyKeymap} from '@codemirror/commands';
-import {syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldGutter, indentOnInput} from '@codemirror/language';
-import {json, jsonParseLinter} from '@codemirror/lang-json';
-import {linter} from '@codemirror/lint';
-
+<script>
 // ===== DOM refs =====
 const $ = id => document.getElementById(id);
 const leftPanel = $('leftPanel');
@@ -399,123 +411,13 @@ function setTheme(t){
   localStorage.setItem('easydoit-theme', t);
   document.documentElement.setAttribute('data-theme', t);
   themeSelect.value = t;
-  if(window._cmView){
-    window._cmView.dispatch({
-      effects: window._cmThemeComp.reconfigure(getEditorTheme())
-    });
-  }
+  const cmThemes = {apple:'default', obsidian:'monokai', linear:'material', vscode:'dracula'};
+  if(window._cm) window._cm.setOption('theme', cmThemes[t] || 'default');
 }
 themeSelect.value = getTheme();
 themeSelect.addEventListener('change', e => setTheme(e.target.value));
 
-// ===== CodeMirror Theme per Theme =====
-function getEditorTheme(){
-  const t = getTheme();
-  const themes = {
-    apple: {
-      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
-      '.cm-content': { fontFamily: "'SF Mono','Cascadia Code','JetBrains Mono','Fira Code','Consolas',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
-      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
-      '.cm-activeLineGutter': { backgroundColor: 'var(--accent-bg)' },
-      '.cm-activeLine': { backgroundColor: 'var(--bg3)' },
-      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
-      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
-      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
-      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23d94f4f\\' stroke-width=\\'1\\'/></svg>")' },
-      '.cm-diagnostic': { color: 'var(--red)' },
-      '.cm-diagnosticText': { color: 'var(--red)' },
-      '.cm-lint-marker-error': { color: 'var(--red)' },
-      '.ͼo': { color: 'oklch(50% 0.18 310)' },
-      '.ͼp': { color: 'oklch(60% 0.14 145)' },
-      '.ͼq': { color: 'oklch(65% 0.16 250)' },
-      '.ͼr': { color: 'oklch(60% 0.12 45)' },
-      '.ͼs': { color: 'oklch(55% 0.12 300)' },
-      '.ͼu': { color: 'var(--tx3)' },
-    },
-    obsidian: {
-      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
-      '.cm-content': { fontFamily: "'JetBrains Mono','SF Mono','Cascadia Code','Fira Code',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
-      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
-      '.cm-activeLineGutter': { backgroundColor: 'transparent' },
-      '.cm-activeLine': { backgroundColor: 'transparent' },
-      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
-      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
-      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
-      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23e05555\\' stroke-width=\\'1\\'/></svg>")' },
-      '.cm-diagnostic': { color: 'var(--red)' },
-      '.cm-diagnosticText': { color: 'var(--red)' },
-      '.cm-lint-marker-error': { color: 'var(--red)' },
-      '.ͼo': { color: 'oklch(65% 0.16 310)' },
-      '.ͼp': { color: 'oklch(62% 0.14 145)' },
-      '.ͼq': { color: 'oklch(68% 0.16 250)' },
-      '.ͼr': { color: 'oklch(62% 0.12 45)' },
-      '.ͼs': { color: 'oklch(58% 0.12 300)' },
-      '.ͼu': { color: 'var(--tx2)' },
-    },
-    linear: {
-      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
-      '.cm-content': { fontFamily: "'JetBrains Mono','SF Mono','Cascadia Code','Fira Code',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
-      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
-      '.cm-activeLineGutter': { backgroundColor: 'var(--accent-bg)' },
-      '.cm-activeLine': { backgroundColor: 'var(--bg3)' },
-      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
-      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
-      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
-      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23e06060\\' stroke-width=\\'1\\'/></svg>")' },
-      '.cm-diagnostic': { color: 'var(--red)' },
-      '.cm-diagnosticText': { color: 'var(--red)' },
-      '.cm-lint-marker-error': { color: 'var(--red)' },
-      '.ͼo': { color: 'oklch(60% 0.16 310)' },
-      '.ͼp': { color: 'oklch(60% 0.14 210)' },
-      '.ͼq': { color: 'oklch(72% 0.16 210)' },
-      '.ͼr': { color: 'oklch(65% 0.14 70)' },
-      '.ͼs': { color: 'oklch(55% 0.08 260)' },
-      '.ͼu': { color: 'var(--tx3)' },
-    },
-    vscode: {
-      '&': { backgroundColor: 'var(--bg)', color: 'var(--tx1)' },
-      '.cm-content': { fontFamily: "'Cascadia Code','JetBrains Mono','SF Mono','Fira Code',monospace", fontSize: '14px', lineHeight: '1.6', padding: '12px 0' },
-      '.cm-gutters': { backgroundColor: 'var(--bg2)', color: 'var(--tx3)', border: 'none', borderRight: '1px solid var(--bdr)' },
-      '.cm-activeLineGutter': { backgroundColor: 'transparent' },
-      '.cm-activeLine': { backgroundColor: 'transparent' },
-      '.cm-cursor': { borderLeftColor: 'var(--accent)' },
-      '.cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-matchingBracket': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-foldPlaceholder': { backgroundColor: 'var(--bg3)', color: 'var(--tx2)', border: '1px solid var(--bdr)' },
-      '.cm-tooltip': { backgroundColor: 'var(--bg)', color: 'var(--tx1)', border: '1px solid var(--bdr)' },
-      '&.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-bg) !important' },
-      '.cm-searchMatch': { backgroundColor: 'var(--accent-bg)', outline: '1px solid var(--accent)' },
-      '.cm-lintRange-error': { backgroundImage: 'url("data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'6\\' height=\\'3\\'><path d=\\'M0 2.5 Q1.5 0 3 2.5 T6 2.5\\' fill=\\'none\\' stroke=\\'%23e05555\\' stroke-width=\\'1\\'/></svg>")' },
-      '.cm-diagnostic': { color: 'var(--red)' },
-      '.cm-diagnosticText': { color: 'var(--red)' },
-      '.cm-lint-marker-error': { color: 'var(--red)' },
-      '.ͼo': { color: 'oklch(65% 0.14 310)' },
-      '.ͼp': { color: 'oklch(65% 0.16 150)' },
-      '.ͼq': { color: 'oklch(70% 0.14 220)' },
-      '.ͼr': { color: 'oklch(62% 0.12 55)' },
-      '.ͼs': { color: 'oklch(55% 0.10 280)' },
-      '.ͼu': { color: 'var(--tx2)' },
-    },
-  };
-  return EditorView.theme(themes[t] || themes.apple, {dark: t !== 'apple'});
-}
-
-// ===== CodeMirror Init =====
-const themeComp = new Compartment();
-window._cmThemeComp = themeComp;
-
+// ===== CodeMirror 5 Init =====
 let initialText = '';
 try { initialText = localStorage.getItem(LS_KEY) || ''; } catch(e) {}
 
@@ -529,39 +431,30 @@ if(jsonParam){
   } catch(e) {}
 }
 
-const editorState = EditorState.create({
-  doc: initialText,
-  extensions: [
-    lineNumbers(),
-    highlightActiveLineGutter(),
-    highlightActiveLine(),
-    foldGutter(),
-    bracketMatching(),
-    indentOnInput(),
-    json(),
-    linter(jsonParseLinter()),
-    history(),
-    keymap.of([...defaultKeymap, ...historyKeymap]),
-    syntaxHighlighting(defaultHighlightStyle),
-    themeComp.of(getEditorTheme()),
-    EditorView.updateListener.of(update => {
-      if(update.docChanged) handleDocChange();
-    }),
-  ],
-});
+const ta = document.createElement('textarea');
+ta.id = 'cm-textarea';
+$('editorContainer').appendChild(ta);
 
-const editorView = new EditorView({
-  state: editorState,
-  parent: $('editorContainer'),
+const editor = CodeMirror.fromTextArea(ta, {
+  mode: { name: 'javascript', json: true },
+  lineNumbers: true,
+  matchBrackets: true,
+  autoCloseBrackets: true,
+  foldGutter: true,
+  gutters: ['CodeMirror-lint-markers', 'CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+  lint: true,
+  tabSize: 2,
+  indentUnit: 2,
+  indentWithTabs: false,
+  lineWrapping: false,
+  theme: 'default'
 });
-window._cmView = editorView;
+editor.setValue(initialText);
+editor.on('change', handleDocChange);
+window._cm = editor;
 
-function getDocText(){ return editorView.state.doc.toString(); }
-function setDocText(text){
-  editorView.dispatch({
-    changes: { from: 0, to: editorView.state.doc.length, insert: text }
-  });
-}
+function getDocText(){ return editor.getValue(); }
+function setDocText(text){ editor.setValue(text); }
 
 // ===== Debounced Handler =====
 function handleDocChange(){
