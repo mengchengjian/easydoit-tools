@@ -365,39 +365,40 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
 <div class="top">
   <div class="top-l">
     <button class="btn" onclick="toggleSide()" id="tog-side">&#9776;</button>
+    <span style="font-weight:700;font-size:16px;color:var(--accent);margin:0 2px;letter-spacing:-0.5px">MD</span>
     <svg width="13" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
       <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
   </div>
   <div class="top-c">
-    <button class="btn" onclick="ins('**','**')" title="Bold"><b>B</b></button>
-    <button class="btn" onclick="ins('*','*')" title="Italic"><i>I</i></button>
-    <button class="btn" onclick="ins('~~','~~')" title="Strikethrough"><s>S</s></button>
+    <button class="btn" onclick="ins('**','**')" title="粗体 (B)"><b>B</b></button>
+    <button class="btn" onclick="ins('*','*')" title="斜体 (I)"><i>I</i></button>
+    <button class="btn" onclick="ins('~~','~~')" title="删除线 (S)"><s>S</s></button>
     <span class="sep"></span>
-    <button class="btn" onclick="insH()">H</button>
-    <button class="btn" onclick="insL('ul')">List</button>
-    <button class="btn" onclick="insL('ol')">1.</button>
-    <button class="btn" onclick="ins('> ','')">&ldquo;</button>
+    <button class="btn" onclick="insH()" title="标题 (H)">H</button>
+    <button class="btn" onclick="insL('ul')" title="列表">列表</button>
+    <button class="btn" onclick="insL('ol')" title="编号">编号</button>
+    <button class="btn" onclick="ins('> ','')" title="引用">&ldquo;</button>
     <span class="sep"></span>
-    <button class="btn" onclick="ins('`','`')">&lt;/&gt;</button>
-    <button class="btn" onclick="ins('\n```\n\n```\n','')">Code</button>
-    <button class="btn" onclick="ins('[','](url)')">Link</button>
-    <button class="btn" onclick="ins('![alt](','')')">Img</button>
+    <button class="btn" onclick="ins('`','`')" title="内联代码">&lt;/&gt;</button>
+    <button class="btn" onclick="ins('\n```\n\n```\n','')" title="代码块">代码块</button>
+    <button class="btn" onclick="ins('[','](url)')" title="链接">链接</button>
+    <button class="btn" onclick="ins('![alt](','')')" title="图片">图片</button>
     <span class="sep"></span>
-    <button class="btn" onclick="insTable()">Table</button>
-    <button class="btn" onclick="ins('---\n','')">HR</button>
+    <button class="btn" onclick="insTable()" title="表格">表格</button>
+    <button class="btn" onclick="ins('---\n','')" title="分割线">分割线</button>
     <span class="sep"></span>
-    <button class="btn" onclick="toggleSearch()" id="btn-search">Search</button>
+    <button class="btn" onclick="toggleSearch()" id="btn-search">搜索</button>
   </div>
   <div class="top-r">
     <button class="btn" onclick="toggleLN()" id="btn-ln">#</button>
-    <button class="btn" onclick="openTemplates()">Templates</button>
-    <button class="btn" onclick="downloadCur()">Export</button>
+    <button class="btn" onclick="openTemplates()">模板</button>
+    <button class="btn" onclick="downloadCur()">导出</button>
     <button class="btn" onclick="exportPDF()">PDF</button>
-    <button class="btn primary" onclick="copyHTML()">Copy HTML</button>
-    <button class="btn" onclick="toggleFocus()" title="Focus Mode">Focus</button>
+    <button class="btn primary" onclick="copyHTML()">复制 HTML</button>
+    <button class="btn" onclick="toggleFocus()" title="专注模式">专注</button>
     <div style="position:relative">
-      <button class="btn theme-btn" onclick="toggleThemeDrop()" id="btn-theme"><span class="th-dot" id="th-dot-cur"></span>Theme</button>
+      <button class="btn theme-btn" onclick="toggleThemeDrop()" id="btn-theme"><span class="th-dot" id="th-dot-cur"></span>主题</button>
       <div class="theme-drop" id="themeDrop">
         <div class="theme-opt" onclick="setTheme('apple')"><span class="th-dot th-apple"></span>Apple</div>
         <div class="theme-opt" onclick="setTheme('obsidian')"><span class="th-dot th-obsidian"></span>Obsidian</div>
@@ -409,14 +410,14 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
 </div>
 
 <div class="mb">
-  <div class="cur" id="mb-files" onclick="mobTab('files')">Files</div>
-  <div id="mb-edit" onclick="mobTab('edit')">Edit</div>
-  <div id="mb-preview" onclick="mobTab('preview')">Preview</div>
+  <div class="cur" id="mb-files" onclick="mobTab('files')">文件</div>
+  <div id="mb-edit" onclick="mobTab('edit')">编辑</div>
+  <div id="mb-preview" onclick="mobTab('preview')">预览</div>
 </div>
 
 <div class="main">
   <div class="sidebar" id="sidebar">
-    <div class="side-hd"><span>Files</span>
+    <div class="side-hd"><span>文件</span>
       <div class="side-hd-act">
         <button onclick="mkFolder(null)">+</button>
         <button onclick="mkFile(null)">N</button>
@@ -425,14 +426,14 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
       </div>
     </div>
     <div class="side-tabs" id="sideTabs">
-      <button class="cur" onclick="switchSideTab('files')">Files</button>
-      <button onclick="switchSideTab('outline')">Outline</button>
-      <button onclick="switchSideTab('search')">Search</button>
+      <button class="cur" onclick="switchSideTab('files')">文件</button>
+      <button onclick="switchSideTab('outline')">大纲</button>
+      <button onclick="switchSideTab('search')">搜索</button>
     </div>
     <div class="side-tree" id="tree" ondragover="treeDragover(event)" ondragleave="treeDragleave(event)" ondrop="treeDrop(event)"></div>
     <div class="side-toc" id="sideToc"></div>
     <div class="side-search" id="sideSearch">
-      <input id="globalSr" placeholder="Search all files..." oninput="globalSearch()">
+      <input id="globalSr" placeholder="搜索所有文件..." oninput="globalSearch()">
       <div class="sr-list" id="srList"></div>
     </div>
   </div>
@@ -448,24 +449,24 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
       </div>
     </div>
     <div class="ed-search" id="edSearch">
-      <input class="sr-find" id="srFind" placeholder="Find..." oninput="doSearch()">
-      <input class="sr-repl" id="srRepl" placeholder="Replace...">
+      <input class="sr-find" id="srFind" placeholder="查找..." oninput="doSearch()">
+      <input class="sr-repl" id="srRepl" placeholder="替换...">
       <span class="sr-count" id="srCount"></span>
-      <button class="sr-btn" onclick="srPrev()" title="Previous">&#8593;</button>
-      <button class="sr-btn" onclick="srNext()" title="Next">&#8595;</button>
-      <button class="sr-btn" id="srCase" onclick="toggleCase()" title="Case sensitive">Aa</button>
-      <button class="sr-act" onclick="srReplace()">Replace</button>
-      <button class="sr-act replace-all" onclick="srReplaceAll()">Replace All</button>
-      <button class="sr-btn" onclick="toggleSearch()" title="Close">&times;</button>
+      <button class="sr-btn" onclick="srPrev()" title="上一个">&#8593;</button>
+      <button class="sr-btn" onclick="srNext()" title="下一个">&#8595;</button>
+      <button class="sr-btn" id="srCase" onclick="toggleCase()" title="区分大小写">Aa</button>
+      <button class="sr-act" onclick="srReplace()">替换</button>
+      <button class="sr-act replace-all" onclick="srReplaceAll()">全部替换</button>
+      <button class="sr-btn" onclick="toggleSearch()" title="关闭">&times;</button>
     </div>
     <div class="ed-area" id="edArea">
       <div class="ed-ln" id="edLn"><span></span></div>
-      <textarea id="editor" placeholder="Open or create a file to start writing..."></textarea>
+      <textarea id="editor" placeholder="打开或新建文件开始写作..."></textarea>
     </div>
     <div class="ed-st">
-      <span id="st-ln"><b>0</b> lines</span>
-      <span id="st-wd"><b>0</b> words</span>
-      <span id="st-ch"><b>0</b> chars</span>
+      <span id="st-ln"><b>0</b> 行</span>
+      <span id="st-wd"><b>0</b> 词</span>
+      <span id="st-ch"><b>0</b> 字</span>
       <span class="sv-ind" id="svInd"><span class="sv-dot" id="svDot"></span><span class="sv-txt" id="svTxt"></span></span>
     </div>
   </div>
@@ -475,7 +476,7 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
   </div>
 </div>
 
-<button class="focus-esc" id="focusEsc" onclick="toggleFocus()" title="Exit focus (Esc)">&#10005;</button>
+<button class="focus-esc" id="focusEsc" onclick="toggleFocus()" title="退出专注 (Esc)">&#10005;</button>
 
 <div class="cmenu" id="cmenu"></div>
 <div class="md-overlay" id="mdOver"><div class="md-box" id="mdBox"></div></div>
@@ -669,7 +670,7 @@ function toggleThemeDrop(){
   const d=document.getElementById('themeDrop');const was=d.classList.contains('open');d.classList.toggle('open');
   if(!was)setTimeout(()=>document.addEventListener('click',function cl(e){if(!e.target.closest('#btn-theme')&&!e.target.closest('.theme-drop')){d.classList.remove('open');document.removeEventListener('click',cl)}},0));
 }
-function setTheme(t){applyTheme(t);document.getElementById('themeDrop').classList.remove('open');toast('Theme: '+t)}
+function setTheme(t){applyTheme(t);document.getElementById('themeDrop').classList.remove('open');toast('主题：'+t)}
 (function(){const saved=localStorage.getItem(THEME_KEY)||'apple';applyTheme(saved)})();
 
 mermaid.initialize({startOnLoad:false,securityLevel:'loose'});
@@ -919,9 +920,9 @@ async function init(){await opnDB();document.getElementById('btn-ln').classList.
 // ===== SAVE STATUS INDICATOR =====
 function setSaveStatus(status){
   saveStatus=status;svDot.className='sv-dot';svTxt.className='sv-txt';
-  if(status==='unsaved'){svDot.classList.add('red-dot');svTxt.classList.add('unsaved');svTxt.textContent='Unsaved'}
-  else if(status==='saving'){svDot.classList.add('amber');svTxt.classList.add('saving');svTxt.textContent='Saving...'}
-  else if(status==='saved'){svDot.classList.add('green');svTxt.classList.add('saved');svTxt.textContent='Saved'}
+  if(status==='unsaved'){svDot.classList.add('red-dot');svTxt.classList.add('unsaved');svTxt.textContent='未保存'}
+  else if(status==='saving'){svDot.classList.add('amber');svTxt.classList.add('saving');svTxt.textContent='保存中...'}
+  else if(status==='saved'){svDot.classList.add('green');svTxt.classList.add('saved');svTxt.textContent='已保存'}
 }
 
 function markUnsaved(){
@@ -1037,7 +1038,7 @@ function rtree(){
   const topFls=fls.filter(f=>!f.folderId);let h='';
   for(const fd of topFds)h+=rFolder(fd,fds,fls);
   for(const fl of topFls)h+=rFile(fl);
-  if(!h)h='<div style="padding:24px;text-align:center;color:var(--tx3);font-size:12px;line-height:1.8">No files yet</div>';
+  if(!h)h='<div style="padding:24px;text-align:center;color:var(--tx3);font-size:12px;line-height:1.8">暂无文件</div>';
   tree.innerHTML=h;
 }
 function rFolder(fd,fds,fls){
@@ -1049,7 +1050,7 @@ function rFolder(fd,fds,fls){
     <span class="ti-arrow${on?' on':''}" onclick="event.stopPropagation();tog('${fd.id}')">&#9654;</span>
     <span class="ti-ico" style="color:var(--accent)">&#128193;</span>
     <span class="ti-name" onclick="tog('${fd.id}')">${esc(fd.name)}</span>
-    <span class="ti-act"><button onclick="event.stopPropagation();rnFd('${fd.id}')" title="Rename">&#9998;</button><button class="del" onclick="event.stopPropagation();rmFd('${fd.id}')" title="Delete">&times;</button></span></div>`;
+    <span class="ti-act"><button onclick="event.stopPropagation();rnFd('${fd.id}')" title="重命名">&#9998;</button><button class="del" onclick="event.stopPropagation();rmFd('${fd.id}')" title="删除">&times;</button></span></div>`;
   h+=`<div class="tree-children${on?'':' folded'}">`;
   for(const sf of sfs)h+=rFolder(sf,fds,fls);
   for(const sf of sfls)h+=rFile(sf);
@@ -1062,7 +1063,7 @@ function rFile(fl){
   return `<div class="${cls}" data-file-id="${fl.id}" draggable="true" onclick="sel('${fl.id}')" ondragstart="fsDragStart(event,'${fl.id}')" oncontextmenu="cm(event,'file','${fl.id}')">
     <span class="ti-ico" style="color:var(--svg-ico)">${ico}</span>
     <span class="ti-name">${esc(fl.name)}</span>
-    <span class="ti-act"><button onclick="event.stopPropagation();rnFl('${fl.id}','${esc(fl.name)}')" title="Rename">&#9998;</button><button class="del" onclick="event.stopPropagation();rmFl('${fl.id}')" title="Delete">&times;</button></span></div>`;
+    <span class="ti-act"><button onclick="event.stopPropagation();rnFl('${fl.id}','${esc(fl.name)}')" title="重命名">&#9998;</button><button class="del" onclick="event.stopPropagation();rmFl('${fl.id}')" title="删除">&times;</button></span></div>`;
 }
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
@@ -1086,17 +1087,17 @@ async function saveCur(){
     markSaved();
   }catch(e){
     setSaveStatus('unsaved');
-    toast('Save failed');
+    toast('保存失败');
   }
 }
 
-async function mkFolder(pid){const n=prompt('Folder name:','New Folder');if(!n||!n.trim())return;await put('folders',{id:uid(),name:n.trim(),parentId:pid||null,sort:0,createdAt:Date.now()});await ldtree();texp[n.trim()]=true;rtree()}
-async function mkFile(fid){const n=prompt('File name:','untitled.md');if(!n||!n.trim())return;const t=n.endsWith('.svg')?'svg':n.endsWith('.txt')?'txt':'md';const fl={id:uid(),name:n.trim(),type:t,folderId:fid||null,content:'',createdAt:Date.now(),updatedAt:Date.now()};await put('files',fl);if(fid)texp[fid]=true;saveActiveTabContent();openTabs.push({fileId:fl.id,fileName:fl.name,fileType:fl.type,content:'',cursorPos:0});activeTabIndex=openTabs.length-1;cfid=fl.id;cfile=fl;await ldtree();edTitle.textContent=fl.name;ed.value='';ed.readOnly=fl.type==='svg';updPrev();updLn();renderTabs()}
-async function doUpload(e){for(const f of e.target.files){const c=await new Promise(r=>{const fr=new FileReader();fr.onload=ev=>r(ev.target.result);fr.readAsText(f)});await put('files',{id:uid(),name:f.name,type:f.name.endsWith('.svg')?'svg':f.name.endsWith('.txt')?'txt':'md',folderId:null,content:c,createdAt:Date.now(),updatedAt:Date.now()})}await ldtree();rtree();toast('Imported '+e.target.files.length+' file(s)');e.target.value=''}
-async function rnFl(id,oname){const nn=prompt('Rename:',oname);if(!nn||!nn.trim()||nn.trim()===oname)return;const fl=await get('files',id);if(!fl)return;fl.name=nn.trim();fl.type=nn.endsWith('.svg')?'svg':nn.endsWith('.txt')?'txt':'md';fl.updatedAt=Date.now();await put('files',fl);if(cfid===id){cfile=fl;edTitle.textContent=fl.name}const ti=findTabIndex(id);if(ti>=0){openTabs[ti].fileName=fl.name;openTabs[ti].fileType=fl.type;renderTabs()}await ldtree();rtree()}
-async function rnFd(id){const fd=await get('folders',id);if(!fd)return;const nn=prompt('Rename folder:',fd.name);if(!nn||!nn.trim()||nn.trim()===fd.name)return;fd.name=nn.trim();await put('folders',fd);await ldtree();rtree()}
-async function rmFl(id){if(!confirm('Delete this file?'))return;await del('files',id);const ti=findTabIndex(id);if(ti>=0){closeTab(ti)}if(cfid===id){cfid=null;cfile=null;ed.value='';edTitle.textContent='';updPrev()}await ldtree();rtree()}
-async function rmFd(id){if(!confirm('Delete this folder and everything inside?'))return;const fds=await all('folders'),fls=await all('files');async function rec(fid){for(const fd of fds.filter(f=>f.parentId===fid))await rec(fd.id);for(const fl of fls.filter(f=>f.folderId===fid)){const ti=findTabIndex(fl.id);if(ti>=0)closeTab(ti);if(fl.id===cfid){cfid=null;cfile=null;ed.value='';edTitle.textContent='';updPrev()}await del('files',fl.id)}await del('folders',fid)}await rec(id);await ldtree();rtree()}
+async function mkFolder(pid){const n=prompt('文件夹名称：','新建文件夹');if(!n||!n.trim())return;await put('folders',{id:uid(),name:n.trim(),parentId:pid||null,sort:0,createdAt:Date.now()});await ldtree();texp[n.trim()]=true;rtree()}
+async function mkFile(fid){const n=prompt('文件名称：','未命名.md');if(!n||!n.trim())return;const t=n.endsWith('.svg')?'svg':n.endsWith('.txt')?'txt':'md';const fl={id:uid(),name:n.trim(),type:t,folderId:fid||null,content:'',createdAt:Date.now(),updatedAt:Date.now()};await put('files',fl);if(fid)texp[fid]=true;saveActiveTabContent();openTabs.push({fileId:fl.id,fileName:fl.name,fileType:fl.type,content:'',cursorPos:0});activeTabIndex=openTabs.length-1;cfid=fl.id;cfile=fl;await ldtree();edTitle.textContent=fl.name;ed.value='';ed.readOnly=fl.type==='svg';updPrev();updLn();renderTabs()}
+async function doUpload(e){for(const f of e.target.files){const c=await new Promise(r=>{const fr=new FileReader();fr.onload=ev=>r(ev.target.result);fr.readAsText(f)});await put('files',{id:uid(),name:f.name,type:f.name.endsWith('.svg')?'svg':f.name.endsWith('.txt')?'txt':'md',folderId:null,content:c,createdAt:Date.now(),updatedAt:Date.now()})}await ldtree();rtree();toast('已导入 '+e.target.files.length+' 个文件');e.target.value=''}
+async function rnFl(id,oname){const nn=prompt('重命名文件：',oname);if(!nn||!nn.trim()||nn.trim()===oname)return;const fl=await get('files',id);if(!fl)return;fl.name=nn.trim();fl.type=nn.endsWith('.svg')?'svg':nn.endsWith('.txt')?'txt':'md';fl.updatedAt=Date.now();await put('files',fl);if(cfid===id){cfile=fl;edTitle.textContent=fl.name}const ti=findTabIndex(id);if(ti>=0){openTabs[ti].fileName=fl.name;openTabs[ti].fileType=fl.type;renderTabs()}await ldtree();rtree()}
+async function rnFd(id){const fd=await get('folders',id);if(!fd)return;const nn=prompt('重命名文件夹：',fd.name);if(!nn||!nn.trim()||nn.trim()===fd.name)return;fd.name=nn.trim();await put('folders',fd);await ldtree();rtree()}
+async function rmFl(id){if(!confirm('确认删除此文件？'))return;await del('files',id);const ti=findTabIndex(id);if(ti>=0){closeTab(ti)}if(cfid===id){cfid=null;cfile=null;ed.value='';edTitle.textContent='';updPrev()}await ldtree();rtree()}
+async function rmFd(id){if(!confirm('确认删除此文件夹及其所有内容？'))return;const fds=await all('folders'),fls=await all('files');async function rec(fid){for(const fd of fds.filter(f=>f.parentId===fid))await rec(fd.id);for(const fl of fls.filter(f=>f.folderId===fid)){const ti=findTabIndex(fl.id);if(ti>=0)closeTab(ti);if(fl.id===cfid){cfid=null;cfile=null;ed.value='';edTitle.textContent='';updPrev()}await del('files',fl.id)}await del('folders',fid)}await rec(id);await ldtree();rtree()}
 
 function fsDragStart(e,id){dfid=id;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',id);const img=new Image();img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';e.dataTransfer.setDragImage(img,0,0);e.target.addEventListener('dragend',function cl(){if(dgnode){dgnode.classList.remove('drop-target');dgnode=null}dfid=null;e.target.removeEventListener('dragend',cl)})}
 function itemDragover(e,fid){if(!dfid){e.dataTransfer.dropEffect='none';return}e.preventDefault();e.dataTransfer.dropEffect='move';const el=e.currentTarget;if(dgnode)dgnode.classList.remove('drop-target');el.classList.add('drop-target');dgnode=el}
@@ -1106,7 +1107,7 @@ function treeDragover(e){if(!dfid)return;e.preventDefault()}
 function treeDragleave(e){if(dgnode){dgnode.classList.remove('drop-target');dgnode=null}}
 async function treeDrop(e){e.preventDefault();if(!dfid)return;let tf=null;if(dgnode){tf=dgnode.getAttribute('data-fid');dgnode.classList.remove('drop-target');dgnode=null}const fl=await get('files',dfid);if(!fl)return;fl.folderId=tf;fl.updatedAt=Date.now();await put('files',fl);if(cfid===dfid)cfile=fl;dfid=null;if(tf)texp[tf]=true;await ldtree();rtree()}
 
-function cm(e,type,id){e.preventDefault();const m=document.getElementById('cmenu');let h='';if(type==='folder'){h+=`<div class="cmenu-item" onclick="mkFile('${id}');hcm()">New File</div><div class="cmenu-item" onclick="mkFolder('${id}');hcm()">New Folder</div><div class="cmenu-sep"></div><div class="cmenu-item" onclick="rnFd('${id}');hcm()">Rename</div><div class="cmenu-item" onclick="rmFd('${id}');hcm()" style="color:var(--red)">Delete</div>`}else{h+=`<div class="cmenu-item" onclick="rnFl('${id}','');hcm()">Rename</div><div class="cmenu-sep"></div><div class="cmenu-item" onclick="dlFile('${id}');hcm()">Download</div><div class="cmenu-item" onclick="rmFl('${id}');hcm()" style="color:var(--red)">Delete</div>`}m.innerHTML=h;m.style.display='block';m.style.left=Math.min(e.clientX,innerWidth-170)+'px';m.style.top=Math.min(e.clientY,innerHeight-200)+'px';setTimeout(()=>document.addEventListener('click',hcm,{once:true}),0)}
+function cm(e,type,id){e.preventDefault();const m=document.getElementById('cmenu');let h='';if(type==='folder'){h+=`<div class="cmenu-item" onclick="mkFile('${id}');hcm()">新建文件</div><div class="cmenu-item" onclick="mkFolder('${id}');hcm()">新建文件夹</div><div class="cmenu-sep"></div><div class="cmenu-item" onclick="rnFd('${id}');hcm()">重命名</div><div class="cmenu-item" onclick="rmFd('${id}');hcm()" style="color:var(--red)">删除</div>`}else{h+=`<div class="cmenu-item" onclick="rnFl('${id}','');hcm()">重命名</div><div class="cmenu-sep"></div><div class="cmenu-item" onclick="dlFile('${id}');hcm()">下载</div><div class="cmenu-item" onclick="rmFl('${id}');hcm()" style="color:var(--red)">删除</div>`}m.innerHTML=h;m.style.display='block';m.style.left=Math.min(e.clientX,innerWidth-170)+'px';m.style.top=Math.min(e.clientY,innerHeight-200)+'px';setTimeout(()=>document.addEventListener('click',hcm,{once:true}),0)}
 function hcm(){document.getElementById('cmenu').style.display='none'}
 
 async function dlFile(id){const fl=await get('files',id);if(!fl)return;const b=new Blob([fl.content],{type:fl.type==='svg'?'image/svg+xml':'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fl.name;a.click();URL.revokeObjectURL(a.href)}
@@ -1114,7 +1115,7 @@ async function downloadCur(){if(!cfile){const b=new Blob([ed.value],{type:'text/
 
 async function updPrev(){
   if(cfile&&cfile.type==='svg'){pr.innerHTML='<div class="pr-svg">'+cfile.content+'</div>';updStat();return}
-  if(!ed.value){pr.innerHTML='<div class="pr-empty"><div style="opacity:0.1"><svg width="36" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>Preview</span></div>';updStat();return}
+  if(!ed.value){pr.innerHTML='<div class="pr-empty"><div style="opacity:0.1"><svg width="36" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>预览</span></div>';updStat();return}
 
   let text=ed.value;
   text=replaceEmoji(text);
@@ -1151,12 +1152,12 @@ async function updPrev(){
   updStat();
 }
 
-function updStat(){const t=ed.value,ln=t?t.split('\n').length:0,wd=t.trim()?t.trim().split(/\s+/).length:0;document.getElementById('st-ln').innerHTML='<b>'+ln+'</b> lines';document.getElementById('st-wd').innerHTML='<b>'+wd+'</b> words';document.getElementById('st-ch').innerHTML='<b>'+t.length+'</b> chars'}
+function updStat(){const t=ed.value,ln=t?t.split('\n').length:0,wd=t.trim()?t.trim().split(/\s+/).length:0;document.getElementById('st-ln').innerHTML='<b>'+ln+'</b> 行';document.getElementById('st-wd').innerHTML='<b>'+wd+'</b> 词';document.getElementById('st-ch').innerHTML='<b>'+t.length+'</b> 字'}
 function updLn(){const ln=ed.value.split('\n').length;let h='';for(let i=1;i<=ln;i++)h+='<span>'+i+'</span>';edLn.innerHTML=h;edLn.style.display=lnOn?'':'none';document.getElementById('edArea').classList.toggle('show-ln',lnOn)}
 function toggleLN(){lnOn=!lnOn;document.getElementById('btn-ln').classList.toggle('on',lnOn);updLn()}
 function toggleWrap(){wrapOn=!wrapOn;document.getElementById('btn-wrap').classList.toggle('on',!wrapOn);ed.style.whiteSpace=wrapOn?'':'pre';ed.style.overflowX=wrapOn?'':'auto'}
 function toggleMono(){monoOn=!monoOn;document.getElementById('btn-mono').classList.toggle('on',!monoOn);ed.style.fontFamily=monoOn?'':'var(--font)'}
-function copyHTML(){const h='<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><style>body{font-family:-apple-system,sans-serif;max-width:760px;margin:48px auto;padding:0 24px;line-height:1.85;color:#222}pre{background:#f5f5f5;padding:16px;border-radius:6px}code{background:#f5f5f5;padding:2px 5px;border-radius:3px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}th{background:#f9f9f9}img{max-width:100%}</style></head>\n<body>\n'+pr.innerHTML+'\n</body>\n</html>';navigator.clipboard.writeText(h).then(()=>toast('Copied'))}
+function copyHTML(){const h='<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><style>body{font-family:-apple-system,sans-serif;max-width:760px;margin:48px auto;padding:0 24px;line-height:1.85;color:#222}pre{background:#f5f5f5;padding:16px;border-radius:6px}code{background:#f5f5f5;padding:2px 5px;border-radius:3px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}th{background:#f9f9f9}img{max-width:100%}</style></head>\n<body>\n'+pr.innerHTML+'\n</body>\n</html>';navigator.clipboard.writeText(h).then(()=>toast('已复制'))}
 
 async function saveSettings(){await put('settings',{key:'texp',value:JSON.stringify(texp)})}
 async function ldLast(){const s=await get('settings','texp');if(s)texp=JSON.parse(s.value);const lf=await get('settings','lastFile');if(!lf)return;const fl=await get('files',lf.value);if(!fl)return;openTabs.push({fileId:fl.id,fileName:fl.name,fileType:fl.type,content:fl.content||'',cursorPos:0});activeTabIndex=0;cfid=fl.id;cfile=fl;edTitle.textContent=fl.name;ed.value=fl.content||'';ed.readOnly=fl.type==='svg';updPrev();updLn();renderTabs()}
@@ -1213,7 +1214,7 @@ function doSearch(){
   srMatches=[];let m;while((m=re.exec(txt))!==null){srMatches.push(m.index)}
   if(srMatches.length>0){srIdx=0;selMatch()}else{srIdx=-1}
   document.getElementById('srCount').textContent=srMatches.length>0?(srIdx+1)+' / '+srMatches.length:'0 / 0';
-  if(srMatches.length===0)document.getElementById('srCount').textContent='No results';
+  if(srMatches.length===0)document.getElementById('srCount').textContent='无结果';
 }
 
 function selMatch(){
@@ -1257,7 +1258,7 @@ function srReplaceAll(){
   const flags=srCaseSensitive?'g':'gi';const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),flags);
   const count=(ed.value.match(re)||[]).length;
   ed.value=ed.value.replace(re,r);
-  srMatches=[];srIdx=-1;document.getElementById('srCount').textContent='Replaced '+count;
+  srMatches=[];srIdx=-1;document.getElementById('srCount').textContent='已替换 '+count;
   updPrev();updLn();markUnsaved();
 }
 
@@ -1286,7 +1287,7 @@ ed.addEventListener('paste',e=>{
     const reader=new FileReader();
     reader.onload=function(ev){
       const b64=ev.target.result;
-      if(b64.length>5*1024*1024){toast('Image too large (>5MB), skipped');done++;return}
+      if(b64.length>5*1024*1024){toast('图片过大（>5MB），已跳过');done++;return}
       inserted+='![pasted-image]('+b64+')\n';
       done++;
       if(done===processImages.length){
@@ -1343,7 +1344,7 @@ function buildTOC(){
   const toc=document.getElementById('sideToc');
   if(sideTab!=='outline')return;
   const headings=parseTOC(ed.value);
-  if(!headings.length){toc.innerHTML='<div class="toc-empty">No headings</div>';return}
+  if(!headings.length){toc.innerHTML='<div class="toc-empty">暂无标题</div>';return}
   let h='';
   headings.forEach((hd,i)=>{
     const slug=slugify(hd.text)||'heading-'+i;
@@ -1465,7 +1466,7 @@ async function doGlobalSearch(){
   // Sort by file name, then line number
   results.sort((a,b)=>a.fileName.localeCompare(b.fileName)||a.lineNum-b.lineNum);
 
-  if(!results.length){list.innerHTML='<div class="sr-empty">No results found</div>';return}
+  if(!results.length){list.innerHTML='<div class="sr-empty">未找到结果</div>';return}
 
   let h='';
   results.forEach(r=>{
@@ -1506,7 +1507,7 @@ async function openFromSearch(fileId,lineNum,query){
 
 // ===== FEATURE: EXPORT PDF =====
 function exportPDF(){
-  if(!cfile&&!ed.value){toast('No file to export');return}
+  if(!cfile&&!ed.value){toast('没有可导出的文件');return}
   // Get current preview HTML
   const prevHTML=pr.innerHTML;
   const title=cfile?cfile.name:'untitled';
@@ -1546,11 +1547,11 @@ function exportPDF(){
 
 // ===== FEATURE: TEMPLATES =====
 const TEMPLATES=[
-  {name:'Weekly Report',desc:'Weekly report template (done / plans / issues)',content:'# Weekly Report\n\n**Period:** YYYY-MM-DD ~ YYYY-MM-DD\n**Author:** \n\n---\n\n## This Week\n\n- Task 1: Description\n- Task 2: Description\n\n## Next Week\n\n- Plan 1: Description\n- Plan 2: Description\n\n## Issues & Risks\n\n- Issue 1: Description and status\n- Risk 1: Description and mitigation\n'},
-  {name:'Meeting Notes',desc:'Meeting notes template (time / attendees / decisions / action items)',content:'# Meeting Notes\n\n**Date:** YYYY-MM-DD\n**Time:** HH:MM - HH:MM\n**Attendees:** \n**Location:** \n\n---\n\n## Agenda\n\n1. Topic 1\n2. Topic 2\n\n## Discussion\n\n### Topic 1\n\n- Key points\n- Decisions made\n\n### Topic 2\n\n- Key points\n- Decisions made\n\n## Action Items\n\n- [ ] Action 1 (Assignee: @name, Due: YYYY-MM-DD)\n- [ ] Action 2 (Assignee: @name, Due: YYYY-MM-DD)\n'},
-  {name:'API Documentation',desc:'API doc template (method / URL / params / response)',content:'# API Documentation\n\n## Endpoint Name\n\n**Method:** GET/POST\n**URL:** `/api/v1/resource`\n**Auth:** Bearer Token\n\n### Request Parameters\n\n| Param | Type | Required | Description |\n|-------|------|----------|-------------|\n| id | string | Yes | Resource ID |\n\n### Request Example\n\n```json\n{\n  "id": "abc123"\n}\n```\n\n### Response\n\n```json\n{\n  "code": 0,\n  "message": "success",\n  "data": {}\n}\n```\n\n### Error Codes\n\n| Code | Description |\n|------|-------------|\n| 400 | Bad Request |\n| 401 | Unauthorized |\n'},
-  {name:'README',desc:'Project README template (intro / install / usage / license)',content:'# Project Name\n\nBrief description of the project.\n\n## Features\n\n- Feature 1\n- Feature 2\n- Feature 3\n\n## Prerequisites\n\n- Requirement 1\n- Requirement 2\n\n## Installation\n\n```bash\ngit clone https://github.com/user/repo.git\ncd repo\n```\n\n## Usage\n\n```bash\n./start.sh\n```\n\n## License\n\nMIT\n'},
-  {name:'Technical Blog',desc:'Blog post template (title / abstract / body / references)',content:'# Blog Title\n\n> A brief one-line summary of this article.\n\n## Introduction\n\nIntroduce the problem and context here.\n\n## Background\n\nBackground knowledge and related work.\n\n## Main Content\n\n### Section 1\n\nDetailed explanation...\n\n### Section 2\n\nDetailed explanation...\n\n## Conclusion\n\nSummarize the key takeaways.\n\n## References\n\n- [Link 1](https://example.com)\n- [Link 2](https://example.com)\n'}
+  {name:'周报',desc:'本周工作总结与下周计划',content:'# 周报\n\n**时间：** YYYY-MM-DD ~ YYYY-MM-DD\n**作者：** \n\n---\n\n## 本周工作\n\n- 任务 1：说明\n- 任务 2：说明\n\n## 下周计划\n\n- 计划 1：说明\n- 计划 2：说明\n\n## 问题与风险\n\n- 问题 1：描述与状态\n- 风险 1：描述与缓解措施\n'},
+  {name:'会议纪要',desc:'会议时间、议题、决议与待办',content:'# 会议纪要\n\n**日期：** YYYY-MM-DD\n**时间：** HH:MM - HH:MM\n**参会人员：** \n**地点：** \n\n---\n\n## 议程\n\n1. 议题 1\n2. 议题 2\n\n## 讨论\n\n### 议题 1\n\n- 要点\n- 决议\n\n### 议题 2\n\n- 要点\n- 决议\n\n## 待办事项\n\n- [ ] 待办 1（负责人：@name，截止：YYYY-MM-DD）\n- [ ] 待办 2（负责人：@name，截止：YYYY-MM-DD）\n'},
+  {name:'API 文档',desc:'接口名称、方法、参数与响应',content:'# API 文档\n\n## 接口名称\n\n**方法：** GET/POST\n**URL：** `/api/v1/resource`\n**认证：** Bearer Token\n\n### 请求参数\n\n| 参数 | 类型 | 必填 | 说明 |\n|-------|------|----------|-------------|\n| id | string | 是 | 资源 ID |\n\n### 请求示例\n\n```json\n{\n  "id": "abc123"\n}\n```\n\n### 响应\n\n```json\n{\n  "code": 0,\n  "message": "success",\n  "data": {}\n}\n```\n\n### 错误码\n\n| 状态码 | 说明 |\n|------|-------------|\n| 400 | 请求错误 |\n| 401 | 未授权 |\n'},
+  {name:'项目说明',desc:'项目简介、安装、使用与许可',content:'# 项目名称\n\n项目简介。\n\n## 功能特性\n\n- 功能 1\n- 功能 2\n- 功能 3\n\n## 环境要求\n\n- 依赖 1\n- 依赖 2\n\n## 安装\n\n```bash\ngit clone https://github.com/user/repo.git\ncd repo\n```\n\n## 使用\n\n```bash\n./start.sh\n```\n\n## 许可证\n\nMIT\n'},
+  {name:'技术博客',desc:'标题、摘要、正文与参考链接',content:'# 博客标题\n\n> 一句话摘要。\n\n## 引言\n\n介绍问题背景与上下文。\n\n## 背景知识\n\n相关背景知识与已有工作。\n\n## 正文\n\n### 第一章\n\n详细阐述...\n\n### 第二章\n\n详细阐述...\n\n## 总结\n\n总结关键要点。\n\n## 参考资料\n\n- [链接 1](https://example.com)\n- [链接 2](https://example.com)\n'}
 ];
 
 let selectedTemplateIndex=-1;
@@ -1567,7 +1568,7 @@ function openTemplates(){
   });
   listHTML+='</div>';
 
-  box.innerHTML='<h3>Create from Template</h3>'+listHTML+'<div class="md-act"><button onclick="closeTemplates()">Cancel</button><button class="pri" onclick="createFromTemplate()">Create</button></div>';
+  box.innerHTML='<h3>从模板创建</h3>'+listHTML+'<div class="md-act"><button onclick="closeTemplates()">取消</button><button class="pri" onclick="createFromTemplate()">创建</button></div>';
   overlay.classList.add('open');
 }
 
@@ -1582,7 +1583,7 @@ function closeTemplates(){
 }
 
 async function createFromTemplate(){
-  if(selectedTemplateIndex<0){toast('Select a template first');return}
+  if(selectedTemplateIndex<0){toast('请先选择模板');return}
   const tpl=TEMPLATES[selectedTemplateIndex];
   const baseName=tpl.name.toLowerCase().replace(/\s+/g,'-');
   // Find next available number
@@ -1596,7 +1597,7 @@ async function createFromTemplate(){
   closeTemplates();
   await ldtree();
   openTab(fl.id);
-  toast('Created: '+fileName);
+  toast('已创建：'+fileName);
 }
 </script>
 </body>
