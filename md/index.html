@@ -1,36 +1,157 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="warm">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Markdown Editor</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark-dimmed.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark-dimmed.min.css" id="hljs-theme">
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
 <style>
 *,::before,::after{margin:0;padding:0;box-sizing:border-box}
 
-:root{
+/* ===== THEME: Warm Amber Dark ===== */
+:root,[data-theme="warm"]{
   --bg:#121210;
   --bg2:#1a1a17;
   --bg3:#21211d;
   --bdr:rgba(255,255,255,0.06);
   --bdr2:rgba(255,255,255,0.10);
-
   --tx1:rgba(255,255,255,0.87);
   --tx2:rgba(255,255,255,0.50);
   --tx3:rgba(255,255,255,0.28);
   --tx4:rgba(255,255,255,0.14);
-
   --accent:#d4a574;
   --accent-bg:rgba(212,165,116,0.10);
+  --accent-bdr:rgba(212,165,116,0.2);
   --red:#e05555;
   --red-bg:rgba(224,85,85,0.10);
-
+  --h-color:#fff;
+  --strong-color:#fff;
+  --svg-ico:#a099d4;
+  --overlay:rgba(0,0,0,0.5);
+  --shadow:rgba(0,0,0,0.4);
+  --shadow-sm:rgba(0,0,0,0.35);
+  --btn-hover:rgba(255,255,255,0.04);
+  --btn-active:rgba(255,255,255,0.08);
+  --item-hover:rgba(255,255,255,0.03);
+  --table-stripe:rgba(255,255,255,0.015);
+  --scroll-thumb:rgba(255,255,255,0.06);
+  --scroll-thumb-hover:rgba(255,255,255,0.12);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Noto Sans SC",sans-serif;
   --mono:"SF Mono","JetBrains Mono","Fira Code","Cascadia Code",monospace;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;
+  --fw-title:600;
+  --fw-btn:500;
+  color-scheme:dark;
+}
 
-  --r4:4px; --r6:6px; --r8:8px; --r12:12px;
+/* ===== THEME: Brutalist Raw ===== */
+[data-theme="brutalist"]{
+  --bg:#f4f1ec;
+  --bg2:#ebe7e0;
+  --bg3:#e0dbd3;
+  --bdr:rgba(0,0,0,0.10);
+  --bdr2:rgba(0,0,0,0.18);
+  --tx1:#13110e;
+  --tx2:#5c554a;
+  --tx3:#968e82;
+  --tx4:#c7bfb2;
+  --accent:#1a1a1a;
+  --accent-bg:rgba(0,0,0,0.05);
+  --accent-bdr:rgba(0,0,0,0.15);
+  --red:#b33025;
+  --red-bg:rgba(179,48,37,0.08);
+  --h-color:#0a0806;
+  --strong-color:#0a0806;
+  --svg-ico:#4a4440;
+  --overlay:rgba(0,0,0,0.25);
+  --shadow:rgba(0,0,0,0.15);
+  --shadow-sm:rgba(0,0,0,0.10);
+  --btn-hover:rgba(0,0,0,0.04);
+  --btn-active:rgba(0,0,0,0.08);
+  --item-hover:rgba(0,0,0,0.02);
+  --table-stripe:rgba(0,0,0,0.02);
+  --scroll-thumb:rgba(0,0,0,0.10);
+  --scroll-thumb-hover:rgba(0,0,0,0.18);
+  --font:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC",sans-serif;
+  --mono:"JetBrains Mono","SF Mono","Fira Code",monospace;
+  --r4:0;--r6:0;--r8:0;--r12:0;
+  --fw-title:700;
+  --fw-btn:600;
+  color-scheme:light;
+}
+
+/* ===== THEME: Nordic Light ===== */
+[data-theme="nordic"]{
+  --bg:#f5f7fa;
+  --bg2:#ebeff5;
+  --bg3:#dde3ed;
+  --bdr:rgba(0,0,0,0.05);
+  --bdr2:rgba(0,0,0,0.10);
+  --tx1:#1a2533;
+  --tx2:#54677d;
+  --tx3:#8498ae;
+  --tx4:#bfcad7;
+  --accent:#3568a6;
+  --accent-bg:rgba(53,104,166,0.08);
+  --accent-bdr:rgba(53,104,166,0.18);
+  --red:#c0392b;
+  --red-bg:rgba(192,57,43,0.06);
+  --h-color:#0c1520;
+  --strong-color:#0c1520;
+  --svg-ico:#5577a5;
+  --overlay:rgba(0,0,0,0.18);
+  --shadow:rgba(0,0,0,0.08);
+  --shadow-sm:rgba(0,0,0,0.06);
+  --btn-hover:rgba(0,0,0,0.03);
+  --btn-active:rgba(0,0,0,0.06);
+  --item-hover:rgba(0,0,0,0.02);
+  --table-stripe:rgba(0,0,0,0.015);
+  --scroll-thumb:rgba(0,0,0,0.08);
+  --scroll-thumb-hover:rgba(0,0,0,0.15);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;
+  --fw-title:600;
+  --fw-btn:500;
+  color-scheme:light;
+}
+
+/* ===== THEME: Editorial Classic ===== */
+[data-theme="editorial"]{
+  --bg:#fcfaf5;
+  --bg2:#f5f0e7;
+  --bg3:#ede6d9;
+  --bdr:rgba(0,0,0,0.07);
+  --bdr2:rgba(0,0,0,0.13);
+  --tx1:#2a2014;
+  --tx2:#6b5d44;
+  --tx3:#9b8d72;
+  --tx4:#c7baa3;
+  --accent:#8b4513;
+  --accent-bg:rgba(139,69,19,0.07);
+  --accent-bdr:rgba(139,69,19,0.15);
+  --red:#a23b2e;
+  --red-bg:rgba(162,59,46,0.06);
+  --h-color:#1a1004;
+  --strong-color:#1a1004;
+  --svg-ico:#6b5d44;
+  --overlay:rgba(0,0,0,0.20);
+  --shadow:rgba(0,0,0,0.12);
+  --shadow-sm:rgba(0,0,0,0.08);
+  --btn-hover:rgba(0,0,0,0.03);
+  --btn-active:rgba(0,0,0,0.06);
+  --item-hover:rgba(0,0,0,0.02);
+  --table-stripe:rgba(0,0,0,0.015);
+  --scroll-thumb:rgba(0,0,0,0.08);
+  --scroll-thumb-hover:rgba(0,0,0,0.15);
+  --font:"Georgia","Songti SC","Noto Serif SC","PingFang SC",serif;
+  --mono:"SF Mono","JetBrains Mono","Fira Code",monospace;
+  --r4:3px;--r6:5px;--r8:7px;--r12:10px;
+  --fw-title:700;
+  --fw-btn:500;
+  color-scheme:light;
 }
 
 html,body{height:100%;overflow:hidden}
@@ -46,8 +167,8 @@ body{
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:10px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.12)}
+::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
 
 /* ---------- top bar ---------- */
 .top{
@@ -78,20 +199,27 @@ body{
   transition:all .15s;
   display:inline-flex;align-items:center;gap:3px;
   letter-spacing:0.1px;
+  font-weight:var(--fw-btn);
 }
-.btn:hover{background:rgba(255,255,255,0.04);color:var(--tx1)}
-.btn:active{background:rgba(255,255,255,0.08)}
+.btn:hover{background:var(--btn-hover);color:var(--tx1)}
+.btn:active{background:var(--btn-active)}
 .btn.primary{
   background:var(--accent-bg);
   color:var(--accent);
-  border-color:rgba(212,165,116,0.2);
+  border-color:var(--accent-bdr);
   font-weight:500;
 }
-.btn.primary:hover{background:rgba(212,165,116,0.18)}
+.btn.primary:hover{background:color-mix(in srgb,var(--accent-bg) 100%,var(--tx1) 8%)}
 .sep{width:1px;height:16px;background:var(--bdr);margin:0 4px}
 
-.top-r{display:flex;align-items:center;gap:2px}
+.top-r{display:flex;align-items:center;gap:4px}
 .top-r .btn{padding:0 6px;font-size:11px}
+.top-r .btn.theme-btn{padding:0 8px;font-size:11px;gap:4px}
+.theme-btn .th-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid var(--bdr2)}
+.th-dot.th-warm{background:#d4a574}
+.th-dot.th-brutalist{background:#1a1a1a}
+.th-dot.th-nordic{background:#3568a6}
+.th-dot.th-editorial{background:#8b4513}
 
 /* ---------- layout ---------- */
 .main{display:flex;flex:1;overflow:hidden}
@@ -122,7 +250,7 @@ body{
   display:flex;align-items:center;justify-content:center;
   transition:all .15s;
 }
-.side-hd-act button:hover{background:rgba(255,255,255,0.05);color:var(--tx1)}
+.side-hd-act button:hover{background:var(--btn-hover);color:var(--tx1)}
 
 .side-tree{flex:1;overflow-y:auto;padding:4px 0}
 
@@ -136,7 +264,7 @@ body{
   transition:all .1s;
   -webkit-user-drag:element;
 }
-.tree-item:hover{background:rgba(255,255,255,0.03);color:var(--tx1)}
+.tree-item:hover{background:var(--item-hover);color:var(--tx1)}
 .tree-item.sel{background:var(--accent-bg);color:var(--accent)}
 .tree-item .ti-ico{width:15px;text-align:center;flex-shrink:0;font-size:12px}
 .tree-item .ti-arrow{width:12px;text-align:center;flex-shrink:0;font-size:8px;color:var(--tx3);transition:transform .15s}
@@ -151,7 +279,7 @@ body{
   transition:all .1s;
   display:flex;align-items:center;justify-content:center;
 }
-.tree-item .ti-act button:hover{background:rgba(255,255,255,0.08);color:var(--tx1)}
+.tree-item .ti-act button:hover{background:var(--btn-hover);color:var(--tx1)}
 .tree-item .ti-act button.del:hover{background:var(--red-bg);color:var(--red)}
 
 .tree-children{overflow:hidden}
@@ -199,7 +327,7 @@ body{
   display:flex;align-items:center;justify-content:center;
   transition:all .15s;
 }
-.ed-opt button:hover{background:rgba(255,255,255,0.05);color:var(--tx1)}
+.ed-opt button:hover{background:var(--btn-hover);color:var(--tx1)}
 .ed-opt button.on{color:var(--accent);background:var(--accent-bg)}
 
 .ed-area{flex:1;position:relative;overflow:hidden}
@@ -251,7 +379,7 @@ body{
 .md{font-size:15px;line-height:1.85;color:var(--tx1)}
 
 .md h1,.md h2,.md h3,.md h4,.md h5,.md h6{
-  font-weight:600;line-height:1.25;color:#fff;
+  font-weight:var(--fw-title);line-height:1.25;color:var(--h-color);
   margin:1.4em 0 .5em;letter-spacing:-0.3px;
 }
 .md h1{font-size:1.75em}
@@ -263,7 +391,7 @@ body{
 .md a{color:var(--accent);text-decoration:none}
 .md a:hover{text-decoration:underline}
 
-.md strong{font-weight:600;color:#fff}
+.md strong{font-weight:var(--fw-title);color:var(--strong-color)}
 .md em{color:var(--tx2)}
 .md del{color:var(--tx3)}
 .md code{
@@ -294,8 +422,8 @@ body{
   border-radius:var(--r6);overflow:hidden;
 }
 .md th,.md td{border:1px solid var(--bdr);padding:8px 14px;text-align:left}
-.md th{background:var(--bg2);font-weight:600;color:var(--tx1)}
-.md tr:nth-child(even){background:rgba(255,255,255,0.015)}
+.md th{background:var(--bg2);font-weight:var(--fw-title);color:var(--tx1)}
+.md tr:nth-child(even){background:var(--table-stripe)}
 .md img{max-width:100%;border-radius:var(--r6);margin:.5em 0}
 .md hr{border:none;border-top:1px solid var(--bdr);margin:2em 0}
 .md input[type="checkbox"]{accent-color:var(--accent);margin-right:6px}
@@ -308,6 +436,29 @@ body{
   color:var(--tx3);font-size:13px;
 }
 
+/* ---------- theme switcher dropdown ---------- */
+.theme-drop{
+  position:absolute;top:100%;right:0;
+  margin-top:4px;
+  background:var(--bg2);
+  border:1px solid var(--bdr2);
+  border-radius:var(--r8);
+  padding:4px 0;
+  min-width:160px;
+  box-shadow:0 8px 30px var(--shadow);
+  display:none;z-index:110;
+}
+.theme-drop.open{display:block}
+.theme-opt{
+  padding:7px 14px;font-size:12px;
+  color:var(--tx2);cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  transition:all .1s;
+}
+.theme-opt:hover{background:var(--btn-hover);color:var(--tx1)}
+.theme-opt.cur{color:var(--accent);background:var(--accent-bg)}
+.theme-opt .th-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid var(--bdr2)}
+
 /* ---------- context menu ---------- */
 .cmenu{
   position:fixed;z-index:100;
@@ -315,20 +466,20 @@ body{
   border:1px solid var(--bdr2);
   border-radius:var(--r8);padding:4px 0;
   min-width:150px;display:none;
-  box-shadow:0 8px 30px rgba(0,0,0,.4);
+  box-shadow:0 8px 30px var(--shadow);
 }
 .cmenu-item{
   padding:6px 14px;font-size:12px;
   color:var(--tx2);cursor:pointer;
   transition:all .1s;
 }
-.cmenu-item:hover{background:rgba(255,255,255,0.04);color:var(--tx1)}
+.cmenu-item:hover{background:var(--btn-hover);color:var(--tx1)}
 .cmenu-sep{height:1px;background:var(--bdr);margin:4px 0}
 
 /* ---------- modal ---------- */
 .md-overlay{
   position:fixed;inset:0;
-  background:rgba(0,0,0,.5);
+  background:var(--overlay);
   z-index:50;display:none;
   align-items:center;justify-content:center;
 }
@@ -338,9 +489,9 @@ body{
   border:1px solid var(--bdr2);
   border-radius:var(--r12);padding:24px;
   min-width:300px;max-width:420px;
-  box-shadow:0 12px 40px rgba(0,0,0,.5);
+  box-shadow:0 12px 40px var(--shadow);
 }
-.md-box h3{font-size:14px;font-weight:600;margin-bottom:14px}
+.md-box h3{font-size:14px;font-weight:var(--fw-title);margin-bottom:14px}
 .md-box input{
   width:100%;padding:7px 12px;
   background:var(--bg3);border:1px solid var(--bdr);
@@ -359,13 +510,13 @@ body{
   background:transparent;color:var(--tx2);
   transition:all .15s;
 }
-.md-box button:hover{background:rgba(255,255,255,.04);color:var(--tx1)}
+.md-box button:hover{background:var(--btn-hover);color:var(--tx1)}
 .md-box button.pri{
   background:var(--accent-bg);
   color:var(--accent);
-  border-color:rgba(212,165,116,.2);
+  border-color:var(--accent-bdr);
 }
-.md-box button.pri:hover{background:rgba(212,165,116,.18)}
+.md-box button.pri:hover{background:color-mix(in srgb,var(--accent-bg) 100%,var(--tx1) 8%)}
 .md-box button.danger{color:var(--red);border-color:var(--red-bg)}
 .md-box button.danger:hover{background:var(--red-bg)}
 
@@ -377,7 +528,7 @@ body{
   font-size:12px;color:var(--tx2);
   z-index:60;opacity:0;
   transition:opacity .25s;pointer-events:none;
-  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  box-shadow:0 4px 16px var(--shadow-sm);
 }
 .toast.show{opacity:1}
 
@@ -389,7 +540,7 @@ body{
     width:280px;transform:translateX(-100%);
     transition:transform .25s cubic-bezier(0.16,1,0.3,1);
   }
-  .sidebar.open{transform:translateX(0);box-shadow:8px 0 30px rgba(0,0,0,.5)}
+  .sidebar.open{transform:translateX(0);box-shadow:8px 0 30px var(--shadow)}
   .drag{display:none}
   .editor-panel{border-right:none}
   .preview{display:none}
@@ -409,7 +560,7 @@ body{
 
 <div class="top">
   <div class="top-l">
-    <button class="btn" onclick="toggleSide()" id="tog-side">☰</button>
+    <button class="btn" onclick="toggleSide()" id="tog-side">&#9776;</button>
     <svg width="13" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
       <polyline points="14 2 14 8 20 8"/>
@@ -427,8 +578,8 @@ body{
     <button class="btn" onclick="insL('ol')">1.</button>
     <button class="btn" onclick="ins('> ','')">&ldquo;</button>
     <span class="sep"></span>
-    <button class="btn" onclick="ins('\`','\`')">&lt;/&gt;</button>
-    <button class="btn" onclick="ins('\n\`\`\`\n\n\`\`\`\n','')">Code</button>
+    <button class="btn" onclick="ins('`','`')">&lt;/&gt;</button>
+    <button class="btn" onclick="ins('\n```\n\n```\n','')">Code</button>
     <button class="btn" onclick="ins('[','](url)')">Link</button>
     <button class="btn" onclick="ins('![alt](','')')">Img</button>
     <span class="sep"></span>
@@ -439,6 +590,17 @@ body{
     <button class="btn" onclick="toggleLN()" id="btn-ln">#</button>
     <button class="btn" onclick="downloadCur()">Export</button>
     <button class="btn primary" onclick="copyHTML()">Copy HTML</button>
+    <div style="position:relative">
+      <button class="btn theme-btn" onclick="toggleThemeDrop()" id="btn-theme">
+        <span class="th-dot" id="th-dot-cur"></span>Theme
+      </button>
+      <div class="theme-drop" id="themeDrop">
+        <div class="theme-opt" onclick="setTheme('warm')"><span class="th-dot th-warm"></span>Warm Amber</div>
+        <div class="theme-opt" onclick="setTheme('brutalist')"><span class="th-dot th-brutalist"></span>Brutalist</div>
+        <div class="theme-opt" onclick="setTheme('nordic')"><span class="th-dot th-nordic"></span>Nordic Light</div>
+        <div class="theme-opt" onclick="setTheme('editorial')"><span class="th-dot th-editorial"></span>Editorial</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -502,6 +664,48 @@ body{
 <div class="toast" id="toast"></div>
 
 <script>
+// ---- theme ----
+const THEME_KEY='md-theme';
+const HLJS_THEMES={
+  warm:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark-dimmed.min.css',
+  brutalist:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css',
+  nordic:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css',
+  editorial:'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css'
+};
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const hl=document.getElementById('hljs-theme');
+  if(hl)hl.href=HLJS_THEMES[t]||HLJS_THEMES.warm;
+  localStorage.setItem(THEME_KEY,t);
+  updateThemeUI(t);
+}
+function updateThemeUI(t){
+  const dot=document.getElementById('th-dot-cur');
+  dot.className='th-dot th-'+t;
+  document.querySelectorAll('.theme-opt').forEach(el=>{
+    el.classList.toggle('cur',el.onclick.toString().includes("'"+t+"'"));
+  });
+}
+function toggleThemeDrop(){
+  const d=document.getElementById('themeDrop');
+  const was=d.classList.contains('open');
+  d.classList.toggle('open');
+  if(!was)setTimeout(()=>document.addEventListener('click',function cl(e){
+    if(!e.target.closest('#btn-theme')&&!e.target.closest('.theme-drop')){
+      d.classList.remove('open');document.removeEventListener('click',cl);
+    }
+  },0));
+}
+function setTheme(t){
+  applyTheme(t);
+  document.getElementById('themeDrop').classList.remove('open');
+  toast('Theme: '+t);
+}
+(function(){
+  const saved=localStorage.getItem(THEME_KEY)||'warm';
+  applyTheme(saved);
+})();
+
 // ---- DB ----
 const DB='md-editor-db',DBV=1;let db;
 function opnDB(){return new Promise((ok,fail)=>{const r=indexedDB.open(DB,DBV);r.onupgradeneeded=e=>{const d=e.target.result;d.objectStoreNames.contains('folders')||d.createObjectStore('folders',{keyPath:'id'});d.objectStoreNames.contains('files')||d.createObjectStore('files',{keyPath:'id'});d.objectStoreNames.contains('settings')||d.createObjectStore('settings',{keyPath:'key'})};r.onsuccess=e=>{db=e.target.result;ok(db)};r.onerror=e=>fail(e)})}
@@ -549,7 +753,7 @@ function rFolder(fd,fds,fls){
     ondrop="itemDrop(event,'${fd.id}')">`;
   h+=`<div class="tree-item f" oncontextmenu="cm(event,'folder','${fd.id}')">
     <span class="ti-arrow${on?' on':''}" onclick="event.stopPropagation();tog('${fd.id}')">&#9654;</span>
-    <span class="ti-ico" style="color:#d4a574">&#128193;</span>
+    <span class="ti-ico" style="color:var(--accent)">&#128193;</span>
     <span class="ti-name" onclick="tog('${fd.id}')">${esc(fd.name)}</span>
     <span class="ti-act">
       <button onclick="event.stopPropagation();rnFd('${fd.id}')" title="Rename">&#9998;</button>
@@ -564,13 +768,12 @@ function rFolder(fd,fds,fls){
 }
 function rFile(fl){
   const ico=fl.type==='svg'?'&#128444;':fl.type==='txt'?'&#128196;':'&#128462;';
-  const c=fl.type==='svg'?'#a099d4':'var(--tx3)';
   const cls=fl.id===cfid?'tree-item fl sel':'tree-item fl';
   return `<div class="${cls}" data-file-id="${fl.id}" draggable="true"
     onclick="sel('${fl.id}')"
     ondragstart="fsDragStart(event,'${fl.id}')"
     oncontextmenu="cm(event,'file','${fl.id}')">
-    <span class="ti-ico" style="color:${c}">${ico}</span>
+    <span class="ti-ico" style="color:var(--svg-ico)">${ico}</span>
     <span class="ti-name">${esc(fl.name)}</span>
     <span class="ti-act">
       <button onclick="event.stopPropagation();rnFl('${fl.id}','${esc(fl.name)}')" title="Rename">&#9998;</button>
