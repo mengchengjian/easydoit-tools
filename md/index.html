@@ -383,7 +383,7 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
     <button class="btn" onclick="ins('`','`')" title="内联代码">&lt;/&gt;</button>
     <button class="btn" onclick="ins('\n```\n\n```\n','')" title="代码块">代码块</button>
     <button class="btn" onclick="ins('[','](url)')" title="链接">链接</button>
-    <button class="btn" onclick="ins('![alt](','')')" title="图片">图片</button>
+    <button class="btn" onclick="insImg()" title="插入图片">图片</button>
     <span class="sep"></span>
     <button class="btn" onclick="insTable()" title="表格">表格</button>
     <button class="btn" onclick="ins('---\n','')" title="分割线">分割线</button>
@@ -1401,6 +1401,85 @@ const _origEdInput=ed.oninput;
 ed.addEventListener('input',function(e){
   if(sideTab==='outline')buildTOC();
 });
+
+// ===== IMAGE PASTE / DROP / PICK =====
+const imgInput=document.createElement('input');
+imgInput.type='file';imgInput.accept='image/*';imgInput.multiple=true;imgInput.style.display='none';
+document.body.appendChild(imgInput);
+
+imgInput.addEventListener('change',function(){
+  const files=imgInput.files;if(!files.length)return;
+  processImageFiles(files,ed.selectionStart);
+  imgInput.value='';
+});
+
+// Override toolbar image button
+function insImg(){
+  imgInput.click();
+}
+
+ed.addEventListener('paste',function(e){
+  const items=e.clipboardData?.items;if(!items)return;
+  for(let i=0;i<items.length;i++){
+    if(items[i].type.startsWith('image/')){
+      e.preventDefault();
+      const blob=items[i].getAsFile();
+      const reader=new FileReader();
+      reader.onload=function(ev){
+        insertAtCursor(ed,'![image]('+ev.target.result+')');
+        updPrev();updLn();markUnsaved();
+      };
+      reader.readAsDataURL(blob);
+      return;
+    }
+  }
+});
+
+const edArea=document.getElementById('edArea');
+edArea.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();edArea.style.outline='2px dashed var(--accent)'});
+edArea.addEventListener('dragleave',function(e){edArea.style.outline=''});
+edArea.addEventListener('drop',function(e){
+  e.preventDefault();e.stopPropagation();
+  edArea.style.outline='';
+  const files=e.dataTransfer?.files;if(!files||!files.length)return;
+  // get drop position in textarea
+  const rect=ed.getBoundingClientRect();
+  const dropY=e.clientY-rect.top+ed.scrollTop;
+  const lh=parseFloat(getComputedStyle(ed).lineHeight)||25.2;
+  const line=Math.floor(dropY/lh);
+  let pos=0;const lines=ed.value.split('\n');
+  for(let i=0;i<Math.min(line,lines.length);i++)pos+=lines[i].length+1;
+  processImageFiles(files,pos);
+});
+
+function processImageFiles(files,pos){
+  const imgFiles=Array.from(files).filter(f=>f.type.startsWith('image/'));
+  if(!imgFiles.length)return;
+  let done=0;const results=[];
+  imgFiles.forEach((f,i)=>{
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      results[i]=ev.target.result;
+      done++;if(done===imgFiles.length){
+        const cur=ed.selectionStart;
+        ed.setSelectionRange(pos,pos);
+        results.forEach((url,idx)=>{
+          insertAtCursor(ed,(idx>0?'\n':'')+'![image]('+url+')');
+        });
+        ed.setSelectionRange(cur,cur);
+        updPrev();updLn();markUnsaved();
+      }
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function insertAtCursor(ta,text){
+  const start=ta.selectionStart,end=ta.selectionEnd;
+  ta.value=ta.value.slice(0,start)+text+ta.value.slice(end);
+  ta.selectionStart=ta.selectionEnd=start+text.length;
+  ta.focus();
+}
 
 // Preview scroll → TOC highlight
 prPanel.addEventListener('scroll',updateActiveTOC);
