@@ -1176,12 +1176,12 @@ let st;ed.addEventListener('input',()=>{
   },600);
 });
 ed.addEventListener('scroll',()=>{edLn.style.transform='translateY('+(-ed.scrollTop+28)+'px)'});
-ed.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ed.selectionStart,d=ed.selectionEnd;ed.value=ed.value.substring(0,s)+'  '+ed.value.substring(d);ed.selectionStart=ed.selectionEnd=s+2;updPrev();updLn();markUnsaved()}if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveCur()}});
+ed.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ed.selectionStart,d=ed.selectionEnd;ed.setRangeText('  ',s,d,'end');updPrev();updLn();markUnsaved()}if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveCur()}});
 
-function ins(b,a){const s=ed.selectionStart,d=ed.selectionEnd,v=ed.value.substring(s,d);ed.value=ed.value.substring(0,s)+b+v+a+ed.value.substring(d);ed.selectionStart=s+b.length;ed.selectionEnd=d+b.length;ed.focus();updPrev();updLn();markUnsaved()}
-function insH(){const s=ed.selectionStart,ls=ed.value.lastIndexOf('\n',s-1)+1;const le=ed.value.indexOf('\n',s)===-1?ed.value.length:ed.value.indexOf('\n',s);const line=ed.value.substring(ls,le);const m=line.match(/^(#{1,6})\s/);let l=m?m[1].length:0;l=l>=6?0:l+1;ed.value=ed.value.substring(0,ls)+(l===0?line.replace(/^#{1,6}\s*/,''):'#'.repeat(l)+' '+line.replace(/^#{1,6}\s*/,''))+ed.value.substring(le);ed.focus();updPrev();updLn();markUnsaved()}
-function insL(t){const s=ed.selectionStart,ls=ed.value.lastIndexOf('\n',s-1)+1;const le=ed.value.indexOf('\n',s)===-1?ed.value.length:ed.value.indexOf('\n',s);const line=ed.value.substring(ls,le);const p=t==='ul'?'- ':'1. ';const h=/^[\-\*\+]\s/.test(line)||/^\d+\.\s/.test(line);ed.value=ed.value.substring(0,ls)+(h?line.replace(/^[\-\*\+]\s|^\d+\.\s/,''):p+line)+ed.value.substring(le);ed.focus();updPrev();updLn();markUnsaved()}
-function insTable(){const t='\n| H1 | H2 | H3 |\n|---|---|---|\n|   |   |   |\n';const s=ed.selectionStart;ed.value=ed.value.substring(0,s)+t+ed.value.substring(s);ed.selectionStart=ed.selectionEnd=s+t.length;ed.focus();updPrev();updLn();markUnsaved()}
+function ins(b,a){const s=ed.selectionStart,d=ed.selectionEnd,v=ed.value.substring(s,d);ed.setRangeText(b+v+a,s,d,'end');ed.setSelectionRange(s+b.length,s+b.length);ed.focus();updPrev();updLn();markUnsaved()}
+function insH(){const s=ed.selectionStart,ls=ed.value.lastIndexOf('\n',s-1)+1;const le=ed.value.indexOf('\n',s)===-1?ed.value.length:ed.value.indexOf('\n',s);const line=ed.value.substring(ls,le);const m=line.match(/^(#{1,6})\s/);let l=m?m[1].length:0;l=l>=6?0:l+1;const nl=l===0?line.replace(/^#{1,6}\s*/,''):'#'.repeat(l)+' '+line.replace(/^#{1,6}\s*/,'');ed.setRangeText(nl,ls,le,'end');ed.focus();updPrev();updLn();markUnsaved()}
+function insL(t){const s=ed.selectionStart,ls=ed.value.lastIndexOf('\n',s-1)+1;const le=ed.value.indexOf('\n',s)===-1?ed.value.length:ed.value.indexOf('\n',s);const line=ed.value.substring(ls,le);const p=t==='ul'?'- ':'1. ';const h=/^[\-\*\+]\s/.test(line)||/^\d+\.\s/.test(line);const nl=h?line.replace(/^[\-\*\+]\s|^\d+\.\s/,''):p+line;ed.setRangeText(nl,ls,le,'end');ed.focus();updPrev();updLn();markUnsaved()}
+function insTable(){const t='\n| H1 | H2 | H3 |\n|---|---|---|\n|   |   |   |\n';const s=ed.selectionStart;ed.setRangeText(t,s,s,'end');ed.focus();updPrev();updLn();markUnsaved()}
 function toggleSide(){if(innerWidth<=768){sidebar.classList.toggle('open');return}sidebar.classList.toggle('closed');document.getElementById('dragL').style.display=sidebar.classList.contains('closed')?'none':''}
 
 let rs=null,rsX,rsW;
@@ -1237,7 +1237,7 @@ function srReplace(){
   const q=document.getElementById('srFind').value;const r=document.getElementById('srRepl').value;
   if(!q)return;
   const pos=srMatches[srIdx];
-  ed.value=ed.value.substring(0,pos)+r+ed.value.substring(pos+q.length);
+  ed.setRangeText(r,pos,pos+q.length,'end');
   const diff=r.length-q.length;
   // Rebuild match positions after current
   const newMatches=[];for(let i=0;i<srMatches.length;i++){
@@ -1257,7 +1257,7 @@ function srReplaceAll(){
   const r=document.getElementById('srRepl').value;
   const flags=srCaseSensitive?'g':'gi';const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),flags);
   const count=(ed.value.match(re)||[]).length;
-  ed.value=ed.value.replace(re,r);
+  ed.setRangeText(ed.value.replace(re,r),0,ed.value.length,'end');
   srMatches=[];srIdx=-1;document.getElementById('srCount').textContent='已替换 '+count;
   updPrev();updLn();markUnsaved();
 }
@@ -1291,9 +1291,7 @@ ed.addEventListener('paste',e=>{
       inserted+='![pasted-image]('+b64+')\n';
       done++;
       if(done===processImages.length){
-        ed.value=ed.value.substring(0,s)+inserted+ed.value.substring(s);
-        const pos=s+inserted.length;
-        ed.selectionStart=ed.selectionEnd=pos;
+        ed.setRangeText(inserted,s,s,'end');
         ed.focus();updPrev();updLn();markUnsaved();
       }
     };
@@ -1476,8 +1474,7 @@ function processImageFiles(files,pos){
 
 function insertAtCursor(ta,text){
   const start=ta.selectionStart,end=ta.selectionEnd;
-  ta.value=ta.value.slice(0,start)+text+ta.value.slice(end);
-  ta.selectionStart=ta.selectionEnd=start+text.length;
+  ta.setRangeText(text,start,end,'end');
   ta.focus();
 }
 
