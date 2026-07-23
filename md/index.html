@@ -1400,6 +1400,8 @@ updPrev=function(){
     }
   });
   buildTOC();
+  // Resolve relative images from bound local folder
+  resolveLocalImages(pr);
 };
 
 // Hook into existing ed input handler to update TOC
@@ -1542,13 +1544,6 @@ async function resolveLocalImages(container){
     }catch(e){}
   }
 }
-
-// Hook into updPrev to resolve local images after render
-const _origUpdPrev2=updPrev;
-updPrev=function(){
-  _origUpdPrev2();
-  resolveLocalImages(pr);
-};
 
 // Preview scroll → TOC highlight
 prPanel.addEventListener('scroll',updateActiveTOC);
