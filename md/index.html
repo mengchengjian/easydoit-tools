@@ -675,8 +675,8 @@ function setTheme(t){applyTheme(t);document.getElementById('themeDrop').classLis
 
 mermaid.initialize({startOnLoad:false,securityLevel:'loose'});
 
-const DB='md-editor-db',DBV=1;let db;
-function opnDB(){return new Promise((ok,fail)=>{const r=indexedDB.open(DB,DBV);r.onupgradeneeded=e=>{const d=e.target.result;d.objectStoreNames.contains('folders')||d.createObjectStore('folders',{keyPath:'id'});d.objectStoreNames.contains('files')||d.createObjectStore('files',{keyPath:'id'});d.objectStoreNames.contains('settings')||d.createObjectStore('settings',{keyPath:'key'})};r.onsuccess=e=>{db=e.target.result;ok(db)};r.onerror=e=>fail(e)})}
+const DB='md-editor-db',DBV=2;let db;
+function opnDB(){return new Promise((ok,fail)=>{const r=indexedDB.open(DB,DBV);r.onupgradeneeded=e=>{const d=e.target.result;d.objectStoreNames.contains('folders')||d.createObjectStore('folders',{keyPath:'id'});d.objectStoreNames.contains('files')||d.createObjectStore('files',{keyPath:'id'});d.objectStoreNames.contains('settings')||d.createObjectStore('settings',{keyPath:'key'});d.objectStoreNames.contains('img')||d.createObjectStore('img',{keyPath:'id'})};r.onsuccess=e=>{db=e.target.result;ok(db)};r.onerror=e=>fail(e)})}
 function sto(s,m){return db.transaction(s,m).objectStore(s)}
 function put(s,o){return new Promise(r=>{const t=sto(s,'readwrite');t.put(o);t.transaction.oncomplete=()=>r()})}
 function get(s,i){return new Promise(r=>{const t=sto(s,'readonly').get(i);t.onsuccess=()=>r(t.result)})}
@@ -995,6 +995,11 @@ function saveActiveTabContent(){
   const tab=openTabs[activeTabIndex];
   tab.content=ed.value;
   tab.cursorPos=ed.selectionStart;
+  // Save image store on tab switch
+  if(cfid){
+    if(imgStore.size>0)put('img',{id:cfid,data:JSON.stringify([...imgStore])});
+    else del('img',cfid).catch(()=>{});
+  }
 }
 
 function applyActiveTab(){
@@ -1003,12 +1008,15 @@ function applyActiveTab(){
     updPrev();updLn();return;
   }
   const tab=openTabs[activeTabIndex];
-  get('files',tab.fileId).then(fl=>{
+  get('files',tab.fileId).then(async fl=>{
     if(!fl)return;
     cfid=tab.fileId;cfile=fl;
     edTitle.textContent=tab.fileName;
     ed.value=tab.content;
     ed.readOnly=fl.type==='svg';
+    // Restore image store for this file
+    imgStore.clear();
+    get('img',cfid).then(e=>{if(e&&e.data){const arr=JSON.parse(e.data);imgRefCounter=arr.length?arr.length:0;arr.forEach(([k,v])=>imgStore.set(k,v))}});
     updPrev();updLn();
     try{ed.selectionStart=ed.selectionEnd=Math.min(tab.cursorPos||0,ed.value.length)}catch(e){}
     rtree();
@@ -1079,6 +1087,9 @@ async function saveSilent(){
   if(!cfile||cfile.type==='svg')return;
   cfile.content=c;cfile.updatedAt=Date.now();
   await put('files',cfile);
+  // Persist image store
+  if(imgStore.size>0)await put('img',{id:cfid,data:JSON.stringify([...imgStore])});
+  else await del('img',cfid).catch(()=>{});
 }
 async function saveCur(){
   markSaving();
@@ -1096,8 +1107,8 @@ async function mkFile(fid){const n=prompt('文件名称：','未命名.md');if(!
 async function doUpload(e){for(const f of e.target.files){const c=await new Promise(r=>{const fr=new FileReader();fr.onload=ev=>r(ev.target.result);fr.readAsText(f)});await put('files',{id:uid(),name:f.name,type:f.name.endsWith('.svg')?'svg':f.name.endsWith('.txt')?'txt':'md',folderId:null,content:c,createdAt:Date.now(),updatedAt:Date.now()})}await ldtree();rtree();toast('已导入 '+e.target.files.length+' 个文件');e.target.value=''}
 async function rnFl(id,oname){const nn=prompt('重命名文件：',oname);if(!nn||!nn.trim()||nn.trim()===oname)return;const fl=await get('files',id);if(!fl)return;fl.name=nn.trim();fl.type=nn.endsWith('.svg')?'svg':nn.endsWith('.txt')?'txt':'md';fl.updatedAt=Date.now();await put('files',fl);if(cfid===id){cfile=fl;edTitle.textContent=fl.name}const ti=findTabIndex(id);if(ti>=0){openTabs[ti].fileName=fl.name;openTabs[ti].fileType=fl.type;renderTabs()}await ldtree();rtree()}
 async function rnFd(id){const fd=await get('folders',id);if(!fd)return;const nn=prompt('重命名文件夹：',fd.name);if(!nn||!nn.trim()||nn.trim()===fd.name)return;fd.name=nn.trim();await put('folders',fd);await ldtree();rtree()}
-async function rmFl(id){if(!confirm('确认删除此文件？'))return;await del('files',id);const ti=findTabIndex(id);if(ti>=0){closeTab(ti)}if(cfid===id){cfid=null;cfile=null;ed.value='';edTitle.textContent='';updPrev()}await ldtree();rtree()}
-async function rmFd(id){if(!confirm('确认删除此文件夹及其所有内容？'))return;const fds=await all('folders'),fls=await all('files');async function rec(fid){for(const fd of fds.filter(f=>f.parentId===fid))await rec(fd.id);for(const fl of fls.filter(f=>f.folderId===fid)){const ti=findTabIndex(fl.id);if(ti>=0)closeTab(ti);if(fl.id===cfid){cfid=null;cfile=null;ed.value='';edTitle.textContent='';updPrev()}await del('files',fl.id)}await del('folders',fid)}await rec(id);await ldtree();rtree()}
+async function rmFl(id){if(!confirm('确认删除此文件？'))return;await del('files',id);await del('img',id).catch(()=>{});const ti=findTabIndex(id);if(ti>=0){closeTab(ti)}if(cfid===id){cfid=null;cfile=null;ed.value='';edTitle.textContent='';imgStore.clear();updPrev()}await ldtree();rtree()}
+async function rmFd(id){if(!confirm('确认删除此文件夹及其所有内容？'))return;const fds=await all('folders'),fls=await all('files');async function rec(fid){for(const fd of fds.filter(f=>f.parentId===fid))await rec(fd.id);for(const fl of fls.filter(f=>f.folderId===fid)){const ti=findTabIndex(fl.id);if(ti>=0)closeTab(ti);if(fl.id===cfid){cfid=null;cfile=null;ed.value='';edTitle.textContent='';imgStore.clear();updPrev()}await del('files',fl.id);await del('img',fl.id).catch(()=>{})}await del('folders',fid)}await rec(id);await ldtree();rtree()}
 
 function fsDragStart(e,id){dfid=id;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',id);const img=new Image();img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';e.dataTransfer.setDragImage(img,0,0);e.target.addEventListener('dragend',function cl(){if(dgnode){dgnode.classList.remove('drop-target');dgnode=null}dfid=null;e.target.removeEventListener('dragend',cl)})}
 function itemDragover(e,fid){if(!dfid){e.dataTransfer.dropEffect='none';return}e.preventDefault();e.dataTransfer.dropEffect='move';const el=e.currentTarget;if(dgnode)dgnode.classList.remove('drop-target');el.classList.add('drop-target');dgnode=el}
@@ -1110,14 +1121,15 @@ async function treeDrop(e){e.preventDefault();if(!dfid)return;let tf=null;if(dgn
 function cm(e,type,id){e.preventDefault();const m=document.getElementById('cmenu');let h='';if(type==='folder'){h+=`<div class="cmenu-item" onclick="mkFile('${id}');hcm()">新建文件</div><div class="cmenu-item" onclick="mkFolder('${id}');hcm()">新建文件夹</div><div class="cmenu-sep"></div><div class="cmenu-item" onclick="rnFd('${id}');hcm()">重命名</div><div class="cmenu-item" onclick="rmFd('${id}');hcm()" style="color:var(--red)">删除</div>`}else{h+=`<div class="cmenu-item" onclick="rnFl('${id}','');hcm()">重命名</div><div class="cmenu-sep"></div><div class="cmenu-item" onclick="dlFile('${id}');hcm()">下载</div><div class="cmenu-item" onclick="rmFl('${id}');hcm()" style="color:var(--red)">删除</div>`}m.innerHTML=h;m.style.display='block';m.style.left=Math.min(e.clientX,innerWidth-170)+'px';m.style.top=Math.min(e.clientY,innerHeight-200)+'px';setTimeout(()=>document.addEventListener('click',hcm,{once:true}),0)}
 function hcm(){document.getElementById('cmenu').style.display='none'}
 
-async function dlFile(id){const fl=await get('files',id);if(!fl)return;const b=new Blob([fl.content],{type:fl.type==='svg'?'image/svg+xml':'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fl.name;a.click();URL.revokeObjectURL(a.href)}
-async function downloadCur(){if(!cfile){const b=new Blob([ed.value],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='untitled.md';a.click();URL.revokeObjectURL(a.href);return}await saveSilent();dlFile(cfid)}
+async function dlFile(id){const fl=await get('files',id);if(!fl)return;let c=fl.content;const ie=await get('img',id);if(ie&&ie.data){const arr=JSON.parse(ie.data);const m=new Map(arr);c=c.replace(/ref:@(\d+)/g,(_,n)=>m.get('@'+n)||'')}const b=new Blob([c],{type:fl.type==='svg'?'image/svg+xml':'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fl.name;a.click();URL.revokeObjectURL(a.href)}
+async function downloadCur(){if(!cfile){const b=new Blob([restoreImgs(ed.value)],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='untitled.md';a.click();URL.revokeObjectURL(a.href);return}await saveSilent();dlFile(cfid)}
 
 async function updPrev(){
   if(cfile&&cfile.type==='svg'){pr.innerHTML='<div class="pr-svg">'+cfile.content+'</div>';updStat();return}
   if(!ed.value){pr.innerHTML='<div class="pr-empty"><div style="opacity:0.1"><svg width="36" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>预览</span></div>';updStat();return}
 
   let text=ed.value;
+  text=restoreImgs(text);
   text=replaceEmoji(text);
   text=parseFootnotes(text);
 
@@ -1268,7 +1280,12 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){const s=document.getElementById('edSearch');if(s.classList.contains('on')){s.classList.remove('on');document.getElementById('btn-search').classList.remove('on');document.getElementById('srFind').value='';document.getElementById('srRepl').value='';document.getElementById('srCount').textContent='';srMatches=[];srIdx=-1}}
 });
 
-// ===== FEATURE 2: IMAGE PASTE =====
+// ===== FEATURE 2: IMAGE PASTE (with short ref) =====
+const imgStore=new Map();
+let imgRefCounter=0;
+function storeImg(b64){const ref='@'+imgRefCounter;imgStore.set(ref,b64);imgRefCounter++;return ref}
+function restoreImgs(text){return text.replace(/ref:@(\d+)/g,(_,n)=>imgStore.get('@'+n)||'')}
+
 ed.addEventListener('paste',e=>{
   const items=e.clipboardData?e.clipboardData.items:[];
   let hasImage=false;
@@ -1288,7 +1305,7 @@ ed.addEventListener('paste',e=>{
     reader.onload=function(ev){
       const b64=ev.target.result;
       if(b64.length>5*1024*1024){toast('图片过大（>5MB），已跳过');done++;return}
-      inserted+='![pasted-image]('+b64+')\n';
+      inserted+='![pasted-image](ref:'+storeImg(b64)+')\n';
       done++;
       if(done===processImages.length){
         ed.setRangeText(inserted,s,s,'end');
@@ -1462,7 +1479,7 @@ function processImageFiles(files,pos){
         const cur=ed.selectionStart;
         ed.setSelectionRange(pos,pos);
         results.forEach((url,idx)=>{
-          insertAtCursor(ed,(idx>0?'\n':'')+'![image]('+url+')');
+          insertAtCursor(ed,(idx>0?'\n':'')+'![image](ref:'+storeImg(url)+')');
         });
         ed.setSelectionRange(cur,cur);
         updPrev();updLn();markUnsaved();
