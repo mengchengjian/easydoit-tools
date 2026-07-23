@@ -271,11 +271,6 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
 .sv-dot.red-dot{background:var(--red)}
 .sv-txt.saved{color:oklch(60% 0.16 145)}.sv-txt.saving{color:oklch(70% 0.14 85)}.sv-txt.unsaved{color:var(--red)}
 
-/* ===== DIR BIND ===== */
-.dir-bind{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--tx3);cursor:pointer;padding:1px 6px;border-radius:10px;border:1px solid var(--bdr);transition:all .15s;white-space:nowrap}
-.dir-bind:hover{color:var(--accent);border-color:var(--accent)}
-.dir-bind.bound{color:oklch(60% 0.16 145);border-color:oklch(60% 0.16 145 / 0.4);background:oklch(60% 0.16 145 / 0.06)}
-
 /* ===== TEMPLATE MODAL ===== */
 .tmpl-list{max-height:300px;overflow-y:auto;margin-bottom:14px}
 .tmpl-opt{padding:10px 12px;border-radius:var(--r6);cursor:pointer;border:1px solid var(--bdr);margin-bottom:6px;transition:all .1s;display:flex;flex-direction:column;gap:3px}
@@ -473,7 +468,6 @@ body.focus .focus-esc{display:flex;align-items:center;justify-content:center}
       <span id="st-wd"><b>0</b> 词</span>
       <span id="st-ch"><b>0</b> 字</span>
       <span class="sv-ind" id="svInd"><span class="sv-dot" id="svDot"></span><span class="sv-txt" id="svTxt"></span></span>
-      <span id="dirBind" class="dir-bind" title="绑定本地文件夹后，Markdown 中的相对路径图片将从本地读取">📁 绑定本地文件夹</span>
     </div>
   </div>
   <div class="drag" id="dragR" onmousedown="resizeStart('R',event)"></div>
@@ -1486,69 +1480,6 @@ function insertAtCursor(ta,text){
   ta.selectionStart=ta.selectionEnd=start+text.length;
   ta.focus();
 }
-
-// ===== LOCAL FOLDER BINDING =====
-let localDirHandle=null;
-const dirBind=document.getElementById('dirBind');
-
-dirBind.addEventListener('click',async ()=>{
-  if(localDirHandle){
-    if(confirm('取消绑定文件夹 "'+localDirHandle.name+'"？')){
-      localDirHandle=null;
-      dirBind.textContent='📁 绑定本地文件夹';
-      dirBind.classList.remove('bound');
-      dirBind.title='绑定本地文件夹后，Markdown 中的相对路径图片将从本地读取';
-      updPrev();
-    }
-    return;
-  }
-  try{
-    localDirHandle=await window.showDirectoryPicker({mode:'readonly'});
-    dirBind.textContent='📁 '+localDirHandle.name;
-    dirBind.classList.add('bound');
-    dirBind.title='已绑定：'+localDirHandle.name+'（点击取消绑定）';
-    updPrev();
-    toast('已绑定文件夹：'+localDirHandle.name);
-  }catch(e){
-    if(e.name!=='AbortError')toast('绑定失败');
-  }
-});
-
-// Resolve relative image paths against bound local directory
-async function resolveLocalImages(container){
-  if(!localDirHandle)return;
-  const imgs=container.querySelectorAll('img');
-  for(const img of imgs){
-    const src=img.getAttribute('src');
-    if(!src||src.startsWith('data:')||src.startsWith('http')||src.startsWith('//'))continue;
-    try{
-      const parts=src.split('/').filter(p=>p&&p!=='.');
-      if(parts.some(p=>p==='..')){toast('不支持 "../" 向上遍历路径');continue}
-      let handle=localDirHandle;
-      // Navigate into subdirectories
-      for(let i=0;i<parts.length-1;i++){
-        handle=await handle.getDirectoryHandle(parts[i]).catch(()=>null);
-        if(!handle)break;
-      }
-      if(!handle)continue;
-      // Get the file
-      const fileName=parts[parts.length-1];
-      const fh=await handle.getFileHandle(fileName).catch(()=>null);
-      if(fh){
-        const file=await fh.getFile();
-        const url=URL.createObjectURL(file);
-        img.src=url;
-      }
-    }catch(e){}
-  }
-}
-
-// Hook into updPrev to resolve local images after render
-const _origUpdPrev2=updPrev;
-updPrev=function(){
-  _origUpdPrev2();
-  resolveLocalImages(pr);
-};
 
 // Preview scroll → TOC highlight
 prPanel.addEventListener('scroll',updateActiveTOC);
