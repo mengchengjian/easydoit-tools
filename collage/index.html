@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collage Maker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* ===== OKLCH Theme System ===== */
+:root {
+  --accent-h: 250; --accent-c: 0.12; --accent-l: 0.62;
+  --bg-l: 0.98; --bg-c: 0.005;
+  --surface-l: 0.945; --surface-c: 0.008;
+  --border-l: 0.88; --border-c: 0.01;
+  --text-l: 0.15; --text-c: 0.01;
+  --text2-l: 0.52;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --radius: 10px;
+  --radius-sm: 7px;
+  --transition: .2s cubic-bezier(.25,.46,.45,.94);
+}
+[data-theme="dark"] {
+  --bg-l: 0.075; --bg-c: 0.008;
+  --surface-l: 0.12; --surface-c: 0.01;
+  --border-l: 0.22; --border-c: 0.015;
+  --text-l: 0.88; --text-c: 0.01;
+  --text2-l: 0.6;
+  --shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 2px rgba(0,0,0,.15);
+}
+:root {
+  --accent: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
+  --accent-hover: oklch(calc(var(--accent-l) - .04) var(--accent-c) var(--accent-h));
+  --bg: oklch(var(--bg-l) var(--bg-c) 0);
+  --surface: oklch(var(--surface-l) var(--surface-c) 0);
+  --border: oklch(var(--border-l) var(--border-c) 0);
+  --text: oklch(var(--text-l) var(--text-c) 0);
+  --text2: oklch(var(--text2-l) var(--text-c) 0);
+  --text3: oklch(calc(var(--text2-l) - .12) var(--text-c) 0);
+}
+
+/* ===== Reset & Base ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue','PingFang SC',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  transition:background var(--transition),color var(--transition);
+}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input[type="file"]{display:none}
+
+/* ===== Header ===== */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:100;
+}
+header h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.header-actions{display:flex;gap:10px;align-items:center}
+.theme-btn{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--border);transition:background var(--transition);
+  font-size:16px;
+}
+.theme-btn:hover{background:var(--accent);color:#fff}
+
+/* ===== App Layout ===== */
+.app{display:flex;flex-direction:column;height:calc(100vh - 62px)}
+.top-section{padding:20px 24px 16px}
+.bottom-section{flex:1;display:flex;overflow:hidden}
+.col-main{flex:1;overflow:auto;padding:0 24px 20px}
+.col-side{width:300px;flex-shrink:0;border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden}
+
+/* ===== Upload Zone ===== */
+.upload-zone{
+  border:2px dashed var(--border);
+  border-radius:var(--radius);
+  padding:24px 20px;text-align:center;
+  transition:all var(--transition);cursor:pointer;
+  background:var(--surface);margin-bottom:16px;
+}
+.upload-zone:hover,.upload-zone.dragover{
+  border-color:var(--accent);background:oklch(oklch(var(--accent-l)/.08));
+}
+.upload-zone .icon{font-size:28px;margin-bottom:6px}
+.upload-zone .label{font-size:13px;color:var(--text2)}
+.upload-zone .hint{font-size:11px;color:var(--text3);margin-top:4px}
+.upload-zone.has-photos{
+  padding:12px 16px;display:flex;align-items:center;gap:12px;
+}
+.upload-zone.has-photos .icon{font-size:18px;margin:0}
+.upload-zone.has-photos .label{font-size:12px}
+.upload-zone.has-photos .hint{display:none}
+
+/* ===== Photo Pool ===== */
+.photo-pool{
+  display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;
+  scrollbar-width:thin;
+}
+.photo-pool::-webkit-scrollbar{height:4px}
+.photo-pool::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.photo-chip{
+  flex-shrink:0;width:56px;height:56px;border-radius:var(--radius-sm);
+  overflow:hidden;border:1.5px solid var(--border);
+  position:relative;cursor:pointer;transition:border var(--transition);
+}
+.photo-chip:hover{border-color:var(--accent)}
+.photo-chip img{width:100%;height:100%;object-fit:cover}
+.photo-chip .del{
+  position:absolute;top:-2px;right:-2px;width:18px;height:18px;
+  border-radius:50%;background:rgba(200,50,50,.9);color:#fff;
+  font-size:10px;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--transition);
+}
+.photo-chip:hover .del{opacity:1}
+.photo-pool-empty{
+  font-size:12px;color:var(--text3);padding:4px 0;
+}
+
+/* ===== Settings Bar ===== */
+.settings-bar{
+  display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;
+  padding:14px 0 0;margin-top:2px;
+}
+.settings-bar[style*="display:none"]{display:none!important}
+.setting-group{display:flex;align-items:center;gap:6px}
+.setting-group label{font-size:12px;color:var(--text2);white-space:nowrap;font-weight:500}
+.setting-group select,.setting-group input[type="number"]{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:5px 8px;font-size:12px;
+  color:var(--text);outline:none;min-width:48px;
+  transition:border var(--transition);
+}
+.setting-group select:focus,.setting-group input:focus{border-color:var(--accent)}
+.setting-group select{cursor:pointer}
+input[type="color"]{width:28px;height:28px;border:none;border-radius:var(--radius-sm);
+  cursor:pointer;padding:0;background:none}
+input[type="color"]::-webkit-color-swatch-wrapper{padding:2px}
+input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var(--border)}
+.gen-btn{
+  background:var(--accent);color:#fff;padding:6px 18px;
+  border-radius:var(--radius-sm);font-size:13px;font-weight:500;
+  transition:background var(--transition);margin-left:auto;
+}
+.gen-btn:hover{background:var(--accent-hover)}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== Collage Preview Grid ===== */
+.grid-toolbar{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:16px 0 10px;
+}
+.grid-toolbar .title{font-size:13px;font-weight:600;color:var(--text2)}
+.grid-toolbar .count{font-size:11px;color:var(--text3);margin-left:4px}
+.preview-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:14px;min-height:100px;
+}
+.preview-grid.empty{
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text3);font-size:13px;min-height:200px;
+}
+.collage-card{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  background:var(--surface);box-shadow:var(--shadow);
+  cursor:pointer;transition:transform var(--transition),box-shadow var(--transition);
+  aspect-ratio:1;
+}
+.collage-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.collage-card canvas{width:100%;height:100%;display:block}
+.collage-card .overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.3);color:#fff;font-size:12px;font-weight:500;
+  opacity:0;transition:opacity var(--transition);
+}
+.collage-card:hover .overlay{opacity:1}
+.collage-card .badge{
+  position:absolute;top:6px;right:6px;width:22px;height:22px;
+  border-radius:50%;background:var(--accent);color:#fff;
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--transition);z-index:2;
+}
+.collage-card.saved .badge{opacity:1;background:#34c759}
+.collage-card .shuffle-btn{
+  position:absolute;bottom:6px;right:6px;width:24px;height:24px;
+  border-radius:50%;background:rgba(0,0,0,.5);color:#fff;
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--transition);z-index:2;
+}
+.collage-card:hover .shuffle-btn{opacity:1}
+.collage-card .shuffle-btn:hover{background:rgba(0,0,0,.7)}
+.collage-card.saved .shuffle-btn{display:none}
+
+/* ===== Keep Sidebar ===== */
+.side-header{
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.side-header h3{font-size:13px;font-weight:600}
+.side-header .count{font-size:11px;color:var(--text3)}
+.keep-list{
+  flex:1;overflow-y:auto;padding:12px 16px;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  align-content:start;
+}
+.keep-list:empty::after{
+  content:'点击上方拼图保留喜欢的作品';
+  display:block;grid-column:1/-1;
+  text-align:center;color:var(--text3);font-size:12px;padding:40px 0;
+}
+.keep-item{
+  position:relative;border-radius:var(--radius-sm);overflow:hidden;
+  box-shadow:var(--shadow);aspect-ratio:1;
+}
+.keep-item canvas{width:100%;height:100%;display:block}
+.keep-item .remove-btn{
+  position:absolute;top:4px;right:4px;width:20px;height:20px;
+  border-radius:50%;background:rgba(200,50,50,.8);color:#fff;
+  font-size:9px;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--transition);
+}
+.keep-item:hover .remove-btn{opacity:1}
+.dl-btn{
+  display:block;margin:0 16px 14px;padding:8px;
+  background:var(--accent);color:#fff;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:500;text-align:center;
+  transition:background var(--transition);
+}
+.dl-btn:hover{background:var(--accent-hover)}
+.dl-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  background:var(--text);color:var(--bg);
+  padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;
+  opacity:0;transition:opacity var(--transition),transform var(--transition);
+  pointer-events:none;z-index:999;
+}
+.toast.show{opacity:1}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .bottom-section{flex-direction:column}
+  .col-side{width:auto;border-left:none;border-top:1px solid var(--border);
+    max-height:240px}
+  .preview-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+}
+@media(max-width:600px){
+  .top-section{padding:12px 14px 10px}
+  .col-main{padding:0 14px 14px}
+  .settings-bar{gap:8px 10px}
+  .setting-group label{font-size:11px}
+  .setting-group select,.setting-group input{font-size:11px;padding:4px 6px}
+  .preview-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .keep-list{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✦ Collage Maker</h1>
+  <div class="header-actions">
+    <button class="theme-btn" onclick="toggleTheme()" title="切换主题">◐</button>
+  </div>
+</header>
+
+<div class="app">
+  <div class="top-section">
+    <!-- Upload -->
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <div class="icon">⊞</div>
+      <div class="label">上传照片或拖拽到此处</div>
+      <div class="hint">支持 JPG / PNG / WebP，建议 10~20 张</div>
+    </div>
+    <!-- Photo pool -->
+    <div class="photo-pool" id="photoPool"><span class="photo-pool-empty">尚未上传照片</span></div>
+    <!-- Settings -->
+    <div class="settings-bar" id="settingsBar" style="display:none">
+      <div class="setting-group">
+        <label>每张拼</label>
+        <select id="photoCount"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option>8</option></select>
+        <label>张</label>
+      </div>
+      <div class="setting-group">
+        <label>生成</label>
+        <input type="number" id="genCount" value="12" min="1" max="100">
+        <label>张</label>
+      </div>
+      <div class="setting-group">
+        <label>布局</label>
+        <select id="layoutStyle"><option value="grid">网格</option><option value="freeform">自由</option></select>
+      </div>
+      <div class="setting-group">
+        <label>比例</label>
+        <select id="aspectRatio"><option value="1/1">1:1</option><option value="4/3">4:3</option><option value="3/4">3:4</option><option value="16/9">16:9</option></select>
+      </div>
+      <div class="setting-group">
+        <label>间距</label>
+        <input type="number" id="gap" value="4" min="0" max="40" style="width:40px">px
+      </div>
+      <div class="setting-group">
+        <label>圆角</label>
+        <input type="number" id="cornerRadius" value="0" min="0" max="40" style="width:40px">px
+      </div>
+      <div class="setting-group">
+        <label>背景</label>
+        <input type="color" id="bgColor" value="#ffffff">
+      </div>
+      <button class="gen-btn" id="genBtn" onclick="generateAll()">开始拼图</button>
+    </div>
+  </div>
+
+  <div class="bottom-section">
+    <div class="col-main" id="mainCol">
+      <div class="grid-toolbar" id="gridToolbar" style="display:none">
+        <span class="title">生成预览 <span class="count" id="genCountLabel"></span></span>
+        <button style="font-size:12px;color:var(--accent);font-weight:500;cursor:pointer" onclick="shuffleAll()">全部重排</button>
+      </div>
+      <div class="preview-grid empty" id="previewGrid">
+        上传照片并点击「开始拼图」生成拼图组合
+      </div>
+    </div>
+    <div class="col-side" id="keepSidebar" style="display:none">
+      <div class="side-header">
+        <h3>保留栏</h3>
+        <span class="count" id="keepCount">0 张</span>
+      </div>
+      <div class="keep-list" id="keepList"></div>
+      <button class="dl-btn" id="dlBtn" onclick="downloadAll()" disabled>下载全部保留</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== State =====
+const state = {
+  photos: [],        // {file, img, url, name}
+  collages: [],      // {canvas, id, saved}
+  kept: [],          // {canvas, id}
+  idCounter: 0,
+};
+
+// ===== Theme =====
+function toggleTheme(){
+  const d = document.documentElement;
+  d.dataset.theme = d.dataset.theme === 'dark' ? 'light' : 'dark';
+}
+
+// ===== Upload =====
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const photoPool = document.getElementById('photoPool');
+
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+uploadZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  uploadZone.classList.add('dragover');
+});
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(files){
+  for(const f of files){
+    if(!f.type.startsWith('image/')) continue;
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => {
+      state.photos.push({file:f, img, url, name:f.name});
+      renderPhotoPool();
+      updateUploadUI();
+    };
+    img.src = url;
+  }
+}
+
+function removePhoto(idx){
+  const p = state.photos[idx];
+  if(p) URL.revokeObjectURL(p.url);
+  state.photos.splice(idx, 1);
+  renderPhotoPool();
+  updateUploadUI();
+}
+
+function renderPhotoPool(){
+  if(!state.photos.length){
+    photoPool.innerHTML = '<span class="photo-pool-empty">尚未上传照片</span>';
+    return;
+  }
+  photoPool.innerHTML = state.photos.map((p,i) => `
+    <div class="photo-chip">
+      <img src="${p.url}" alt="${p.name}">
+      <span class="del" onclick="event.stopPropagation();removePhoto(${i})">✕</span>
+    </div>
+  `).join('');
+}
+
+function updateUploadUI(){
+  const z = uploadZone;
+  if(state.photos.length){
+    z.classList.add('has-photos');
+    z.querySelector('.label').textContent = `${state.photos.length} 张照片已上传`;
+    document.getElementById('settingsBar').style.display = '';
+  } else {
+    z.classList.remove('has-photos');
+    z.querySelector('.label').textContent = '上传照片或拖拽到此处';
+    document.getElementById('settingsBar').style.display = 'none';
+  }
+}
+
+// ===== Collage Generation =====
+function getCanvasSize(){
+  const ratio = document.getElementById('aspectRatio').value;
+  const parts = ratio.split('/').map(Number);
+  const base = 600;
+  if(parts[0] >= parts[1])
+    return {w: base, h: base * parts[1] / parts[0]};
+  else
+    return {w: base * parts[0] / parts[1], h: base};
+}
+
+function randomSelect(arr, n){
+  if(arr.length === 0) return [];
+  const result = [];
+  const pool = [...arr];
+  for(let i=0; i<n; i++){
+    if(pool.length === 0) pool.push(...arr);
+    const idx = Math.floor(Math.random() * pool.length);
+    result.push(pool.splice(idx,1)[0]);
+  }
+  return result;
+}
+
+function drawCollage(photos){
+  const {w: cw, h: ch} = getCanvasSize();
+  const canvas = document.createElement('canvas');
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext('2d');
+
+  const bg = document.getElementById('bgColor').value;
+  const gap = parseInt(document.getElementById('gap').value) || 0;
+  const radius = parseInt(document.getElementById('cornerRadius').value) || 0;
+  const style = document.getElementById('layoutStyle').value;
+  const n = parseInt(document.getElementById('photoCount').value) || 3;
+
+  const selected = randomSelect(photos, Math.min(n, photos.length));
+  if(!selected.length) return canvas;
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,cw,ch);
+
+  if(style === 'grid'){
+    drawGrid(ctx, cw, ch, selected, gap, radius);
+  } else {
+    drawFreeform(ctx, cw, ch, selected, radius);
+  }
+  return canvas;
+}
+
+function drawGrid(ctx, cw, ch, photos, gap, radius){
+  const n = photos.length;
+  let cols = Math.ceil(Math.sqrt(n * cw / ch));
+  let rows = Math.ceil(n / cols);
+  // Better distribution
+  while(cols * (rows-1) >= n && rows > 1) rows--;
+  while(rows * (cols-1) >= n && cols > 1) cols--;
+  const cellW = (cw - gap * (cols - 1)) / cols;
+  const cellH = (ch - gap * (rows - 1)) / rows;
+
+  for(let i=0; i<n; i++){
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+    const x = col * (cellW + gap);
+    const y = row * (cellH + gap);
+
+    const photo = photos[i];
+    const pa = photo.img.width / photo.img.height;
+    const ca = cellW / cellH;
+    let sx, sy, sw, sh;
+    if(pa > ca){
+      sh = photo.img.height;
+      sw = sh * ca;
+      sy = 0;
+      sx = Math.random() * (photo.img.width - sw);
+    } else {
+      sw = photo.img.width;
+      sh = sw / ca;
+      sx = 0;
+      sy = Math.random() * (photo.img.height - sh);
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    if(radius > 0){
+      ctx.roundRect(x, y, cellW, cellH, radius);
+      ctx.clip();
+    }
+    ctx.drawImage(photo.img, sx, sy, sw, sh, x, y, cellW, cellH);
+    ctx.restore();
+
+    // subtle border
+    ctx.strokeStyle = 'rgba(0,0,0,.04)';
+    ctx.lineWidth = .5;
+    if(radius > 0){
+      ctx.beginPath(); ctx.roundRect(x, y, cellW, cellH, radius); ctx.stroke();
+    } else {
+      ctx.strokeRect(x, y, cellW, cellH);
+    }
+  }
+}
+
+function drawFreeform(ctx, cw, ch, photos, radius){
+  const n = photos.length;
+  const margin = 20;
+  // Try to position photos to fill the space nicely
+  const areas = [];
+  for(const p of photos){
+    const aspect = p.img.width / p.img.height;
+    let w, h;
+    if(aspect >= 1){
+      w = (cw - margin*2) * (0.35 + Math.random() * 0.35);
+      h = w / aspect;
+    } else {
+      h = (ch - margin*2) * (0.35 + Math.random() * 0.35);
+      w = h * aspect;
+    }
+    const rot = (Math.random() - 0.5) * 16;
+    const maxAttempts = 30;
+    let placed = false;
+    for(let attempt=0; attempt<maxAttempts; attempt++){
+      const x = margin + Math.random() * (cw - w - margin*2);
+      const y = margin + Math.random() * (ch - h - margin*2);
+      const r = {x, y, x2: x+w, y2: y+h};
+      if(!areas.some(a => !(r.x2 < a.x || r.x > a.x2 || r.y2 < a.y || r.y > a.y2))){
+        areas.push(r);
+        // draw
+        ctx.save();
+        ctx.translate(x + w/2, y + h/2);
+        ctx.rotate(rot * Math.PI / 180);
+        ctx.beginPath();
+        if(radius > 0){
+          ctx.roundRect(-w/2, -h/2, w, h, radius);
+          ctx.clip();
+        }
+        ctx.drawImage(p.img, 0, 0, p.img.width, p.img.height, -w/2, -h/2, w, h);
+        ctx.restore();
+        // shadow
+        ctx.save();
+        ctx.translate(x + w/2, y + h/2);
+        ctx.rotate(rot * Math.PI / 180);
+        ctx.shadowColor = 'rgba(0,0,0,.15)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 2;
+        ctx.fillStyle = 'transparent';
+        ctx.fillRect(-w/2-2, -h/2-2, w+4, h+4);
+        ctx.restore();
+        // redraw image on top of shadow
+        ctx.save();
+        ctx.translate(x + w/2, y + h/2);
+        ctx.rotate(rot * Math.PI / 180);
+        ctx.beginPath();
+        if(radius > 0){
+          ctx.roundRect(-w/2, -h/2, w, h, radius);
+          ctx.clip();
+        }
+        ctx.drawImage(p.img, 0, 0, p.img.width, p.img.height, -w/2, -h/2, w, h);
+        ctx.restore();
+        placed = true;
+        break;
+      }
+    }
+    if(!placed){
+      // fallback: just place at a random position
+      const x = margin + Math.random() * (cw - w - margin*2);
+      const y = margin + Math.random() * (ch - h - margin*2);
+      ctx.save();
+      ctx.translate(x + w/2, y + h/2);
+      ctx.rotate(rot * Math.PI / 180);
+      ctx.beginPath();
+      if(radius > 0){ ctx.roundRect(-w/2, -h/2, w, h, radius); ctx.clip(); }
+      ctx.drawImage(p.img, 0, 0, p.img.width, p.img.height, -w/2, -h/2, w, h);
+      ctx.restore();
+    }
+  }
+}
+
+// ===== Generate All =====
+function generateAll(){
+  const count = parseInt(document.getElementById('genCount').value) || 12;
+  if(state.photos.length < 2){
+    toast('至少需要 2 张照片');
+    return;
+  }
+  const minPhotos = parseInt(document.getElementById('photoCount').value) || 3;
+  if(state.photos.length < minPhotos){
+    toast(`至少需要 ${minPhotos} 张照片才能完成设置`);
+    return;
+  }
+
+  const genBtn = document.getElementById('genBtn');
+  genBtn.disabled = true;
+  genBtn.textContent = '拼图中...';
+
+  state.collages = [];
+  document.getElementById('previewGrid').classList.remove('empty');
+
+  // Use requestAnimationFrame to batch render
+  const batchSize = 6;
+  let idx = 0;
+
+  function renderBatch(){
+    const end = Math.min(idx + batchSize, count);
+    for(; idx < end; idx++){
+      const id = state.idCounter++;
+      const canvas = drawCollage(state.photos);
+      state.collages.push({canvas, id, saved:false});
+    }
+    renderPreviewGrid();
+    if(idx < count){
+      requestAnimationFrame(renderBatch);
+    } else {
+      genBtn.disabled = false;
+      genBtn.textContent = '开始拼图';
+      document.getElementById('gridToolbar').style.display = '';
+      document.getElementById('genCountLabel').textContent = `共 ${state.collages.length} 张`;
+      document.getElementById('keepSidebar').style.display = '';
+    }
+  }
+  requestAnimationFrame(renderBatch);
+}
+
+function renderPreviewGrid(){
+  const grid = document.getElementById('previewGrid');
+  grid.innerHTML = state.collages.map(c => {
+    const dataUrl = c.canvas.toDataURL('image/png', 0.85);
+    return `<div class="collage-card${c.saved?' saved':''}" onclick="toggleSave(${c.id})">
+      <img src="${dataUrl}" alt="collage">
+      <div class="badge">${c.saved?'✓':'♡'}</div>
+      <span class="shuffle-btn" onclick="event.stopPropagation();shuffleOne(${c.id})">↻</span>
+    </div>`;
+  }).join('');
+}
+
+// ===== Shuffle / Save =====
+function shuffleAll(){
+  state.collages.forEach(c => {
+    if(!c.saved){
+      c.canvas = drawCollage(state.photos);
+    }
+  });
+  renderPreviewGrid();
+  toast('已重新生成未保留的拼图');
+}
+
+function shuffleOne(id){
+  const c = state.collages.find(x => x.id === id);
+  if(c && !c.saved){
+    c.canvas = drawCollage(state.photos);
+    renderPreviewGrid();
+  }
+}
+
+function toggleSave(id){
+  const c = state.collages.find(x => x.id === id);
+  if(!c) return;
+  c.saved = !c.saved;
+  if(c.saved){
+    // Add to kept (deep copy)
+    const clone = document.createElement('canvas');
+    clone.width = c.canvas.width;
+    clone.height = c.canvas.height;
+    clone.getContext('2d').drawImage(c.canvas, 0, 0);
+    state.kept.push({canvas: clone, id: c.id});
+  } else {
+    state.kept = state.kept.filter(k => k.id !== id);
+  }
+  renderPreviewGrid();
+  renderKeepList();
+}
+
+function renderKeepList(){
+  const list = document.getElementById('keepList');
+  document.getElementById('keepCount').textContent = `${state.kept.length} 张`;
+  list.innerHTML = state.kept.map(k => {
+    const dataUrl = k.canvas.toDataURL('image/png', 0.85);
+    return `<div class="keep-item">
+      <img src="${dataUrl}" alt="kept">
+      <span class="remove-btn" onclick="removeKept(${k.id})">✕</span>
+    </div>`;
+  }).join('');
+  const dl = document.getElementById('dlBtn');
+  dl.disabled = state.kept.length === 0;
+}
+
+function removeKept(id){
+  state.kept = state.kept.filter(k => k.id !== id);
+  const c = state.collages.find(x => x.id === id);
+  if(c) c.saved = false;
+  renderKeepList();
+  renderPreviewGrid();
+}
+
+// ===== Download =====
+async function downloadAll(){
+  if(!state.kept.length) return;
+  const zip = new JSZip();
+  const folder = zip.folder('collages');
+  const promises = state.kept.map((k, i) => {
+    return new Promise(resolve => {
+      k.canvas.toBlob(blob => {
+        folder.file(`collage_${i+1}.png`, blob);
+        resolve();
+      }, 'image/png');
+    });
+  });
+  await Promise.all(promises);
+  const content = await zip.generateAsync({type:'blob'});
+  const url = URL.createObjectURL(content);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `collages_${Date.now()}.zip`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('下载完成');
+}
+
+// ===== Toast =====
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== RoundRect polyfill for older Safari =====
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+    r = Math.min(r, w/2, h/2);
+    this.moveTo(x+r, y);
+    this.lineTo(x+w-r, y);
+    this.quadraticCurveTo(x+w, y, x+w, y+r);
+    this.lineTo(x+w, y+h-r);
+    this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    this.lineTo(x+r, y+h);
+    this.quadraticCurveTo(x, y+h, x, y+h-r);
+    this.lineTo(x, y+r);
+    this.quadraticCurveTo(x, y, x+r, y);
+    this.closePath();
+  };
+}
+
+// ===== Log =====
+console.log('✨ Collage Maker loaded');
+</script>
+</body>
+</html>
