@@ -204,7 +204,7 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
         <div class="control-group">
           <label>每张拼图用 <span class="val">张</span></label>
           <select id="photosPerCollage" onchange="onPerChange()">
-            <option value="2">2 张</option><option value="3">3 张</option><option value="4" selected>4 张</option><option value="5">5 张</option><option value="6">6 张</option><option value="8">8 张</option><option value="9">9 张</option>
+            <option value="2">2 张</option><option value="3">3 张</option><option value="4" selected>4 张</option><option value="5">5 张</option><option value="6">6 张</option><option value="7">7 张</option><option value="8">8 张</option><option value="9">9 张</option><option value="10">10 张</option>
           </select>
         </div>
         <div class="control-group">
@@ -261,36 +261,69 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
 
 <script>
 // ─── Templates ──────────────────────────────
+// Helper: generate uniform grid cells
+const gc = (n, cols) => Array.from({length:n},(_,i)=>({r:Math.floor(i/cols)+1,c:i%cols+1,rs:1,cs:1}));
+
 const ALL_TEMPLATES = {
   2: [
-    { id:'2-h', name:'左右', cols:2,rows:1, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1}] },
-    { id:'2-v', name:'上下', cols:1,rows:2, cells:[{r:1,c:1,rs:1,cs:1},{r:2,c:1,rs:1,cs:1}] },
+    { id:'2-h', name:'左右', cols:2,rows:1, cells:gc(2,2) },
+    { id:'2-v', name:'上下', cols:1,rows:2, cells:gc(2,1) },
     { id:'2-bl', name:'左大右小', cols:3,rows:2, cells:[{r:1,c:1,rs:2,cs:2},{r:1,c:3,rs:1,cs:1}] },
+    { id:'2-br', name:'右大左小', cols:3,rows:2, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:2,cs:2}] },
+    { id:'2-bt', name:'上大下小', cols:2,rows:3, cells:[{r:1,c:1,rs:2,cs:2},{r:3,c:1,rs:1,cs:2}] },
+    { id:'2-bb', name:'下大上小', cols:2,rows:3, cells:[{r:1,c:1,rs:1,cs:2},{r:2,c:1,rs:2,cs:2}] },
   ],
   3: [
-    { id:'3-h', name:'横排', cols:3,rows:1, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:1,c:3,rs:1,cs:1}] },
-    { id:'3-v', name:'竖排', cols:1,rows:3, cells:[{r:1,c:1,rs:1,cs:1},{r:2,c:1,rs:1,cs:1},{r:3,c:1,rs:1,cs:1}] },
+    { id:'3-h', name:'横排', cols:3,rows:1, cells:gc(3,3) },
+    { id:'3-v', name:'竖排', cols:1,rows:3, cells:gc(3,1) },
     { id:'3-t2b', name:'上大下二', cols:2,rows:2, cells:[{r:1,c:1,rs:1,cs:2},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1}] },
+    { id:'3-l2r', name:'左大右二', cols:2,rows:2, cells:[{r:1,c:1,rs:2,cs:1},{r:1,c:2,rs:1,cs:1},{r:2,c:2,rs:1,cs:1}] },
+    { id:'3-r2l', name:'右大左二', cols:2,rows:2, cells:[{r:1,c:1,rs:1,cs:1},{r:2,c:1,rs:1,cs:1},{r:1,c:2,rs:2,cs:1}] },
+    { id:'3-b2t', name:'下大上二', cols:2,rows:2, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:2,c:1,rs:1,cs:2}] },
   ],
   4: [
-    { id:'4-2x2', name:'2×2', cols:2,rows:2, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1}] },
-    { id:'4-h', name:'横排', cols:4,rows:1, cells:Array.from({length:4},(_,i)=>({r:1,c:i+1,rs:1,cs:1})) },
+    { id:'4-2x2', name:'2×2', cols:2,rows:2, cells:gc(4,2) },
+    { id:'4-h', name:'横排', cols:4,rows:1, cells:gc(4,4) },
+    { id:'4-v', name:'竖排', cols:1,rows:4, cells:gc(4,1) },
     { id:'4-1b3', name:'一大三小', cols:3,rows:3, cells:[{r:1,c:1,rs:2,cs:2},{r:1,c:3,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:1,rs:1,cs:3}] },
+    { id:'4-l3r', name:'左大右三', cols:3,rows:3, cells:[{r:1,c:1,rs:3,cs:2},{r:1,c:3,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+    { id:'4-t3b', name:'上大下三', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1}] },
   ],
   5: [
-    { id:'5-cross', name:'十字', cols:3,rows:3, cells:[{r:1,c:2,rs:1,cs:1},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:2,rs:1,cs:1}] },
+    { id:'5-cross', name:'十字', cols:3,rows:3, cells:[{r:1,c:2},{r:2,c:1},{r:2,c:2},{r:2,c:3},{r:3,c:2}].map(c=>({...c,rs:1,cs:1})) },
     { id:'5-2t3b', name:'上二下三', cols:6,rows:2, cells:[{r:1,c:1,rs:1,cs:3},{r:1,c:4,rs:1,cs:3},{r:2,c:1,rs:1,cs:2},{r:2,c:3,rs:1,cs:2},{r:2,c:5,rs:1,cs:2}] },
+    { id:'5-l2r3', name:'左二右三', cols:2,rows:6, cells:[{r:1,c:1,rs:3,cs:1},{r:4,c:1,rs:3,cs:1},{r:1,c:2,rs:2,cs:1},{r:3,c:2,rs:2,cs:1},{r:5,c:2,rs:2,cs:1}] },
+    { id:'5-t1b4', name:'上大下四', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:2,rs:1,cs:1}] },
+    { id:'5-b1t4', name:'下大上四', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:1,c:3,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:3,c:1,rs:1,cs:3}] },
   ],
   6: [
-    { id:'6-2x3', name:'2×3', cols:3,rows:2, cells:Array.from({length:6},(_,i)=>({r:Math.floor(i/3)+1,c:i%3+1,rs:1,cs:1})) },
-    { id:'6-3x2', name:'3×2', cols:2,rows:3, cells:Array.from({length:6},(_,i)=>({r:Math.floor(i/2)+1,c:i%2+1,rs:1,cs:1})) },
+    { id:'6-2x3', name:'2×3', cols:3,rows:2, cells:gc(6,3) },
+    { id:'6-3x2', name:'3×2', cols:2,rows:3, cells:gc(6,2) },
+    { id:'6-h', name:'横排', cols:6,rows:1, cells:gc(6,6) },
+    { id:'6-t1b5', name:'上大下五', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:1,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+    { id:'6-l1r5', name:'左大右五', cols:3,rows:3, cells:[{r:1,c:1,rs:3,cs:2},{r:1,c:3,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+  ],
+  7: [
+    { id:'7-t1b6', name:'上大下六', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:1,rs:1,cs:1},{r:3,c:2,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+    { id:'7-l1r6', name:'左大右六', cols:3,rows:3, cells:[{r:1,c:1,rs:3,cs:2},{r:1,c:3,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+    { id:'7-center', name:'中心六绕', cols:4,rows:4, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:4,rs:1,cs:1},{r:2,c:2,rs:2,cs:2},{r:4,c:1,rs:1,cs:1},{r:4,c:4,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:4,c:3,rs:1,cs:1}] },
+    { id:'7-3t4b', name:'上三下四', cols:12,rows:2, cells:[{r:1,c:1,rs:1,cs:4},{r:1,c:5,rs:1,cs:4},{r:1,c:9,rs:1,cs:4},{r:2,c:1,rs:1,cs:3},{r:2,c:4,rs:1,cs:3},{r:2,c:7,rs:1,cs:3},{r:2,c:10,rs:1,cs:3}] },
   ],
   8: [
-    { id:'8-2x4', name:'2×4', cols:4,rows:2, cells:Array.from({length:8},(_,i)=>({r:Math.floor(i/4)+1,c:i%4+1,rs:1,cs:1})) },
-    { id:'8-4x2', name:'4×2', cols:2,rows:4, cells:Array.from({length:8},(_,i)=>({r:Math.floor(i/2)+1,c:i%2+1,rs:1,cs:1})) },
+    { id:'8-2x4', name:'2×4', cols:4,rows:2, cells:gc(8,4) },
+    { id:'8-4x2', name:'4×2', cols:2,rows:4, cells:gc(8,2) },
+    { id:'8-t1b7', name:'上大下七', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:1,rs:1,cs:1},{r:3,c:2,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+    { id:'8-3t5b', name:'上三下五', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:1,c:3,rs:1,cs:1},{r:2,c:1,rs:2,cs:1},{r:2,c:2,rs:2,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
   ],
   9: [
-    { id:'9-3x3', name:'3×3', cols:3,rows:3, cells:Array.from({length:9},(_,i)=>({r:Math.floor(i/3)+1,c:i%3+1,rs:1,cs:1})) },
+    { id:'9-3x3', name:'3×3', cols:3,rows:3, cells:gc(9,3) },
+    { id:'9-t1b8', name:'上大下八', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:1,rs:1,cs:1},{r:3,c:2,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
+    { id:'9-center', name:'中心八绕', cols:4,rows:4, cells:[{r:1,c:1,rs:1,cs:1},{r:1,c:2,rs:1,cs:1},{r:1,c:3,rs:1,cs:1},{r:1,c:4,rs:1,cs:1},{r:2,c:2,rs:2,cs:2},{r:4,c:1,rs:1,cs:1},{r:4,c:2,rs:1,cs:1},{r:4,c:3,rs:1,cs:1},{r:4,c:4,rs:1,cs:1}] },
+  ],
+  10: [
+    { id:'10-2x5', name:'2×5', cols:5,rows:2, cells:gc(10,5) },
+    { id:'10-5x2', name:'5×2', cols:2,rows:5, cells:gc(10,2) },
+    { id:'10-t1b9', name:'上大下九', cols:3,rows:3, cells:[{r:1,c:1,rs:1,cs:3},{r:2,c:1,rs:1,cs:1},{r:2,c:2,rs:1,cs:1},{r:2,c:3,rs:1,cs:1},{r:3,c:1,rs:1,cs:1},{r:3,c:2,rs:1,cs:1},{r:3,c:3,rs:1,cs:1}] },
   ],
 };
 
