@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Collage Maker</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ===== OKLCH Theme System ===== */
 :root {
@@ -69,7 +68,7 @@ header h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
 
 /* ===== App Layout ===== */
 .app{display:flex;flex-direction:column;height:calc(100vh - 62px)}
-.top-section{padding:20px 24px 16px}
+.top-section{padding:20px 24px 16px;flex-shrink:0}
 .bottom-section{flex:1;display:flex;overflow:hidden}
 .col-main{flex:1;overflow:auto;padding:0 24px 20px}
 .col-side{width:300px;flex-shrink:0;border-left:1px solid var(--border);
@@ -79,54 +78,51 @@ header h1{font-size:18px;font-weight:600;letter-spacing:-.3px}
 .upload-zone{
   border:2px dashed var(--border);
   border-radius:var(--radius);
-  padding:24px 20px;text-align:center;
+  padding:16px 20px;text-align:center;
   transition:all var(--transition);cursor:pointer;
-  background:var(--surface);margin-bottom:16px;
+  background:var(--surface);margin-bottom:12px;
+  display:flex;align-items:center;gap:12px;
 }
 .upload-zone:hover,.upload-zone.dragover{
   border-color:var(--accent);background:oklch(oklch(var(--accent-l)/.08));
 }
-.upload-zone .icon{font-size:28px;margin-bottom:6px}
-.upload-zone .label{font-size:13px;color:var(--text2)}
-.upload-zone .hint{font-size:11px;color:var(--text3);margin-top:4px}
-.upload-zone.has-photos{
-  padding:12px 16px;display:flex;align-items:center;gap:12px;
-}
-.upload-zone.has-photos .icon{font-size:18px;margin:0}
-.upload-zone.has-photos .label{font-size:12px}
-.upload-zone.has-photos .hint{display:none}
+.upload-zone .icon{font-size:22px;flex-shrink:0}
+.upload-zone .info{text-align:left}
+.upload-zone .label{font-size:13px;color:var(--text)}
+.upload-zone .hint{font-size:11px;color:var(--text3);margin-top:2px}
+.upload-zone.empty{display:flex;justify-content:center;padding:20px;flex-direction:column;align-items:center}
+.upload-zone.empty .info{text-align:center}
 
 /* ===== Photo Pool ===== */
 .photo-pool{
-  display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;
+  display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;
   scrollbar-width:thin;
 }
 .photo-pool::-webkit-scrollbar{height:4px}
 .photo-pool::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 .photo-chip{
-  flex-shrink:0;width:56px;height:56px;border-radius:var(--radius-sm);
+  flex-shrink:0;width:48px;height:48px;border-radius:var(--radius-sm);
   overflow:hidden;border:1.5px solid var(--border);
   position:relative;cursor:pointer;transition:border var(--transition);
 }
 .photo-chip:hover{border-color:var(--accent)}
 .photo-chip img{width:100%;height:100%;object-fit:cover}
 .photo-chip .del{
-  position:absolute;top:-2px;right:-2px;width:18px;height:18px;
+  position:absolute;top:-3px;right:-3px;width:18px;height:18px;
   border-radius:50%;background:rgba(200,50,50,.9);color:#fff;
-  font-size:10px;display:flex;align-items:center;justify-content:center;
+  font-size:9px;display:flex;align-items:center;justify-content:center;
   opacity:0;transition:opacity var(--transition);
 }
 .photo-chip:hover .del{opacity:1}
 .photo-pool-empty{
-  font-size:12px;color:var(--text3);padding:4px 0;
+  font-size:11px;color:var(--text3);padding:2px 0;
 }
 
 /* ===== Settings Bar ===== */
 .settings-bar{
   display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;
-  padding:14px 0 0;margin-top:2px;
+  padding:10px 0 0;
 }
-.settings-bar[style*="display:none"]{display:none!important}
 .setting-group{display:flex;align-items:center;gap:6px}
 .setting-group label{font-size:12px;color:var(--text2);white-space:nowrap;font-weight:500}
 .setting-group select,.setting-group input[type="number"]{
@@ -152,13 +148,13 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
 /* ===== Collage Preview Grid ===== */
 .grid-toolbar{
   display:flex;justify-content:space-between;align-items:center;
-  margin:16px 0 10px;
+  margin:14px 0 10px;
 }
 .grid-toolbar .title{font-size:13px;font-weight:600;color:var(--text2)}
 .grid-toolbar .count{font-size:11px;color:var(--text3);margin-left:4px}
 .preview-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:14px;min-height:100px;
+  gap:14px;min-height:100px;align-content:start;
 }
 .preview-grid.empty{
   display:flex;align-items:center;justify-content:center;
@@ -168,13 +164,13 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
   position:relative;border-radius:var(--radius);overflow:hidden;
   background:var(--surface);box-shadow:var(--shadow);
   cursor:pointer;transition:transform var(--transition),box-shadow var(--transition);
-  aspect-ratio:1;
+  aspect-ratio:auto;
 }
 .collage-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.collage-card canvas{width:100%;height:100%;display:block}
+.collage-card canvas{width:100%;height:auto;display:block}
 .collage-card .overlay{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.3);color:#fff;font-size:12px;font-weight:500;
+  background:rgba(0,0,0,.25);color:#fff;font-size:12px;font-weight:500;
   opacity:0;transition:opacity var(--transition);
 }
 .collage-card:hover .overlay{opacity:1}
@@ -186,7 +182,7 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
 }
 .collage-card.saved .badge{opacity:1;background:#34c759}
 .collage-card .shuffle-btn{
-  position:absolute;bottom:6px;right:6px;width:24px;height:24px;
+  position:absolute;bottom:6px;right:6px;width:26px;height:26px;
   border-radius:50%;background:rgba(0,0,0,.5);color:#fff;
   font-size:11px;display:flex;align-items:center;justify-content:center;
   opacity:0;transition:opacity var(--transition);z-index:2;
@@ -215,9 +211,9 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
 }
 .keep-item{
   position:relative;border-radius:var(--radius-sm);overflow:hidden;
-  box-shadow:var(--shadow);aspect-ratio:1;
+  box-shadow:var(--shadow);
 }
-.keep-item canvas{width:100%;height:100%;display:block}
+.keep-item canvas{width:100%;height:auto;display:block}
 .keep-item .remove-btn{
   position:absolute;top:4px;right:4px;width:20px;height:20px;
   border-radius:50%;background:rgba(200,50,50,.8);color:#fff;
@@ -229,10 +225,11 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
   display:block;margin:0 16px 14px;padding:8px;
   background:var(--accent);color:#fff;border-radius:var(--radius-sm);
   font-size:13px;font-weight:500;text-align:center;
-  transition:background var(--transition);
+  transition:background var(--transition);flex-shrink:0;
 }
 .dl-btn:hover{background:var(--accent-hover)}
 .dl-btn:disabled{opacity:.4;cursor:not-allowed}
+.dl-status{font-size:10px;color:var(--text3);text-align:center;padding:2px 0}
 
 /* ===== Toast ===== */
 .toast{
@@ -247,8 +244,7 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
 /* ===== Responsive ===== */
 @media(max-width:900px){
   .bottom-section{flex-direction:column}
-  .col-side{width:auto;border-left:none;border-top:1px solid var(--border);
-    max-height:240px}
+  .col-side{width:auto;border-left:none;border-top:1px solid var(--border);max-height:220px}
   .preview-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
 }
 @media(max-width:600px){
@@ -273,17 +269,18 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
 
 <div class="app">
   <div class="top-section">
-    <!-- Upload -->
     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
       <input type="file" id="fileInput" accept="image/*" multiple>
       <div class="icon">⊞</div>
-      <div class="label">上传照片或拖拽到此处</div>
-      <div class="hint">支持 JPG / PNG / WebP，建议 10~20 张</div>
+      <div class="info">
+        <div class="label">上传照片或拖拽到此处</div>
+        <div class="hint">支持 JPG / PNG / WebP</div>
+      </div>
     </div>
-    <!-- Photo pool -->
+
     <div class="photo-pool" id="photoPool"><span class="photo-pool-empty">尚未上传照片</span></div>
-    <!-- Settings -->
-    <div class="settings-bar" id="settingsBar" style="display:none">
+
+    <div class="settings-bar" id="settingsBar">
       <div class="setting-group">
         <label>每张拼</label>
         <select id="photoCount"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option>8</option></select>
@@ -291,7 +288,7 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
       </div>
       <div class="setting-group">
         <label>生成</label>
-        <input type="number" id="genCount" value="12" min="1" max="100">
+        <input type="number" id="genCount" value="12" min="1" max="100" style="width:48px">
         <label>张</label>
       </div>
       <div class="setting-group">
@@ -300,15 +297,19 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
       </div>
       <div class="setting-group">
         <label>比例</label>
-        <select id="aspectRatio"><option value="1/1">1:1</option><option value="4/3">4:3</option><option value="3/4">3:4</option><option value="16/9">16:9</option></select>
+        <select id="aspectRatio"><option value="1:1">1:1</option><option value="4:3">4:3</option><option value="3:4">3:4</option><option value="16:9">16:9</option></select>
       </div>
       <div class="setting-group">
         <label>间距</label>
-        <input type="number" id="gap" value="4" min="0" max="40" style="width:40px">px
+        <input type="number" id="gap" value="4" min="0" max="40" style="width:42px">px
+      </div>
+      <div class="setting-group">
+        <label>边框</label>
+        <input type="number" id="borderW" value="0" min="0" max="30" style="width:42px">px
       </div>
       <div class="setting-group">
         <label>圆角</label>
-        <input type="number" id="cornerRadius" value="0" min="0" max="40" style="width:40px">px
+        <input type="number" id="cornerRadius" value="0" min="0" max="40" style="width:42px">px
       </div>
       <div class="setting-group">
         <label>背景</label>
@@ -334,6 +335,7 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
         <span class="count" id="keepCount">0 张</span>
       </div>
       <div class="keep-list" id="keepList"></div>
+      <div class="dl-status" id="dlStatus"></div>
       <button class="dl-btn" id="dlBtn" onclick="downloadAll()" disabled>下载全部保留</button>
     </div>
   </div>
@@ -342,431 +344,401 @@ input[type="color"]::-webkit-color-swatch{border-radius:4px;border:1px solid var
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== RoundRect polyfill =====
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    r=Math.min(r,w/2,h/2);
+    this.moveTo(x+r,y);this.lineTo(x+w-r,y);
+    this.quadraticCurveTo(x+w,y,x+w,y+r);
+    this.lineTo(x+w,y+h-r);this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    this.lineTo(x+r,y+h);this.quadraticCurveTo(x,y+h,x,y+h-r);
+    this.lineTo(x,y+r);this.quadraticCurveTo(x,y,x+r,y);
+    this.closePath();
+  };
+}
+
 // ===== State =====
-const state = {
-  photos: [],        // {file, img, url, name}
-  collages: [],      // {canvas, id, saved}
-  kept: [],          // {canvas, id}
-  idCounter: 0,
-};
+const state = {photos:[],collages:[],kept:[],idCounter:0};
 
 // ===== Theme =====
 function toggleTheme(){
-  const d = document.documentElement;
-  d.dataset.theme = d.dataset.theme === 'dark' ? 'light' : 'dark';
+  const d=document.documentElement;
+  d.dataset.theme=d.dataset.theme==='dark'?'light':'dark';
 }
 
 // ===== Upload =====
-const uploadZone = document.getElementById('uploadZone');
-const fileInput = document.getElementById('fileInput');
-const photoPool = document.getElementById('photoPool');
+const uploadZone=document.getElementById('uploadZone');
+const fileInput=document.getElementById('fileInput');
+const photoPool=document.getElementById('photoPool');
 
-fileInput.addEventListener('change', e => handleFiles(e.target.files));
-
-uploadZone.addEventListener('dragover', e => {
-  e.preventDefault();
-  uploadZone.classList.add('dragover');
-});
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadZone.classList.remove('dragover');
-  handleFiles(e.dataTransfer.files);
+fileInput.addEventListener('change',e=>handleFiles(e.target.files));
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover')});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop',e=>{
+  e.preventDefault();uploadZone.classList.remove('dragover');handleFiles(e.dataTransfer.files);
 });
 
 function handleFiles(files){
   for(const f of files){
-    if(!f.type.startsWith('image/')) continue;
-    const url = URL.createObjectURL(f);
-    const img = new Image();
-    img.onload = () => {
-      state.photos.push({file:f, img, url, name:f.name});
-      renderPhotoPool();
-      updateUploadUI();
-    };
-    img.src = url;
+    if(!f.type.startsWith('image/'))continue;
+    const url=URL.createObjectURL(f);
+    const img=new Image();
+    img.onload=()=>{state.photos.push({file:f,img,url,name:f.name});renderPool();};
+    img.src=url;
   }
 }
-
 function removePhoto(idx){
-  const p = state.photos[idx];
-  if(p) URL.revokeObjectURL(p.url);
-  state.photos.splice(idx, 1);
-  renderPhotoPool();
-  updateUploadUI();
+  const p=state.photos[idx];if(p)URL.revokeObjectURL(p.url);
+  state.photos.splice(idx,1);renderPool();
+}
+function renderPool(){
+  if(!state.photos.length){photoPool.innerHTML='<span class="photo-pool-empty">尚未上传照片</span>';updateUploadLabel();return}
+  photoPool.innerHTML=state.photos.map((p,i)=>`<div class="photo-chip"><img src="${p.url}" alt="${p.name}"><span class="del" onclick="event.stopPropagation();removePhoto(${i})">✕</span></div>`).join('');
+  updateUploadLabel();
+}
+function updateUploadLabel(){
+  document.querySelector('.upload-zone .label').textContent=state.photos.length?`${state.photos.length} 张照片已上传`:'上传照片或拖拽到此处';
+  document.getElementById('settingsBar').style.display=state.photos.length?'':'none';
 }
 
-function renderPhotoPool(){
-  if(!state.photos.length){
-    photoPool.innerHTML = '<span class="photo-pool-empty">尚未上传照片</span>';
-    return;
-  }
-  photoPool.innerHTML = state.photos.map((p,i) => `
-    <div class="photo-chip">
-      <img src="${p.url}" alt="${p.name}">
-      <span class="del" onclick="event.stopPropagation();removePhoto(${i})">✕</span>
-    </div>
-  `).join('');
-}
+// ===== Collage Engine =====
+const CANVAS_BASE=1200;
 
-function updateUploadUI(){
-  const z = uploadZone;
-  if(state.photos.length){
-    z.classList.add('has-photos');
-    z.querySelector('.label').textContent = `${state.photos.length} 张照片已上传`;
-    document.getElementById('settingsBar').style.display = '';
-  } else {
-    z.classList.remove('has-photos');
-    z.querySelector('.label').textContent = '上传照片或拖拽到此处';
-    document.getElementById('settingsBar').style.display = 'none';
-  }
-}
-
-// ===== Collage Generation =====
 function getCanvasSize(){
-  const ratio = document.getElementById('aspectRatio').value;
-  const parts = ratio.split('/').map(Number);
-  const base = 600;
-  if(parts[0] >= parts[1])
-    return {w: base, h: base * parts[1] / parts[0]};
-  else
-    return {w: base * parts[0] / parts[1], h: base};
+  const ratio=document.getElementById('aspectRatio').value;
+  const [rw,rh]=ratio.split(':').map(Number);const base=CANVAS_BASE;
+  return rw>=rh?{w:base,h:Math.round(base*rh/rw)}:{w:Math.round(base*rw/rh),h:base};
 }
 
-function randomSelect(arr, n){
-  if(arr.length === 0) return [];
-  const result = [];
-  const pool = [...arr];
-  for(let i=0; i<n; i++){
-    if(pool.length === 0) pool.push(...arr);
-    const idx = Math.floor(Math.random() * pool.length);
-    result.push(pool.splice(idx,1)[0]);
-  }
-  return result;
+function shuffle(arr){
+  const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;
 }
 
 function drawCollage(photos){
-  const {w: cw, h: ch} = getCanvasSize();
-  const canvas = document.createElement('canvas');
-  canvas.width = cw;
-  canvas.height = ch;
-  const ctx = canvas.getContext('2d');
+  const {w:cw,h:ch}=getCanvasSize();
+  const canvas=document.createElement('canvas');canvas.width=cw;canvas.height=ch;
+  const ctx=canvas.getContext('2d');
+  const bg=document.getElementById('bgColor').value;
+  const gap=parseInt(document.getElementById('gap').value)||0;
+  const bw=parseInt(document.getElementById('borderW').value)||0;
+  const radius=parseInt(document.getElementById('cornerRadius').value)||0;
+  const style=document.getElementById('layoutStyle').value;
+  const n=Math.min(parseInt(document.getElementById('photoCount').value)||3,photos.length);
+  const selected=shuffle(photos).slice(0,n);
+  if(!selected.length)return canvas;
 
-  const bg = document.getElementById('bgColor').value;
-  const gap = parseInt(document.getElementById('gap').value) || 0;
-  const radius = parseInt(document.getElementById('cornerRadius').value) || 0;
-  const style = document.getElementById('layoutStyle').value;
-  const n = parseInt(document.getElementById('photoCount').value) || 3;
-
-  const selected = randomSelect(photos, Math.min(n, photos.length));
-  if(!selected.length) return canvas;
-
-  ctx.fillStyle = bg;
-  ctx.fillRect(0,0,cw,ch);
-
-  if(style === 'grid'){
-    drawGrid(ctx, cw, ch, selected, gap, radius);
-  } else {
-    drawFreeform(ctx, cw, ch, selected, radius);
-  }
+  ctx.fillStyle=bg;ctx.fillRect(0,0,cw,ch);
+  style==='grid'?drawGrid(ctx,cw,ch,selected,gap,bw,radius):drawFreeform(ctx,cw,ch,selected,bw,radius);
   return canvas;
 }
 
-function drawGrid(ctx, cw, ch, photos, gap, radius){
-  const n = photos.length;
-  let cols = Math.ceil(Math.sqrt(n * cw / ch));
-  let rows = Math.ceil(n / cols);
-  // Better distribution
-  while(cols * (rows-1) >= n && rows > 1) rows--;
-  while(rows * (cols-1) >= n && cols > 1) cols--;
-  const cellW = (cw - gap * (cols - 1)) / cols;
-  const cellH = (ch - gap * (rows - 1)) / rows;
+function drawGrid(ctx,cw,ch,photos,gap,bw,radius){
+  const n=photos.length;
+  // Find best grid: aim for cells close to square
+  let cols=Math.ceil(Math.sqrt(n*cw/ch));
+  let rows=Math.ceil(n/cols);
+  while(cols*(rows-1)>=n&&rows>1)rows--;
+  while(rows*(cols-1)>=n&&cols>1)cols--;
 
-  for(let i=0; i<n; i++){
-    const row = Math.floor(i / cols);
-    const col = i % cols;
-    const x = col * (cellW + gap);
-    const y = row * (cellH + gap);
+  const cellW=(cw-gap*(cols-1))/cols;
+  const cellH=(ch-gap*(rows-1))/rows;
 
-    const photo = photos[i];
-    const pa = photo.img.width / photo.img.height;
-    const ca = cellW / cellH;
-    let sx, sy, sw, sh;
-    if(pa > ca){
-      sh = photo.img.height;
-      sw = sh * ca;
-      sy = 0;
-      sx = Math.random() * (photo.img.width - sw);
-    } else {
-      sw = photo.img.width;
-      sh = sw / ca;
-      sx = 0;
-      sy = Math.random() * (photo.img.height - sh);
+  for(let i=0;i<n;i++){
+    const row=Math.floor(i/cols),col=i%cols;
+    const x=col*(cellW+gap)+gap/2;
+    const y=row*(cellH+gap)+gap/2;
+
+    let dx=x,dy=y,dw=cellW,dh=cellH;
+    if(gap===0&&col===0){dx=0;dw=cellW+gap/2}
+    if(gap===0&&col===cols-1){dx-=gap/2;dw=cellW+gap/2}
+    if(gap===0&&row===0){dy=0;dh=cellH+gap/2}
+    if(gap===0&&row===rows-1){dy-=gap/2;dh=cellH+gap/2}
+
+    const photo=photos[i];
+    const pa=photo.img.width/photo.img.height;
+    const ca=dw/dh;
+    let sx,sy,sw,sh;
+
+    // Center-crop: default is centered, slight random offset (max 10%) for variety
+    const jitterX=(Math.random()-.5)*0.2;
+    const jitterY=(Math.random()-.5)*0.2;
+
+    if(pa>ca){
+      sh=photo.img.height;
+      sw=sh*ca;
+      sy=0;
+      sx=(photo.img.width-sw)*(0.5+jitterX);
+    }else{
+      sw=photo.img.width;
+      sh=sw/ca;
+      sx=0;
+      sy=(photo.img.height-sh)*(0.5+jitterY);
+    }
+    sx=Math.max(0,Math.min(sx,photo.img.width-sw));
+    sy=Math.max(0,Math.min(sy,photo.img.height-sh));
+
+    // Border
+    if(bw>0){
+      ctx.fillStyle='#fff';
+      ctx.fillRect(dx-bw,dy-bw,dw+2*bw,dh+2*bw);
+      ctx.shadowColor='rgba(0,0,0,.1)';
+      ctx.shadowBlur=bw;
+      ctx.shadowOffsetY=2;
+      ctx.fillRect(dx-bw,dy-bw,dw+2*bw,dh+2*bw);
+      ctx.shadowColor='transparent';
+      ctx.shadowBlur=0;
+      ctx.shadowOffsetY=0;
     }
 
     ctx.save();
     ctx.beginPath();
-    if(radius > 0){
-      ctx.roundRect(x, y, cellW, cellH, radius);
-      ctx.clip();
-    }
-    ctx.drawImage(photo.img, sx, sy, sw, sh, x, y, cellW, cellH);
+    radius>0?ctx.roundRect(dx,dy,dw,dh,radius):ctx.rect(dx,dy,dw,dh);
+    ctx.clip();
+    ctx.drawImage(photo.img,sx,sy,sw,sh,dx,dy,dw,dh);
     ctx.restore();
-
-    // subtle border
-    ctx.strokeStyle = 'rgba(0,0,0,.04)';
-    ctx.lineWidth = .5;
-    if(radius > 0){
-      ctx.beginPath(); ctx.roundRect(x, y, cellW, cellH, radius); ctx.stroke();
-    } else {
-      ctx.strokeRect(x, y, cellW, cellH);
-    }
   }
 }
 
-function drawFreeform(ctx, cw, ch, photos, radius){
-  const n = photos.length;
-  const margin = 20;
-  // Try to position photos to fill the space nicely
-  const areas = [];
-  for(const p of photos){
-    const aspect = p.img.width / p.img.height;
-    let w, h;
-    if(aspect >= 1){
-      w = (cw - margin*2) * (0.35 + Math.random() * 0.35);
-      h = w / aspect;
-    } else {
-      h = (ch - margin*2) * (0.35 + Math.random() * 0.35);
-      w = h * aspect;
+function drawFreeform(ctx,cw,ch,photos,bw,radius){
+  // Improved freeform: photos laid out with slight rotation, organized to fill space
+  const n=photos.length;
+  const M=24;
+  // Divide canvas into a rough grid of positions
+  const cols=Math.ceil(Math.sqrt(n*cw/ch));
+  const rows=Math.ceil(n/cols);
+  const cellW=cw/cols,cellH=ch/rows;
+  const placed=[];
+
+  for(let i=0;i<n;i++){
+    const row=Math.floor(i/cols),col=i%cols;
+    const cx=cellW*(col+.5),cy=cellH*(row+.5);
+    const targetW=cellW*0.85-M, targetH=cellH*0.85-M;
+    const photo=photos[i];
+    const pa=photo.img.width/photo.img.height;
+    let w,h;
+    if(pa>=1){w=targetW;h=w/pa;if(h>targetH){h=targetH;w=h*pa}}
+    else{h=targetH;w=h*pa;if(w>targetW){w=targetW;h=w/pa}}
+
+    const rot=(Math.random()-.5)*12;
+    const x=cx-w/2+(Math.random()-.5)*M;
+    const y=Math.max(M,Math.min(ch-h-M,cy-h/2+(Math.random()-.5)*M));
+
+    // Shadow & border
+    ctx.save();
+    ctx.translate(x+w/2,y+h/2);
+    ctx.rotate(rot*Math.PI/180);
+    if(bw>0){
+      ctx.fillStyle='#fff';
+      ctx.fillRect(-(w/2+bw),-(h/2+bw),w+2*bw,h+2*bw);
     }
-    const rot = (Math.random() - 0.5) * 16;
-    const maxAttempts = 30;
-    let placed = false;
-    for(let attempt=0; attempt<maxAttempts; attempt++){
-      const x = margin + Math.random() * (cw - w - margin*2);
-      const y = margin + Math.random() * (ch - h - margin*2);
-      const r = {x, y, x2: x+w, y2: y+h};
-      if(!areas.some(a => !(r.x2 < a.x || r.x > a.x2 || r.y2 < a.y || r.y > a.y2))){
-        areas.push(r);
-        // draw
-        ctx.save();
-        ctx.translate(x + w/2, y + h/2);
-        ctx.rotate(rot * Math.PI / 180);
-        ctx.beginPath();
-        if(radius > 0){
-          ctx.roundRect(-w/2, -h/2, w, h, radius);
-          ctx.clip();
-        }
-        ctx.drawImage(p.img, 0, 0, p.img.width, p.img.height, -w/2, -h/2, w, h);
-        ctx.restore();
-        // shadow
-        ctx.save();
-        ctx.translate(x + w/2, y + h/2);
-        ctx.rotate(rot * Math.PI / 180);
-        ctx.shadowColor = 'rgba(0,0,0,.15)';
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetY = 2;
-        ctx.fillStyle = 'transparent';
-        ctx.fillRect(-w/2-2, -h/2-2, w+4, h+4);
-        ctx.restore();
-        // redraw image on top of shadow
-        ctx.save();
-        ctx.translate(x + w/2, y + h/2);
-        ctx.rotate(rot * Math.PI / 180);
-        ctx.beginPath();
-        if(radius > 0){
-          ctx.roundRect(-w/2, -h/2, w, h, radius);
-          ctx.clip();
-        }
-        ctx.drawImage(p.img, 0, 0, p.img.width, p.img.height, -w/2, -h/2, w, h);
-        ctx.restore();
-        placed = true;
-        break;
-      }
-    }
-    if(!placed){
-      // fallback: just place at a random position
-      const x = margin + Math.random() * (cw - w - margin*2);
-      const y = margin + Math.random() * (ch - h - margin*2);
-      ctx.save();
-      ctx.translate(x + w/2, y + h/2);
-      ctx.rotate(rot * Math.PI / 180);
-      ctx.beginPath();
-      if(radius > 0){ ctx.roundRect(-w/2, -h/2, w, h, radius); ctx.clip(); }
-      ctx.drawImage(p.img, 0, 0, p.img.width, p.img.height, -w/2, -h/2, w, h);
-      ctx.restore();
-    }
+    ctx.shadowColor='rgba(0,0,0,.12)';
+    ctx.shadowBlur=10;
+    ctx.shadowOffsetY=3;
+    ctx.beginPath();
+    radius>0?ctx.roundRect(-w/2,-h/2,w,h,radius):ctx.rect(-w/2,-h/2,w,h);
+    ctx.clip();
+    ctx.drawImage(photo.img,0,0,photo.img.width,photo.img.height,-w/2,-h/2,w,h);
+    ctx.restore();
   }
 }
 
 // ===== Generate All =====
 function generateAll(){
-  const count = parseInt(document.getElementById('genCount').value) || 12;
-  if(state.photos.length < 2){
-    toast('至少需要 2 张照片');
-    return;
-  }
-  const minPhotos = parseInt(document.getElementById('photoCount').value) || 3;
-  if(state.photos.length < minPhotos){
-    toast(`至少需要 ${minPhotos} 张照片才能完成设置`);
-    return;
-  }
+  const count=parseInt(document.getElementById('genCount').value)||12;
+  const minPhotos=parseInt(document.getElementById('photoCount').value)||3;
+  if(state.photos.length<2){toast('至少需要 2 张照片');return}
+  if(state.photos.length<minPhotos){toast(`至少需要 ${minPhotos} 张照片`);return}
 
-  const genBtn = document.getElementById('genBtn');
-  genBtn.disabled = true;
-  genBtn.textContent = '拼图中...';
+  const genBtn=document.getElementById('genBtn');
+  genBtn.disabled=true;genBtn.textContent='拼图中...';
+  state.collages=[];
 
-  state.collages = [];
-  document.getElementById('previewGrid').classList.remove('empty');
+  const grid=document.getElementById('previewGrid');
+  grid.classList.remove('empty');
 
-  // Use requestAnimationFrame to batch render
-  const batchSize = 6;
-  let idx = 0;
-
+  const batch=8;let idx=0;
   function renderBatch(){
-    const end = Math.min(idx + batchSize, count);
-    for(; idx < end; idx++){
-      const id = state.idCounter++;
-      const canvas = drawCollage(state.photos);
-      state.collages.push({canvas, id, saved:false});
+    const end=Math.min(idx+batch,count);
+    for(;idx<end;idx++){
+      const id=state.idCounter++;
+      state.collages.push({canvas:drawCollage(state.photos),id,saved:false});
     }
-    renderPreviewGrid();
-    if(idx < count){
-      requestAnimationFrame(renderBatch);
-    } else {
-      genBtn.disabled = false;
-      genBtn.textContent = '开始拼图';
-      document.getElementById('gridToolbar').style.display = '';
-      document.getElementById('genCountLabel').textContent = `共 ${state.collages.length} 张`;
-      document.getElementById('keepSidebar').style.display = '';
+    renderPreviews();
+    if(idx<count)requestAnimationFrame(renderBatch);
+    else{
+      genBtn.disabled=false;genBtn.textContent='开始拼图';
+      document.getElementById('gridToolbar').style.display='';
+      document.getElementById('genCountLabel').textContent=`共 ${state.collages.length} 张`;
+      document.getElementById('keepSidebar').style.display='';
     }
   }
   requestAnimationFrame(renderBatch);
 }
 
-function renderPreviewGrid(){
-  const grid = document.getElementById('previewGrid');
-  grid.innerHTML = state.collages.map(c => {
-    const dataUrl = c.canvas.toDataURL('image/png', 0.85);
-    return `<div class="collage-card${c.saved?' saved':''}" onclick="toggleSave(${c.id})">
-      <img src="${dataUrl}" alt="collage">
-      <div class="badge">${c.saved?'✓':'♡'}</div>
-      <span class="shuffle-btn" onclick="event.stopPropagation();shuffleOne(${c.id})">↻</span>
-    </div>`;
-  }).join('');
+function renderPreviews(){
+  const grid=document.getElementById('previewGrid');
+  grid.innerHTML=state.collages.map(c=>`<div class="collage-card${c.saved?' saved':''}" onclick="toggleSave(${c.id})">
+    <canvas></canvas>
+    <div class="badge">${c.saved?'✓':'♡'}</div>
+    <div class="overlay">${c.saved?'已保留':'点击保留'}</div>
+    <span class="shuffle-btn" onclick="event.stopPropagation();shuffleOne(${c.id})">↻</span>
+    </div>`).join('');
+
+  // Render canvases - use actual canvas elements not data URLs
+  grid.querySelectorAll('.collage-card canvas').forEach((el,i)=>{
+    const c=state.collages[i];
+    if(c){
+      el.width=c.canvas.width;el.height=c.canvas.height;
+      el.getContext('2d').drawImage(c.canvas,0,0);
+    }
+  });
 }
 
 // ===== Shuffle / Save =====
 function shuffleAll(){
-  state.collages.forEach(c => {
-    if(!c.saved){
-      c.canvas = drawCollage(state.photos);
-    }
-  });
-  renderPreviewGrid();
-  toast('已重新生成未保留的拼图');
+  state.collages.forEach(c=>{if(!c.saved)c.canvas=drawCollage(state.photos)});
+  renderPreviews();toast('已重新生成未保留的拼图');
 }
-
 function shuffleOne(id){
-  const c = state.collages.find(x => x.id === id);
-  if(c && !c.saved){
-    c.canvas = drawCollage(state.photos);
-    renderPreviewGrid();
-  }
+  const c=state.collages.find(x=>x.id===id);
+  if(c&&!c.saved){c.canvas=drawCollage(state.photos);renderPreviews()}
 }
-
 function toggleSave(id){
-  const c = state.collages.find(x => x.id === id);
-  if(!c) return;
-  c.saved = !c.saved;
+  const c=state.collages.find(x=>x.id===id);if(!c)return;
+  c.saved=!c.saved;
   if(c.saved){
-    // Add to kept (deep copy)
-    const clone = document.createElement('canvas');
-    clone.width = c.canvas.width;
-    clone.height = c.canvas.height;
-    clone.getContext('2d').drawImage(c.canvas, 0, 0);
-    state.kept.push({canvas: clone, id: c.id});
-  } else {
-    state.kept = state.kept.filter(k => k.id !== id);
-  }
-  renderPreviewGrid();
-  renderKeepList();
+    const clone=document.createElement('canvas');
+    clone.width=c.canvas.width;clone.height=c.canvas.height;
+    clone.getContext('2d').drawImage(c.canvas,0,0);
+    state.kept.push({canvas:clone,id:c.id});
+  }else{state.kept=state.kept.filter(k=>k.id!==id)}
+  renderPreviews();renderKept();
 }
-
-function renderKeepList(){
-  const list = document.getElementById('keepList');
-  document.getElementById('keepCount').textContent = `${state.kept.length} 张`;
-  list.innerHTML = state.kept.map(k => {
-    const dataUrl = k.canvas.toDataURL('image/png', 0.85);
-    return `<div class="keep-item">
-      <img src="${dataUrl}" alt="kept">
-      <span class="remove-btn" onclick="removeKept(${k.id})">✕</span>
-    </div>`;
-  }).join('');
-  const dl = document.getElementById('dlBtn');
-  dl.disabled = state.kept.length === 0;
+function renderKept(){
+  const list=document.getElementById('keepList');
+  document.getElementById('keepCount').textContent=`${state.kept.length} 张`;
+  list.innerHTML=state.kept.map(k=>`<div class="keep-item">
+    <canvas></canvas>
+    <span class="remove-btn" onclick="removeKept(${k.id})">✕</span></div>`).join('');
+  list.querySelectorAll('.keep-item canvas').forEach((el,i)=>{
+    const k=state.kept[i];
+    if(k){el.width=k.canvas.width;el.height=k.canvas.height;el.getContext('2d').drawImage(k.canvas,0,0)}
+  });
+  document.getElementById('dlBtn').disabled=!state.kept.length;
 }
-
 function removeKept(id){
-  state.kept = state.kept.filter(k => k.id !== id);
-  const c = state.collages.find(x => x.id === id);
-  if(c) c.saved = false;
-  renderKeepList();
-  renderPreviewGrid();
+  state.kept=state.kept.filter(k=>k.id!==id);
+  const c=state.collages.find(x=>x.id===id);if(c)c.saved=false;
+  renderKept();renderPreviews();
 }
 
 // ===== Download =====
 async function downloadAll(){
-  if(!state.kept.length) return;
-  const zip = new JSZip();
-  const folder = zip.folder('collages');
-  const promises = state.kept.map((k, i) => {
-    return new Promise(resolve => {
-      k.canvas.toBlob(blob => {
-        folder.file(`collage_${i+1}.png`, blob);
-        resolve();
-      }, 'image/png');
-    });
+  if(!state.kept.length)return;
+  const status=document.getElementById('dlStatus');
+  const btn=document.getElementById('dlBtn');
+  btn.disabled=true;btn.textContent='打包中...';
+  status.textContent='正在生成 ZIP...';
+
+  // Build ZIP using pure JS - no CDN dependency
+  const zip=await makeZip(state.kept);
+  const blob=new Blob([zip],{type:'application/zip'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`collages_${Date.now()}.zip`;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+  btn.disabled=false;btn.textContent='下载全部保留';
+  status.textContent='';toast('下载完成');
+}
+
+// Minimal ZIP builder (store only, no compression needed for PNG which is already compressed)
+function makeZip(kept){
+  return new Promise(async resolve=>{
+    const parts=[];
+    const offsets=[];
+    let offset=0;
+
+    for(let i=0;i<kept.length;i++){
+      const c=kept[i].canvas;
+      const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+      const data=await blob.arrayBuffer();
+      const name=`collage_${String(i+1).padStart(2,'0')}.png`;
+      const nameBytes=new TextEncoder().encode(name);
+      const crc=crc32(new Uint8Array(data));
+      const localHeader=new Uint8Array(30+nameBytes.length);
+      const v=new DataView(localHeader.buffer);
+      v.setUint32(0,0x04034b50,true);
+      v.setUint16(4,20,true);v.setUint16(6,0,true);
+      v.setUint16(8,0,true);v.setUint32(10,0,true);
+      v.setUint32(14,crc,true);
+      v.setUint32(18,data.byteLength,true);v.setUint32(22,data.byteLength,true);
+      v.setUint16(26,nameBytes.length,true);v.setUint16(28,0,true);
+      const entry=new Uint8Array(localHeader.length+nameBytes.length+data.byteLength);
+      entry.set(localHeader);entry.set(nameBytes,localHeader.length);
+      entry.set(new Uint8Array(data),localHeader.length+nameBytes.length);
+
+      offsets.push({offset,nameBytes,data,crc});
+      parts.push(entry);
+      offset+=entry.length;
+    }
+
+    // Central directory
+    let cdSize=0;
+    const cdParts=[];
+    let cdOffset=0;
+    for(const p of parts)cdOffset+=p.length;
+    for(let i=0;i<offsets.length;i++){
+      const o=offsets[i];
+      const cd=new Uint8Array(46+o.nameBytes.length);
+      const v=new DataView(cd.buffer);
+      v.setUint32(0,0x02014b50,true);
+      v.setUint16(4,20,true);v.setUint16(6,20,true);
+      v.setUint16(8,0,true);v.setUint16(10,0,true);
+      v.setUint32(12,0,true);v.setUint32(16,o.crc,true);
+      v.setUint32(20,o.data.byteLength,true);v.setUint32(24,o.data.byteLength,true);
+      v.setUint16(28,o.nameBytes.length,true);v.setUint16(30,0,true);
+      v.setUint16(32,0,true);v.setUint16(34,0,true);
+      v.setUint32(36,0,true);v.setUint32(40,0,true);
+      v.setUint32(42,o.offset,true);
+      cd.set(o.nameBytes,46);
+      cdParts.push(cd);cdSize+=cd.length;
+    }
+
+    const eocd=new Uint8Array(22);
+    const ev=new DataView(eocd.buffer);
+    ev.setUint32(0,0x06054b50,true);
+    ev.setUint16(4,0,true);ev.setUint16(6,0,true);
+    ev.setUint16(8,offsets.length,true);ev.setUint16(10,offsets.length,true);
+    ev.setUint32(12,cdSize,true);ev.setUint32(16,cdOffset,true);
+    ev.setUint16(20,0,true);
+
+    const result=new Uint8Array(cdOffset+cdSize+22);
+    let pos=0;
+    for(const p of parts){result.set(p,pos);pos+=p.length}
+    for(const c of cdParts){result.set(c,pos);pos+=c.length}
+    result.set(eocd,pos);
+    resolve(result.buffer);
   });
-  await Promise.all(promises);
-  const content = await zip.generateAsync({type:'blob'});
-  const url = URL.createObjectURL(content);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `collages_${Date.now()}.zip`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('下载完成');
+}
+
+function crc32(data){
+  let crc=0xFFFFFFFF;
+  for(let i=0;i<data.length;i++){
+    crc^=data[i];
+    for(let j=0;j<8;j++)crc=(crc>>>1)^(crc&1?0xEDB88320:0);
+  }
+  return (crc^0xFFFFFFFF)>>>0;
 }
 
 // ===== Toast =====
 function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+  t._timer=setTimeout(()=>t.classList.remove('show'),2000);
 }
-
-// ===== RoundRect polyfill for older Safari =====
-if(!CanvasRenderingContext2D.prototype.roundRect){
-  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
-    r = Math.min(r, w/2, h/2);
-    this.moveTo(x+r, y);
-    this.lineTo(x+w-r, y);
-    this.quadraticCurveTo(x+w, y, x+w, y+r);
-    this.lineTo(x+w, y+h-r);
-    this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-    this.lineTo(x+r, y+h);
-    this.quadraticCurveTo(x, y+h, x, y+h-r);
-    this.lineTo(x, y+r);
-    this.quadraticCurveTo(x, y, x+r, y);
-    this.closePath();
-  };
-}
-
-// ===== Log =====
-console.log('✨ Collage Maker loaded');
 </script>
 </body>
 </html>
