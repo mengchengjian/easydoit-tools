@@ -6,293 +6,164 @@
 <title>拼图工具 — Collage Maker</title>
 <style>
 :root {
-  --bg: oklch(0.975 0 0);
-  --bg-card: oklch(1 0 0 / 0.8);
-  --bg-elevated: oklch(1 0 0 / 0.94);
-  --text: oklch(0.18 0 0);
-  --text-secondary: oklch(0.5 0 0);
-  --text-tertiary: oklch(0.68 0 0);
-  --border: oklch(0.88 0 0);
-  --accent: oklch(0.62 0.19 253);
-  --accent-hover: oklch(0.58 0.22 253);
-  --accent-light: oklch(0.9 0.05 253);
-  --danger: oklch(0.58 0.23 23);
-  --success: oklch(0.58 0.2 145);
-  --keep: oklch(0.55 0.16 145);
+  --bg: oklch(0.975 0 0); --bg-card: oklch(1 0 0 / 0.8); --bg-elevated: oklch(1 0 0 / 0.94);
+  --text: oklch(0.18 0 0); --text-secondary: oklch(0.5 0 0); --text-tertiary: oklch(0.68 0 0);
+  --border: oklch(0.88 0 0); --accent: oklch(0.62 0.19 253); --accent-hover: oklch(0.58 0.22 253);
+  --accent-light: oklch(0.9 0.05 253); --danger: oklch(0.58 0.23 23);
+  --success: oklch(0.58 0.2 145); --keep: oklch(0.55 0.16 145);
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.04);
   --shadow: 0 2px 8px oklch(0 0 0 / 0.05), 0 0 0 0.5px oklch(0 0 0 / 0.04);
   --shadow-lg: 0 8px 28px oklch(0 0 0 / 0.08), 0 0 0 0.5px oklch(0 0 0 / 0.05);
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-xs: 6px; --radius-sm: 8px; --radius: 12px; --radius-lg: 16px;
   --transition: 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-
 [data-theme="dark"] {
-  --bg: oklch(0.14 0 0);
-  --bg-card: oklch(0.19 0 0 / 0.8);
-  --bg-elevated: oklch(0.22 0 0 / 0.94);
-  --text: oklch(0.93 0 0);
-  --text-secondary: oklch(0.62 0 0);
-  --text-tertiary: oklch(0.45 0 0);
-  --border: oklch(0.27 0 0);
-  --accent-light: oklch(0.25 0.05 253);
+  --bg: oklch(0.14 0 0); --bg-card: oklch(0.19 0 0 / 0.8); --bg-elevated: oklch(0.22 0 0 / 0.94);
+  --text: oklch(0.93 0 0); --text-secondary: oklch(0.62 0 0); --text-tertiary: oklch(0.45 0 0);
+  --border: oklch(0.27 0 0); --accent-light: oklch(0.25 0.05 253);
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.25);
   --shadow: 0 2px 8px oklch(0 0 0 / 0.3), 0 0 0 0.5px oklch(0 0 0 / 0.2);
   --shadow-lg: 0 8px 28px oklch(0 0 0 / 0.4), 0 0 0 0.5px oklch(0 0 0 / 0.22);
 }
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-  background: var(--bg); color: var(--text);
-  min-height: 100vh; min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
 }
-
-/* Header */
 header {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 0.5px solid var(--border);
-  padding: 0 20px; height: 48px;
+  position: sticky; top: 0; z-index: 100; background: var(--bg-card);
+  backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid var(--border); padding: 0 20px; height: 48px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .header-left { display: flex; align-items: center; gap: 16px; }
-.header-left .logo {
-  font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
-  display: flex; align-items: center; gap: 7px;
-}
+.header-left .logo { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
 .header-left .logo svg { width: 18px; height: 18px; }
-.keep-count {
-  font-size: 12px; color: var(--text-secondary);
-  display: flex; align-items: center; gap: 6px;
-}
-.keep-count .badge {
-  background: var(--keep); color: #fff; border-radius: 10px;
-  padding: 1px 8px; font-size: 11px; font-weight: 600;
-}
+.keep-count { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.keep-count .badge { background: var(--keep); color: #fff; border-radius: 10px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
 .header-right { display: flex; align-items: center; gap: 8px; }
-
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-  padding: 7px 14px; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 500; font-family: inherit;
-  border: none; cursor: pointer; transition: var(--transition);
-  white-space: nowrap; letter-spacing: -0.01em;
+  padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+  font-family: inherit; border: none; cursor: pointer; transition: var(--transition);
+  white-space: nowrap;
 }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-success { background: var(--success); color: #fff; }
 .btn-success:hover { opacity: 0.85; }
+.btn-success:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-ghost { background: transparent; color: var(--text-secondary); }
 .btn-ghost:hover { background: var(--border); color: var(--text); }
 .btn-icon { padding: 5px; width: 32px; height: 32px; }
 
-/* Main */
-main {
-  display: flex; height: calc(100vh - 48px - 52px);
-  height: calc(100dvh - 48px - 52px);
-  overflow: hidden;
-}
+main { display: flex; height: calc(100vh - 48px - 52px); height: calc(100dvh - 48px - 52px); overflow: hidden; }
 
-/* Left Panel */
-.left-panel {
-  width: 300px; flex-shrink: 0; overflow-y: auto;
-  border-right: 0.5px solid var(--border);
-  background: var(--bg-card);
-  display: flex; flex-direction: column;
-}
-.panel-section {
-  padding: 14px 16px;
-  border-bottom: 0.5px solid var(--border);
-}
+.left-panel { width: 320px; flex-shrink: 0; overflow-y: auto; border-right: 0.5px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; }
+.panel-section { padding: 14px 16px; border-bottom: 0.5px solid var(--border); }
 .panel-section:last-child { border-bottom: none; }
-.panel-section h3 {
-  font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.04em; color: var(--text-tertiary);
-  margin-bottom: 10px;
-}
+.panel-section h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 10px; }
 
-/* Upload zone */
 .upload-zone {
-  border: 2px dashed var(--border); border-radius: var(--radius);
-  padding: 18px 12px; text-align: center; cursor: pointer;
-  transition: var(--transition); display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
+  border: 2px dashed var(--border); border-radius: var(--radius); padding: 16px 12px;
+  text-align: center; cursor: pointer; transition: var(--transition);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 .upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: var(--accent-light); }
 .upload-zone svg { width: 24px; height: 24px; color: var(--text-tertiary); }
 .upload-zone p { font-size: 12px; color: var(--text-tertiary); }
 .upload-zone span { font-size: 10px; color: var(--text-tertiary); opacity: 0.6; }
 
-/* Photo pool */
-.photo-pool {
-  display: flex; flex-wrap: wrap; gap: 5px; padding: 8px;
-  max-height: 200px; overflow-y: auto;
-}
-.photo-thumb {
-  width: 52px; height: 52px; border-radius: var(--radius-xs);
-  object-fit: cover; cursor: grab; border: 1.5px solid transparent;
-  transition: var(--transition); background: var(--border);
-}
+.photo-pool { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; max-height: 150px; overflow-y: auto; }
+.photo-thumb { width: 48px; height: 48px; border-radius: var(--radius-xs); object-fit: cover; cursor: grab; border: 1.5px solid transparent; transition: var(--transition); background: var(--border); }
 .photo-thumb:hover { border-color: var(--accent); }
-.photo-thumb.selected { border-color: var(--text); opacity: 0.6; }
-.photo-count-text {
-  font-size: 11px; color: var(--text-tertiary); text-align: center;
-  padding: 0 8px 8px;
-}
+.photo-count-text { font-size: 11px; color: var(--text-tertiary); text-align: center; padding: 0 8px 8px; }
 
-/* Settings */
 .control-row { display: flex; gap: 10px; margin-bottom: 10px; }
 .control-row:last-child { margin-bottom: 0; }
 .control-group { flex: 1; min-width: 0; }
-.control-group label {
-  display: block; font-size: 11px; color: var(--text-secondary);
-  margin-bottom: 5px; font-weight: 500;
-}
+.control-group label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 500; }
 .control-group label .val { color: var(--text-tertiary); font-weight: 400; float: right; }
 select, input[type="number"] {
   width: 100%; padding: 6px 8px; border-radius: var(--radius-xs);
   border: 0.5px solid var(--border); background: var(--bg-elevated);
-  font-size: 12px; font-family: inherit; color: var(--text);
-  transition: var(--transition);
+  font-size: 12px; font-family: inherit; color: var(--text); transition: var(--transition);
 }
 select:focus, input[type="number"]:focus { outline: none; border-color: var(--accent); }
 input[type="range"] {
-  -webkit-appearance: none; width: 100%; height: 4px;
-  background: var(--border); border-radius: 2px; outline: none;
+  -webkit-appearance: none; width: 100%; height: 4px; background: var(--border); border-radius: 2px; outline: none;
 }
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 16px; height: 16px;
-  border-radius: 50%; background: var(--accent); cursor: pointer;
-  box-shadow: var(--shadow-sm);
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: var(--shadow-sm);
 }
 input[type="color"] {
-  -webkit-appearance: none; width: 28px; height: 28px;
-  border: 1px solid var(--border); border-radius: 6px;
-  cursor: pointer; padding: 0; background: transparent;
+  -webkit-appearance: none; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 0; background: transparent;
 }
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
 input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
 
-.template-selector { display: flex; gap: 4px; flex-wrap: wrap; }
-.tpl-btn {
-  padding: 3px 10px; border-radius: 5px; font-size: 11px;
-  border: 0.5px solid var(--border); cursor: pointer;
-  background: var(--bg-elevated); color: var(--text-secondary);
-  transition: var(--transition); font-weight: 500;
+/* Template cards with mini preview */
+.template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tpl-card {
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 5px; cursor: pointer; transition: var(--transition);
+  background: var(--bg-elevated); display: flex; flex-direction: column; gap: 4px;
 }
-.tpl-btn:hover { border-color: var(--accent); color: var(--text); }
-.tpl-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tpl-card:hover { border-color: var(--accent); }
+.tpl-card.active { border-color: var(--accent); background: var(--accent-light); }
+.tpl-card .tpl-mini {
+  display: grid; gap: 2px; aspect-ratio: 1; border-radius: 3px; overflow: hidden;
+}
+.tpl-card .tpl-mini div { background: var(--border); border-radius: 1px; }
+.tpl-card .tpl-name { font-size: 10px; text-align: center; color: var(--text-secondary); font-weight: 500; }
 
 .ratio-presets { display: flex; gap: 3px; flex-wrap: wrap; }
 .ratio-preset {
-  padding: 3px 8px; border-radius: 4px; font-size: 10px;
-  border: 0.5px solid var(--border); cursor: pointer;
-  background: var(--bg-elevated); color: var(--text-secondary);
+  padding: 3px 8px; border-radius: 4px; font-size: 10px; border: 0.5px solid var(--border);
+  cursor: pointer; background: var(--bg-elevated); color: var(--text-secondary);
   transition: var(--transition); font-weight: 500;
 }
 .ratio-preset:hover { border-color: var(--accent); color: var(--text); }
 .ratio-preset.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-/* Right Area - Results */
-.right-area {
-  flex: 1; overflow-y: auto; padding: 16px 20px;
-  background: var(--bg);
-}
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
-}
-.result-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  border: 0.5px solid var(--border);
-  box-shadow: var(--shadow-sm); transition: var(--transition);
-  overflow: hidden;
-  position: relative;
-}
+.right-area { flex: 1; overflow-y: auto; padding: 16px 20px; background: var(--bg); }
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.result-card { background: var(--bg-card); border-radius: var(--radius); border: 0.5px solid var(--border); box-shadow: var(--shadow-sm); transition: var(--transition); overflow: hidden; position: relative; }
 .result-card:hover { box-shadow: var(--shadow); }
 .result-card.kept { border-color: var(--keep); }
-.result-card.kept::after {
-  content: "已保留"; position: absolute; top: 8px; right: 8px;
-  background: var(--keep); color: #fff; font-size: 10px;
-  padding: 2px 8px; border-radius: 10px; font-weight: 500;
-}
-.result-card .card-preview {
-  width: 100%; aspect-ratio: 1;
-  background: var(--border);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
+.result-card.kept::after { content: "已保留"; position: absolute; top: 8px; right: 8px; background: var(--keep); color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.result-card .card-preview { width: 100%; aspect-ratio: 1; background: var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .result-card .card-preview img { width: 100%; height: 100%; object-fit: contain; }
-.result-card .card-preview .empty-preview {
-  color: var(--text-tertiary); font-size: 12px;
-}
-.result-card .card-actions {
-  display: flex; gap: 0; border-top: 0.5px solid var(--border);
-}
-.result-card .card-actions button {
-  flex: 1; padding: 8px; border: none; background: transparent;
-  cursor: pointer; font-size: 12px; font-weight: 500;
-  font-family: inherit; transition: var(--transition);
-  color: var(--text-secondary);
-}
+.result-card .card-actions { display: flex; gap: 0; border-top: 0.5px solid var(--border); }
+.result-card .card-actions button { flex: 1; padding: 8px; border: none; background: transparent; cursor: pointer; font-size: 12px; font-weight: 500; font-family: inherit; transition: var(--transition); color: var(--text-secondary); }
 .result-card .card-actions button:first-child { border-right: 0.5px solid var(--border); }
 .result-card .card-actions .btn-keep:hover { background: var(--keep); color: #fff; }
 .result-card .card-actions .btn-discard:hover { background: var(--danger); color: #fff; }
 
-.empty-result {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; height: 100%; gap: 12px;
-  color: var(--text-tertiary);
-}
+.empty-result { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px; color: var(--text-tertiary); }
 .empty-result svg { width: 52px; height: 52px; opacity: 0.3; }
 .empty-result p { font-size: 13px; }
 
-/* Bottom Bar */
-.bottom-bar {
-  position: sticky; bottom: 0; z-index: 100;
-  height: 52px; background: var(--bg-card);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-top: 0.5px solid var(--border);
-  padding: 0 20px; display: flex; align-items: center;
-  justify-content: space-between;
-}
+.bottom-bar { position: sticky; bottom: 0; z-index: 100; height: 52px; background: var(--bg-card); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-top: 0.5px solid var(--border); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
 .bottom-bar .info { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-secondary); }
 .bottom-bar .info strong { color: var(--text); font-size: 14px; }
 
-/* Toast */
-.toast {
-  position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
-  background: var(--text); color: var(--bg); padding: 10px 20px;
-  border-radius: var(--radius); font-size: 13px; font-weight: 500;
-  z-index: 1000; opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease; box-shadow: var(--shadow-lg);
-}
+.toast { position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 500; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; box-shadow: var(--shadow-lg); }
 .toast.show { opacity: 1; }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* Responsive */
 @media (max-width: 800px) {
   main { flex-direction: column; height: auto; }
-  .left-panel { width: 100%; flex-shrink: 0; border-right: none; border-bottom: 0.5px solid var(--border); max-height: 40vh; }
+  .left-panel { width: 100%; flex-shrink: 0; border-right: none; border-bottom: 0.5px solid var(--border); max-height: 45vh; }
   .right-area { min-height: 30vh; padding: 12px; }
-  .results-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .results-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
   .photo-pool { max-height: 100px; }
+  .template-grid { grid-template-columns: repeat(4, 1fr); }
   header { padding: 0 12px; }
   .bottom-bar { padding: 0 12px; }
 }
@@ -303,65 +174,54 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
 <header>
   <div class="header-left">
     <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       拼图工具
     </div>
-    <div class="keep-count" id="keepCountDisplay" style="display:none">
-      保留 <span class="badge" id="keepBadge">0</span>
-    </div>
+    <div class="keep-count" id="keepCountDisplay" style="display:none">保留 <span class="badge" id="keepBadge">0</span></div>
   </div>
   <div class="header-right">
-    <button class="btn btn-icon" onclick="toggleTheme()" title="切换主题">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-      </svg>
-    </button>
+    <button class="btn btn-icon" onclick="toggleTheme()" title="切换主题"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
     <button class="btn btn-primary" id="btnGenerate" onclick="generateCollages()">批量生成</button>
   </div>
 </header>
 
 <main>
-  <!-- Left Panel -->
   <aside class="left-panel">
     <div class="panel-section">
       <h3>上传照片</h3>
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M12 16V4m0 0L8 8m4-4l4 4"/><rect x="3" y="14" width="18" height="7" rx="1"/>
-        </svg>
-        <p>拖拽或点击上传</p>
-        <span>支持 JPG / PNG / WebP</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4m0 0L8 8m4-4l4 4"/><rect x="3" y="14" width="18" height="7" rx="1"/></svg>
+        <p>拖拽或点击上传</p><span>支持 JPG / PNG / WebP</span>
       </div>
       <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
     </div>
     <div class="photo-count-text" id="photoCount">尚未上传照片</div>
     <div class="photo-pool" id="photoPool"></div>
+
     <div class="panel-section" style="border-top:0.5px solid var(--border)">
       <h3>拼图设置</h3>
       <div class="control-row">
         <div class="control-group">
-          <label>每张拼 <span class="val">张照片</span></label>
+          <label>每张拼图用 <span class="val">张</span></label>
           <select id="photosPerCollage" onchange="onPerChange()">
-            <option value="2">2 张</option><option value="3">3 张</option>
-            <option value="4" selected>4 张</option><option value="5">5 张</option>
-            <option value="6">6 张</option><option value="8">8 张</option><option value="9">9 张</option>
+            <option value="2">2 张</option><option value="3">3 张</option><option value="4" selected>4 张</option><option value="5">5 张</option><option value="6">6 张</option><option value="8">8 张</option><option value="9">9 张</option>
           </select>
         </div>
         <div class="control-group">
+          <label>批量生成 <span class="val">张</span></label>
+          <input type="number" id="generateCount" value="1" min="1" max="99" onchange="onGenCountChange()">
+        </div>
+      </div>
+      <div class="control-row">
+        <div class="control-group">
           <label>组合方式</label>
-          <select id="comboMode" onchange="updatePreview()">
-            <option value="sequential">按顺序</option>
-            <option value="random">随机</option>
-          </select>
+          <select id="comboMode"><option value="sequential">按顺序</option><option value="random">随机</option></select>
         </div>
       </div>
       <div class="control-row">
         <div class="control-group">
           <label>模板布局</label>
-          <div class="template-selector" id="templateSelector"></div>
+          <div class="template-grid" id="templateGrid"></div>
         </div>
       </div>
       <div class="control-row">
@@ -371,53 +231,33 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
         </div>
       </div>
       <div class="control-row">
-        <div class="control-group">
-          <label>间距 <span class="val" id="gapVal">4px</span></label>
-          <input type="range" id="gapSlider" min="0" max="32" value="4" oninput="updateGap(this.value)">
-        </div>
-        <div class="control-group">
-          <label>边框 <span class="val" id="borderVal">0px</span></label>
-          <input type="range" id="borderSlider" min="0" max="16" value="0" oninput="updateBorder(this.value)">
-        </div>
+        <div class="control-group"><label>间距 <span class="val" id="gapVal">4px</span></label><input type="range" id="gapSlider" min="0" max="32" value="4" oninput="updateGap(this.value)"></div>
+        <div class="control-group"><label>边框 <span class="val" id="borderVal">0px</span></label><input type="range" id="borderSlider" min="0" max="16" value="0" oninput="updateBorder(this.value)"></div>
       </div>
       <div class="control-row">
-        <div class="control-group">
-          <label>圆角 <span class="val" id="radiusVal">2px</span></label>
-          <input type="range" id="radiusSlider" min="0" max="24" value="2" oninput="updateRadius(this.value)">
-        </div>
-        <div class="control-group">
-          <label>背景</label>
-          <input type="color" id="bgColor" value="#ffffff" onchange="updateBg()">
-        </div>
+        <div class="control-group"><label>圆角 <span class="val" id="radiusVal">2px</span></label><input type="range" id="radiusSlider" min="0" max="24" value="2" oninput="updateRadius(this.value)"></div>
+        <div class="control-group"><label>背景</label><input type="color" id="bgColor" value="#ffffff" onchange="updateBg()"></div>
       </div>
     </div>
   </aside>
 
-  <!-- Right: Results -->
   <section class="right-area" id="rightArea">
     <div class="empty-result" id="emptyResult">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
-      </svg>
-      <p>上传照片，点击「批量生成」开始拼图</p>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <p>上传照片，设置参数，点击「批量生成」</p>
     </div>
     <div class="results-grid" id="resultsGrid"></div>
   </section>
 </main>
 
-<!-- Bottom Bar -->
 <div class="bottom-bar">
-  <div class="info">
-    已生成 <strong id="totalCount">0</strong> 张拼图，
-    保留 <strong id="keptCount">0</strong> 张
-  </div>
+  <div class="info">已生成 <strong id="totalCount">0</strong> 张拼图，保留 <strong id="keptCount">0</strong> 张</div>
   <button class="btn btn-success" id="btnDownload" disabled onclick="downloadKept()">一键下载保留</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script>
 // ─── Templates ──────────────────────────────
@@ -455,29 +295,23 @@ const ALL_TEMPLATES = {
 };
 
 const RATIOS = [
-  { label:'1:1', w:1, h:1 },
-  { label:'4:3', w:4, h:3 },
-  { label:'3:4', w:3, h:4 },
-  { label:'3:2', w:3, h:2 },
-  { label:'2:3', w:2, h:3 },
-  { label:'16:9', w:16, h:9 },
+  { label:'1:1', w:1, h:1 }, { label:'4:3', w:4, h:3 }, { label:'3:4', w:3, h:4 },
+  { label:'3:2', w:3, h:2 }, { label:'2:3', w:2, h:3 }, { label:'16:9', w:16, h:9 },
 ];
 
 // ─── State ─────────────────────────────────
 let photos = [];
-let collages = []; // { id, indices, canvasUrl, kept }
+let collages = [];
 let settings = {
   photosPer: 4,
+  generateCount: 1,
   comboMode: 'sequential',
   templateId: null,
   ratio: '1:1',
-  gap: 4,
-  border: 0,
-  radius: 2,
-  bgColor: '#ffffff',
+  gap: 4, border: 0, radius: 2, bgColor: '#ffffff',
 };
 
-// ─── Init UI ───────────────────────────────
+// ─── Ratio presets ─────────────────────────
 function initRatioPresets() {
   const el = document.getElementById('ratioPresets');
   RATIOS.forEach(r => {
@@ -489,13 +323,12 @@ function initRatioPresets() {
   });
 }
 function renderRatioPresets() {
-  document.querySelectorAll('.ratio-preset').forEach(b => {
-    b.classList.toggle('active', b.textContent === settings.ratio);
-  });
+  document.querySelectorAll('.ratio-preset').forEach(b => b.classList.toggle('active', b.textContent === settings.ratio));
 }
 
-function renderTemplateSelector() {
-  const el = document.getElementById('templateSelector');
+// ─── Template cards with mini preview ──────
+function renderTemplateCards() {
+  const el = document.getElementById('templateGrid');
   el.innerHTML = '';
   const temps = ALL_TEMPLATES[settings.photosPer] || [];
   if (temps.length === 0) return;
@@ -503,11 +336,24 @@ function renderTemplateSelector() {
     settings.templateId = temps[0].id;
   }
   temps.forEach(t => {
-    const btn = document.createElement('button');
-    btn.className = 'tpl-btn' + (t.id === settings.templateId ? ' active' : '');
-    btn.textContent = t.name;
-    btn.onclick = () => { settings.templateId = t.id; renderTemplateSelector(); };
-    el.appendChild(btn);
+    const card = document.createElement('div');
+    card.className = 'tpl-card' + (t.id === settings.templateId ? ' active' : '');
+    const mini = document.createElement('div');
+    mini.className = 'tpl-mini';
+    mini.style.gridTemplateColumns = `repeat(${t.cols}, 1fr)`;
+    mini.style.gridTemplateRows = `repeat(${t.rows}, 1fr)`;
+    t.cells.forEach(cell => {
+      const d = document.createElement('div');
+      d.style.gridRow = `${cell.r} / span ${cell.rs}`;
+      d.style.gridColumn = `${cell.c} / span ${cell.cs}`;
+      mini.appendChild(d);
+    });
+    const label = document.createElement('div');
+    label.className = 'tpl-name';
+    label.textContent = t.name;
+    card.appendChild(mini); card.appendChild(label);
+    card.onclick = () => { settings.templateId = t.id; renderTemplateCards(); };
+    el.appendChild(card);
   });
 }
 
@@ -519,8 +365,20 @@ function getActiveTemplate() {
 function onPerChange() {
   settings.photosPer = parseInt(document.getElementById('photosPerCollage').value);
   settings.templateId = null;
-  renderTemplateSelector();
-  updatePreview();
+  renderTemplateCards();
+  updateGenCountDefault();
+}
+function onGenCountChange() {
+  settings.generateCount = parseInt(document.getElementById('generateCount').value) || 1;
+}
+function updateGenCountDefault() {
+  const count = photos.length;
+  const per = settings.photosPer;
+  const def = Math.max(1, Math.floor(count / per));
+  const input = document.getElementById('generateCount');
+  input.value = def;
+  settings.generateCount = def;
+  document.getElementById('btnGenerate').disabled = count < per;
 }
 
 // ─── Photos ────────────────────────────────
@@ -531,7 +389,7 @@ function handleFiles(files) {
     photos.push({ id: Date.now() + Math.random(), file: f, url: URL.createObjectURL(f) });
   });
   renderPhotoPool();
-  updatePreview();
+  updateGenCountDefault();
   document.getElementById('fileInput').value = '';
 }
 
@@ -539,82 +397,40 @@ function renderPhotoPool() {
   const pool = document.getElementById('photoPool');
   const count = document.getElementById('photoCount');
   pool.innerHTML = '';
-  if (photos.length === 0) {
-    count.textContent = '尚未上传照片';
-    return;
-  }
-  count.textContent = `共 ${photos.length} 张照片（${settings.photosPer} 张拼 1 张 → ${Math.floor(photos.length / settings.photosPer)} 张拼图）`;
+  if (photos.length === 0) { count.textContent = '尚未上传照片'; return; }
+  const per = settings.photosPer;
+  const gen = settings.generateCount;
+  count.textContent = `共 ${photos.length} 张照片 · 每张拼 ${per} 张 · 生成 ${gen} 张拼图`;
   photos.forEach((p, i) => {
     const img = document.createElement('img');
-    img.className = 'photo-thumb';
-    img.src = p.url;
-    img.title = p.file.name;
-    img.draggable = true;
-    img.dataset.idx = i;
-    img.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', i.toString());
-      e.dataTransfer.effectAllowed = 'move';
-    });
+    img.className = 'photo-thumb'; img.src = p.url; img.title = p.file.name;
+    img.draggable = true; img.dataset.idx = i;
+    img.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i.toString()); e.dataTransfer.effectAllowed = 'move'; });
     img.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
     img.addEventListener('drop', e => {
       e.preventDefault();
       const from = parseInt(e.dataTransfer.getData('text/plain'));
-      const to = i;
-      if (from !== to && !isNaN(from)) {
-        const [m] = photos.splice(from, 1);
-        photos.splice(to, 0, m);
-        renderPhotoPool();
-        updatePreview();
-      }
+      if (from !== i && !isNaN(from)) { const [m] = photos.splice(from, 1); photos.splice(i, 0, m); renderPhotoPool(); }
     });
-    img.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      URL.revokeObjectURL(p.url);
-      photos.splice(i, 1);
-      renderPhotoPool();
-      updatePreview();
-    });
+    img.addEventListener('contextmenu', e => { e.preventDefault(); URL.revokeObjectURL(p.url); photos.splice(i, 1); renderPhotoPool(); updateGenCountDefault(); });
     pool.appendChild(img);
   });
 }
 
-// ─── Preview / Estimate ────────────────────
-function updatePreview() {
-  settings.comboMode = document.getElementById('comboMode').value;
-  const count = photos.length;
-  const per = settings.photosPer;
-  const est = Math.floor(count / per);
-  const countEl = document.getElementById('photoCount');
-  if (count > 0) {
-    countEl.textContent = `共 ${count} 张照片（${per} 张拼 1 张 → ${est} 张拼图）`;
-  }
-  document.getElementById('btnGenerate').disabled = est < 1;
-}
-
 // ─── Generate ──────────────────────────────
 async function generateCollages() {
-  const count = photos.length;
+  settings.generateCount = parseInt(document.getElementById('generateCount').value) || 1;
+  settings.comboMode = document.getElementById('comboMode').value;
   const per = settings.photosPer;
-  const est = Math.floor(count / per);
-  if (est < 1) { showToast('照片不够，至少需要 ' + per + ' 张'); return; }
-
+  const gen = settings.generateCount;
+  if (photos.length < per) { showToast('照片不够，至少需要 ' + per + ' 张'); return; }
   const template = getActiveTemplate();
   if (!template) { showToast('请选择模板'); return; }
 
-  showToast('正在生成 ' + est + ' 张拼图…');
+  showToast('正在生成 ' + gen + ' 张拼图…');
   document.getElementById('btnGenerate').disabled = true;
 
-  // Build groups
-  let indices = Array.from({ length: count }, (_, i) => i);
-  if (settings.comboMode === 'random') {
-    indices = shuffle([...indices]);
-  }
-  const groups = [];
-  for (let i = 0; i < est; i++) {
-    groups.push(indices.slice(i * per, (i + 1) * per));
-  }
-
-  // Render each collage
+  const loadedImgs = await Promise.all(photos.map(p => loadImage(p.url)));
   const ratio = RATIOS.find(r => r.label === settings.ratio) || RATIOS[0];
   const exportW = 1200;
   const exportH = Math.round(exportW * ratio.h / ratio.w);
@@ -622,26 +438,35 @@ async function generateCollages() {
   const border = settings.border;
   const radius = Math.round(settings.radius * 1.5);
 
-  // Load all images first
-  const loadedImgs = await Promise.all(photos.map(p => loadImage(p.url)));
-
   const newCollages = [];
-  for (let g = 0; g < groups.length; g++) {
-    const groupIdx = groups[g];
+  const totalPhotos = photos.length;
+
+  for (let g = 0; g < gen; g++) {
+    let indices;
+    if (settings.comboMode === 'random') {
+      // Randomly pick 'per' unique indices from photo pool
+      const pool = Array.from({ length: totalPhotos }, (_, i) => i);
+      indices = [];
+      for (let k = 0; k < per && pool.length > 0; k++) {
+        const ri = Math.floor(Math.random() * pool.length);
+        indices.push(pool.splice(ri, 1)[0]);
+      }
+    } else {
+      // Sequential: group by order, cycle if needed
+      const start = (g * per) % totalPhotos;
+      indices = [];
+      for (let k = 0; k < per; k++) {
+        indices.push((start + k) % totalPhotos);
+      }
+    }
+
     const canvas = document.createElement('canvas');
-    canvas.width = exportW;
-    canvas.height = exportH;
+    canvas.width = exportW; canvas.height = exportH;
     const ctx = canvas.getContext('2d');
 
-    // Background
     ctx.fillStyle = settings.bgColor;
-    if (radius > 0) {
-      roundRect(ctx, 0, 0, exportW, exportH, radius);
-      ctx.fill();
-      ctx.save(); ctx.clip();
-    } else {
-      ctx.fillRect(0, 0, exportW, exportH);
-    }
+    if (radius > 0) { roundRect(ctx, 0, 0, exportW, exportH, radius); ctx.fill(); ctx.save(); ctx.clip(); }
+    else ctx.fillRect(0, 0, exportW, exportH);
 
     const innerW = exportW - gap * 2;
     const innerH = exportH - gap * 2;
@@ -654,40 +479,22 @@ async function generateCollages() {
       const y = gap + (cell.r - 1) * cellH;
       const w = cell.cs * cellW;
       const h = cell.rs * cellH;
-
-      if (border > 0) {
-        ctx.fillStyle = settings.bgColor;
-        ctx.fillRect(x - border, y - border, w + border * 2, h + border * 2);
-      }
-
-      const img = loadedImgs[groupIdx[i]];
+      if (border > 0) { ctx.fillStyle = settings.bgColor; ctx.fillRect(x - border, y - border, w + border * 2, h + border * 2); }
+      const img = loadedImgs[indices[i]];
       if (img) {
         const scale = Math.max(w / img.width, h / img.height);
-        const sw = img.width * scale;
-        const sh = img.height * scale;
-        const sx = (sw - w) / 2;
-        const sy = (sh - h) / 2;
-        ctx.save();
-        ctx.beginPath();
+        const sw = img.width * scale, sh = img.height * scale;
+        const sx = (sw - w) / 2, sy = (sh - h) / 2;
+        ctx.save(); ctx.beginPath();
         const cr = Math.max(0, radius - gap);
-        if (cr > 1) roundRect(ctx, x, y, w, h, cr);
-        else ctx.rect(x, y, w, h);
-        ctx.clip();
-        ctx.drawImage(img, x - sx, y - sy, sw, sh);
-        ctx.restore();
+        if (cr > 1) roundRect(ctx, x, y, w, h, cr); else ctx.rect(x, y, w, h);
+        ctx.clip(); ctx.drawImage(img, x - sx, y - sy, sw, sh); ctx.restore();
       }
     }
     if (radius > 0) ctx.restore();
 
     const blob = await canvasToBlob(canvas);
-    const url = URL.createObjectURL(blob);
-    newCollages.push({
-      id: Date.now() + g,
-      indices: groupIdx,
-      canvasUrl: url,
-      blob: blob,
-      kept: false,
-    });
+    newCollages.push({ id: Date.now() + g, indices, canvasUrl: URL.createObjectURL(blob), blob, kept: false });
   }
 
   collages = newCollages;
@@ -702,15 +509,8 @@ function renderResults() {
   const grid = document.getElementById('resultsGrid');
   const empty = document.getElementById('emptyResult');
   grid.innerHTML = '';
-
-  if (collages.length === 0) {
-    empty.style.display = '';
-    grid.style.display = 'none';
-    return;
-  }
-  empty.style.display = 'none';
-  grid.style.display = '';
-
+  if (collages.length === 0) { empty.style.display = ''; grid.style.display = 'none'; return; }
+  empty.style.display = 'none'; grid.style.display = '';
   collages.forEach((c, i) => {
     const card = document.createElement('div');
     card.className = 'result-card' + (c.kept ? ' kept' : '');
@@ -719,39 +519,21 @@ function renderResults() {
       <div class="card-actions">
         <button class="btn-keep" onclick="toggleKeep(${i})">${c.kept ? '取消保留' : '保留'}</button>
         <button class="btn-discard" onclick="discardCollage(${i})">删除</button>
-      </div>
-    `;
+      </div>`;
     grid.appendChild(card);
   });
 }
-
-function toggleKeep(i) {
-  collages[i].kept = !collages[i].kept;
-  renderResults();
-  updateBottomBar();
-}
-
+function toggleKeep(i) { collages[i].kept = !collages[i].kept; renderResults(); updateBottomBar(); }
 function discardCollage(i) {
-  const c = collages[i];
-  if (c.canvasUrl) URL.revokeObjectURL(c.canvasUrl);
-  collages.splice(i, 1);
-  renderResults();
-  updateBottomBar();
-  if (collages.length === 0) {
-    document.getElementById('emptyResult').style.display = '';
-    document.getElementById('resultsGrid').style.display = 'none';
-  }
+  URL.revokeObjectURL(collages[i].canvasUrl); collages.splice(i, 1); renderResults(); updateBottomBar();
+  if (collages.length === 0) { document.getElementById('emptyResult').style.display = ''; document.getElementById('resultsGrid').style.display = 'none'; }
 }
-
 function updateBottomBar() {
-  const total = collages.length;
-  const kept = collages.filter(c => c.kept).length;
+  const total = collages.length, kept = collages.filter(c => c.kept).length;
   document.getElementById('totalCount').textContent = total;
   document.getElementById('keptCount').textContent = kept;
   document.getElementById('btnDownload').disabled = kept === 0;
-
-  const badge = document.getElementById('keepBadge');
-  badge.textContent = kept;
+  document.getElementById('keepBadge').textContent = kept;
   document.getElementById('keepCountDisplay').style.display = kept > 0 ? '' : 'none';
 }
 
@@ -760,105 +542,53 @@ async function downloadKept() {
   const kept = collages.filter(c => c.kept);
   if (kept.length === 0) return;
   showToast('正在打包…');
-
   if (kept.length === 1) {
-    const c = kept[0];
-    const a = document.createElement('a');
-    a.href = c.canvasUrl;
-    a.download = `collage_${Date.now()}.png`;
-    a.click();
-    showToast('已下载');
-    return;
+    const a = document.createElement('a'); a.href = kept[0].canvasUrl; a.download = `collage_${Date.now()}.png`; a.click(); showToast('已下载'); return;
   }
-
   const zip = new JSZip();
-  kept.forEach((c, i) => {
-    zip.file(`collage_${i + 1}.png`, c.blob);
-  });
+  kept.forEach((c, i) => zip.file(`collage_${i + 1}.png`, c.blob));
   const content = await zip.generateAsync({ type: 'blob' });
   const url = URL.createObjectURL(content);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `collages_${Date.now()}.zip`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('已下载 ' + kept.length + ' 张拼图');
+  const a = document.createElement('a'); a.href = url; a.download = `collages_${Date.now()}.zip`; a.click();
+  URL.revokeObjectURL(url); showToast('已下载 ' + kept.length + ' 张拼图');
 }
 
 // ─── Helpers ───────────────────────────────
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-function canvasToBlob(canvas) {
-  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y, x + w, y + r, r);
-  ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-  ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
-  ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
-  ctx.closePath();
-}
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
+function loadImage(src) { return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src; }); }
+function canvasToBlob(canvas) { return new Promise(resolve => canvas.toBlob(resolve, 'image/png')); }
+function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r); ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r); ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r); ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r); ctx.closePath(); }
+function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 function updateGap(v) { settings.gap = parseInt(v); document.getElementById('gapVal').textContent = v + 'px'; }
 function updateBorder(v) { settings.border = parseInt(v); document.getElementById('borderVal').textContent = v + 'px'; }
 function updateRadius(v) { settings.radius = parseInt(v); document.getElementById('radiusVal').textContent = v + 'px'; }
 function updateBg() { settings.bgColor = document.getElementById('bgColor').value; }
 
-// ─── Upload Zone ───────────────────────────
-const uploadZone = document.getElementById('uploadZone');
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
-
+// ─── Upload ────────────────────────────────
+const uz = document.getElementById('uploadZone');
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('drag-over'); });
+uz.addEventListener('dragleave', () => uz.classList.remove('drag-over'));
+uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
 document.addEventListener('paste', e => {
-  const items = e.clipboardData?.items;
-  if (!items) return;
-  const files = [];
-  for (const item of items) { if (item.type.startsWith('image/')) files.push(item.getAsFile()); }
+  const items = e.clipboardData?.items; if (!items) return;
+  const files = []; for (const item of items) { if (item.type.startsWith('image/')) files.push(item.getAsFile()); }
   if (files.length > 0) handleFiles(files);
 });
 
 // ─── Theme ─────────────────────────────────
 function toggleTheme() {
-  const body = document.body;
-  const next = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  body.setAttribute('data-theme', next);
-  const bg = document.getElementById('bgColor');
-  bg.value = next === 'dark' ? '#1a1a1a' : '#ffffff';
-  settings.bgColor = bg.value;
+  const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  document.getElementById('bgColor').value = next === 'dark' ? '#1a1a1a' : '#ffffff';
+  settings.bgColor = document.getElementById('bgColor').value;
 }
 
 // ─── Toast ─────────────────────────────────
-let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
-}
+let tt;
+function showToast(m) { const e = document.getElementById('toast'); e.textContent = m; e.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => e.classList.remove('show'), 2000); }
 
 // ─── Init ──────────────────────────────────
 initRatioPresets();
-renderTemplateSelector();
-updatePreview();
+renderTemplateCards();
 </script>
 </body>
 </html>
