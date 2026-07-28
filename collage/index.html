@@ -55,6 +55,8 @@ header {
 .btn-success { background: var(--success); color: #fff; }
 .btn-success:hover { opacity: 0.85; }
 .btn-success:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-danger { background: #dc3545; color: #fff; }
+.btn-danger:hover { opacity: 0.85; }
 .btn-ghost { background: transparent; color: var(--text-secondary); }
 .btn-ghost:hover { background: var(--border); color: var(--text); }
 .btn-icon { padding: 5px; width: 32px; height: 32px; }
@@ -215,7 +217,7 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
       <div class="control-row">
         <div class="control-group">
           <label>组合方式</label>
-          <select id="comboMode"><option value="sequential">按顺序</option><option value="random">随机</option></select>
+          <select id="comboMode"><option value="sequential">按顺序</option><option value="random" selected>随机</option></select>
         </div>
       </div>
       <div class="control-row">
@@ -252,7 +254,10 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
 
 <div class="bottom-bar">
   <div class="info">已生成 <strong id="totalCount">0</strong> 张拼图，保留 <strong id="keptCount">0</strong> 张</div>
-  <button class="btn btn-success" id="btnDownload" disabled onclick="downloadKept()">一键下载保留</button>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-danger" id="btnClearUnkept" onclick="clearUnkept()" style="display:none;">一键删除未保留</button>
+    <button class="btn btn-success" id="btnDownload" disabled onclick="downloadKept()">一键下载保留</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -338,7 +343,7 @@ let collages = [];
 let settings = {
   photosPer: 4,
   generateCount: 1,
-  comboMode: 'sequential',
+  comboMode: 'random',
   templateId: null,
   ratio: '3:4',
   gap: 4, border: 0, radius: 2, bgColor: '#ffffff',
@@ -565,11 +570,21 @@ function discardCollage(i) {
 }
 function updateBottomBar() {
   const total = collages.length, kept = collages.filter(c => c.kept).length;
+  const unkept = total - kept;
   document.getElementById('totalCount').textContent = total;
   document.getElementById('keptCount').textContent = kept;
   document.getElementById('btnDownload').disabled = kept === 0;
-  document.getElementById('keepBadge').textContent = kept;
-  document.getElementById('keepCountDisplay').style.display = kept > 0 ? '' : 'none';
+  document.getElementById('btnClearUnkept').style.display = unkept > 0 ? '' : 'none';
+}
+
+function clearUnkept() {
+  const before = collages.length;
+  // Revoke URLs for unkept collages
+  collages.filter(c => !c.kept).forEach(c => URL.revokeObjectURL(c.canvasUrl));
+  collages = collages.filter(c => c.kept);
+  renderResults();
+  updateBottomBar();
+  showToast('已删除 ' + (before - collages.length) + ' 张未保留拼图');
 }
 
 // ─── Download ──────────────────────────────
