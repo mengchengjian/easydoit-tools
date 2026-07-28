@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拼豆图纸生成器</title>
+<style>
+:root {
+  --bg: #fafafa;
+  --panel-bg: #ffffff;
+  --border: #e2e2e2;
+  --text: #2c2c2c;
+  --text-secondary: #888;
+  --accent: #4a4a4a;
+  --accent-hover: #333;
+  --danger: #c0392b;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden;
+}
+
+/* 左侧面板 */
+.panel{
+  width:340px;min-width:340px;background:var(--panel-bg);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+  padding:16px;gap:14px;
+}
+.panel h1{font-size:18px;font-weight:600;letter-spacing:-0.3px;}
+.panel .subtitle{font-size:11px;color:var(--text-secondary);margin-top:-8px;}
+
+/* 上传区 */
+.upload-zone{
+  border:1.5px dashed var(--border);border-radius:var(--radius);
+  padding:24px 12px;text-align:center;cursor:pointer;transition:border-color .15s;
+  position:relative;
+}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent)}
+.upload-zone p{font-size:12px;color:var(--text-secondary);margin-top:4px;}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-zone .icon{font-size:28px;}
+
+/* 控制项 */
+.control-group{margin-bottom:2px;}
+.control-group label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-weight:500;margin-bottom:3px;
+}
+.control-group label span.val{color:var(--text-secondary);font-weight:400;}
+.control-group input[type=range]{
+  width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:var(--border);border-radius:2px;outline:none;
+}
+.control-group input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:7px;
+  background:var(--accent);cursor:pointer;border:none;
+}
+
+/* 开关 */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;font-weight:500;padding:6px 0;
+}
+.toggle{
+  width:36px;height:20px;background:var(--border);border-radius:10px;
+  position:relative;cursor:pointer;transition:background .15s;
+}
+.toggle.active{background:var(--accent)}
+.toggle::after{
+  content:'';width:16px;height:16px;background:#fff;border-radius:8px;
+  position:absolute;top:2px;left:2px;transition:left .15s;
+}
+.toggle.active::after{left:18px}
+
+/* 色板选择 */
+.palette-grid{
+  display:flex;flex-wrap:wrap;gap:3px;max-height:120px;overflow-y:auto;
+}
+.palette-item{
+  width:20px;height:20px;border-radius:3px;border:1px solid var(--border);
+  cursor:pointer;transition:transform .1s;
+}
+.palette-item:hover{transform:scale(1.15);z-index:1}
+.palette-item.selected{outline:2px solid var(--accent);outline-offset:1px;}
+
+/* 按钮 */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--panel-bg);color:var(--text);font-size:12px;cursor:pointer;
+  transition:all .12s;
+}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-sm{padding:4px 10px;font-size:11px;}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* 主区域 */
+.main{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  padding:16px;
+}
+.canvas-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  overflow:auto;min-height:0;
+}
+.canvas-wrap canvas{
+  image-rendering:pixelated;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+/* 颜色统计 */
+.stats-panel{
+  max-height:180px;overflow-y:auto;border-top:1px solid var(--border);
+  padding-top:8px;margin-top:auto;
+}
+.stats-panel h3{font-size:13px;font-weight:500;margin-bottom:6px;}
+.stat-grid{display:flex;flex-wrap:wrap;gap:4px;}
+.stat-item{
+  display:flex;align-items:center;gap:4px;
+  background:#f5f5f5;padding:2px 7px;border-radius:3px;font-size:11px;
+}
+.stat-swatch{width:14px;height:14px;border-radius:2px;border:1px solid var(--border);flex-shrink:0;}
+
+/* 空状态 */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--text-secondary);gap:8px;font-size:13px;
+}
+.empty-state .big-icon{font-size:48px;opacity:.3;}
+
+/* 响应式 */
+@media(max-width:768px){
+  body{flex-direction:column}
+  .panel{width:100%;min-width:0;max-height:50vh}
+  .main{height:50vh}
+}
+
+/* 打印 */
+@media print{
+  body{display:block;overflow:visible}
+  .panel,.stats-panel{display:none}
+  .main{padding:0}
+  .canvas-wrap canvas{border:none;box-shadow:none;max-width:100%}
+}
+
+/* 加载提示 */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#fff;padding:6px 16px;border-radius:20px;
+  font-size:12px;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none;
+}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- 左侧面板 -->
+<div class="panel">
+  <h1>拼豆图纸生成器</h1>
+  <p class="subtitle">上传图片，自动生成拼豆图纸</p>
+
+  <div class="upload-zone" id="uploadZone">
+    <div class="icon">&#128444;</div>
+    <p>点击或拖拽上传图片</p>
+    <input type="file" id="fileInput" accept="image/*">
+  </div>
+
+  <div class="control-group">
+    <label>拼豆板宽度 <span class="val" id="sizeVal">29</span> 颗</label>
+    <input type="range" id="beadSize" min="10" max="60" value="29" step="1">
+  </div>
+
+  <div class="control-group">
+    <label>最大颜色数 <span class="val" id="colorVal">自动</span></label>
+    <input type="range" id="maxColors" min="0" max="60" value="0" step="1">
+  </div>
+
+  <div class="control-group">
+    <label>预览缩放 <span class="val" id="zoomVal">16</span>px/颗</label>
+    <input type="range" id="zoomLevel" min="4" max="32" value="16" step="1">
+  </div>
+
+  <div class="toggle-row">
+    <span>显示网格线</span>
+    <div class="toggle active" id="toggleGrid"></div>
+  </div>
+
+  <div class="toggle-row">
+    <span>显示编号</span>
+    <div class="toggle" id="toggleNumbers"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="btnExport">导出 PNG</button>
+    <button class="btn" id="btnPrint">打印</button>
+    <button class="btn btn-sm" id="btnClear">清除</button>
+  </div>
+</div>
+
+<!-- 主区域 -->
+<div class="main" id="mainArea">
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="empty-state" id="emptyState">
+      <div class="big-icon">&#128444;</div>
+      <span>上传图片开始拼豆</span>
+    </div>
+    <canvas id="beadCanvas" style="display:none"></canvas>
+  </div>
+  <div class="stats-panel" id="statsPanel" style="display:none">
+    <h3>颜色统计（共 <span id="totalBeads">0</span> 颗）</h3>
+    <div class="stat-grid" id="statGrid"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== 拼豆色板数据 ======
+// 参考 Artkal / Hama / Perler 常见颜色，按色系整理
+const PALETTES = {
+  default: [
+    // 黑-白-灰
+    {id:'01',name:'黑',hex:'#1a1a1a'},{id:'02',name:'深灰',hex:'#555555'},
+    {id:'03',name:'灰',hex:'#888888'},{id:'04',name:'浅灰',hex:'#b0b0b0'},
+    {id:'05',name:'白',hex:'#f5f5f5'},
+
+    // 红-粉
+    {id:'06',name:'深红',hex:'#8B0000'},{id:'07',name:'红',hex:'#DC143C'},
+    {id:'08',name:'亮红',hex:'#FF3B3B'},{id:'09',name:'玫红',hex:'#E91E63'},
+    {id:'10',name:'粉红',hex:'#FF69B4'},{id:'11',name:'浅粉',hex:'#FFB6C1'},
+    {id:'12',name:'肉色',hex:'#FFDAB9'},
+
+    // 橙-黄
+    {id:'13',name:'深橙',hex:'#E65100'},{id:'14',name:'橙',hex:'#FF9800'},
+    {id:'15',name:'亮橙',hex:'#FFB74D'},{id:'16',name:'杏色',hex:'#FFCC80'},
+    {id:'17',name:'金黄',hex:'#FFC107'},{id:'18',name:'黄',hex:'#FFEB3B'},
+    {id:'19',name:'浅黄',hex:'#FFF9C4'},{id:'20',name:'奶油',hex:'#FFFDE7'},
+
+    // 绿
+    {id:'21',name:'深绿',hex:'#1B5E20'},{id:'22',name:'绿',hex:'#4CAF50'},
+    {id:'23',name:'亮绿',hex:'#8BC34A'},{id:'24',name:'草绿',hex:'#CDDC39'},
+    {id:'25',name:'薄荷绿',hex:'#A5D6A7'},{id:'26',name:'淡绿',hex:'#C8E6C9'},
+
+    // 青-蓝
+    {id:'27',name:'深青',hex:'#006064'},{id:'28',name:'青',hex:'#00BCD4'},
+    {id:'29',name:'浅青',hex:'#80DEEA'},{id:'30',name:'深蓝',hex:'#0D47A1'},
+    {id:'31',name:'蓝',hex:'#2196F3'},{id:'32',name:'亮蓝',hex:'#42A5F5'},
+    {id:'33',name:'浅蓝',hex:'#90CAF9'},{id:'34',name:'天蓝',hex:'#BBDEFB'},
+
+    // 紫
+    {id:'35',name:'深紫',hex:'#4A148C'},{id:'36',name:'紫',hex:'#9C27B0'},
+    {id:'37',name:'亮紫',hex:'#BA68C8'},{id:'38',name:'淡紫',hex:'#E1BEE7'},
+    {id:'39',name:'薰衣草',hex:'#D1C4E9'},
+
+    // 棕-米
+    {id:'40',name:'深棕',hex:'#3E2723'},{id:'41',name:'棕',hex:'#795548'},
+    {id:'42',name:'浅棕',hex:'#A1887F'},{id:'43',name:'米色',hex:'#D7CCC8'},
+    {id:'44',name:'沙色',hex:'#F5DEB3'},{id:'45',name:'象牙',hex:'#FFFFF0'},
+
+    // 透明/特殊
+    {id:'46',name:'透明',hex:'#e8e8e8'},
+  ]
+};
+
+// 当前色板
+let currentPalette = PALETTES.default;
+
+// 状态
+let originalImage = null;
+let beadData = null;      // {width, height, pixels: [{row,col,colorIndex}]}
+let showGrid = true;
+let showNumbers = false;
+let beadCount = 29;
+let maxColors = 0;        // 0=自动
+let zoomLevel = 16;
+
+// DOM
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const beadCanvas = document.getElementById('beadCanvas');
+const canvasWrap = document.getElementById('canvasWrap');
+const emptyState = document.getElementById('emptyState');
+const statsPanel = document.getElementById('statsPanel');
+const statGrid = document.getElementById('statGrid');
+const totalBeadsEl = document.getElementById('totalBeads');
+const ctx = beadCanvas.getContext('2d');
+
+// ====== 颜色距离计算（加权欧几里得，侧重感知） ======
+function colorDistance(c1, c2) {
+  const rmean = (c1.r + c2.r) / 2;
+  const dr = c1.r - c2.r;
+  const dg = c1.g - c2.g;
+  const db = c1.b - c2.b;
+  return Math.sqrt(
+    (2 + rmean / 256) * dr * dr +
+    4 * dg * dg +
+    (2 + (255 - rmean) / 256) * db * db
+  );
+}
+
+function hexToRgb(hex) {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return m ? {r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)} : {r:0,g:0,b:0};
+}
+
+// 找最近色板颜色
+function findNearestColor(r, g, b, palette, excludeIndex = -1) {
+  let minDist = Infinity, minIdx = 0;
+  for (let i = 0; i < palette.length; i++) {
+    if (i === excludeIndex) continue;
+    const d = colorDistance({r,g,b}, hexToRgb(palette[i].hex));
+    if (d < minDist) { minDist = d; minIdx = i; }
+  }
+  return minIdx;
+}
+
+// 颜色量化：将图片颜色限制为 maxColors 种（取最接近色板颜色的那些）
+function quantizeColors(imageData, targetCount) {
+  const pixels = [];
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    pixels.push({
+      r: imageData.data[i],
+      g: imageData.data[i + 1],
+      b: imageData.data[i + 2]
+    });
+  }
+
+  if (targetCount === 0 || targetCount >= currentPalette.length) {
+    // 不限制，直接用色板匹配
+    return pixels.map(p => findNearestColor(p.r, p.g, p.b, currentPalette));
+  }
+
+  // 用中位切分法量化
+  function medianCut(buckets, depth) {
+    if (buckets.length >= targetCount || depth > 8) return buckets;
+    const newBuckets = [];
+    for (const bucket of buckets) {
+      if (bucket.length < 2) { newBuckets.push(bucket); continue; }
+      // 找范围最大的通道
+      let rMin=255,rMax=0,gMin=255,gMax=0,bMin=255,bMax=0;
+      for (const p of bucket) {
+        if(p.r<rMin)rMin=p.r;if(p.r>rMax)rMax=p.r;
+        if(p.g<gMin)gMin=p.g;if(p.g>gMax)gMax=p.g;
+        if(p.b<bMin)bMin=p.b;if(p.b>bMax)bMax=p.b;
+      }
+      const rR=rMax-rMin,gR=gMax-gMin,bR=bMax-bMin;
+      let channel = 'r';
+      if(gR>=rR&&gR>=bR)channel='g';
+      else if(bR>=rR&&bR>=gR)channel='b';
+      // 按该通道排序并切分
+      bucket.sort((a,b)=>a[channel]-b[channel]);
+      const mid = bucket.length >> 1;
+      newBuckets.push(bucket.slice(0,mid), bucket.slice(mid));
+    }
+    return medianCut(newBuckets, depth + 1);
+  }
+
+  const buckets = medianCut([pixels], 0);
+  // 每个bucket取平均色 -> 映射到最近色板颜色
+  const bucketColors = buckets.map(b => {
+    let sr=0,sg=0,sb=0;
+    for(const p of b){sr+=p.r;sg+=p.g;sb+=p.b}
+    const n = b.length;
+    return findNearestColor(Math.round(sr/n),Math.round(sg/n),Math.round(sb/n),currentPalette);
+  });
+
+  // 为每个像素找最近的bucket颜色
+  const bucketRgbs = bucketColors.map(i => hexToRgb(currentPalette[i].hex));
+  return pixels.map(p => {
+    let minD=Infinity,minI=0;
+    for(let i=0;i<bucketRgbs.length;i++){
+      const d=colorDistance(p,bucketRgbs[i]);
+      if(d<minD){minD=d;minI=i}
+    }
+    return bucketColors[minI];
+  });
+}
+
+// ====== 处理图片 ======
+function processImage(img) {
+  const w = beadCount;
+  const aspect = img.naturalHeight / img.naturalWidth;
+  const h = Math.max(1, Math.round(w * aspect));
+
+  // 先在临时canvas上缩放
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = w;
+  tmpCanvas.height = h;
+  const tmpCtx = tmpCanvas.getContext('2d');
+  tmpCtx.imageSmoothingEnabled = false;
+  tmpCtx.drawImage(img, 0, 0, w, h);
+  const imageData = tmpCtx.getImageData(0, 0, w, h);
+
+  // 颜色量化
+  const colorIndices = quantizeColors(imageData, maxColors);
+
+  beadData = { width: w, height: h, pixels: [] };
+  for (let row = 0; row < h; row++) {
+    for (let col = 0; col < w; col++) {
+      const idx = row * w + col;
+      beadData.pixels.push({ row, col, colorIndex: colorIndices[idx] });
+    }
+  }
+
+  renderCanvas();
+  updateStats();
+}
+
+// ====== 渲染画布 ======
+function renderCanvas() {
+  if (!beadData) return;
+  const { width, height, pixels } = beadData;
+  const cellSize = zoomLevel;
+  const canvasW = width * cellSize;
+  const canvasH = height * cellSize;
+
+  beadCanvas.width = canvasW;
+  beadCanvas.height = canvasH;
+  beadCanvas.style.display = 'block';
+  emptyState.style.display = 'none';
+
+  ctx.clearRect(0, 0, canvasW, canvasH);
+  ctx.imageSmoothingEnabled = false;
+
+  // 画珠子
+  for (const p of pixels) {
+    const x = p.col * cellSize;
+    const y = p.row * cellSize;
+    const c = currentPalette[p.colorIndex];
+    ctx.fillStyle = c.hex;
+    ctx.fillRect(x, y, cellSize, cellSize);
+
+    // 珠子圆形效果
+    const r = cellSize * 0.42;
+    const cx = x + cellSize / 2;
+    const cy = y + cellSize / 2;
+    const grad = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, r*0.1, cx, cy, r);
+    const rgb = hexToRgb(c.hex);
+    const bright = `rgb(${Math.min(255,rgb.r+40)},${Math.min(255,rgb.g+40)},${Math.min(255,rgb.b+40)})`;
+    const dark = `rgb(${Math.max(0,rgb.r-30)},${Math.max(0,rgb.g-30)},${Math.max(0,rgb.b-30)})`;
+    grad.addColorStop(0, bright);
+    grad.addColorStop(0.7, c.hex);
+    grad.addColorStop(1, dark);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 网格线
+  if (showGrid) {
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 0.5;
+    for (let col = 1; col < width; col++) {
+      ctx.beginPath();
+      ctx.moveTo(col * cellSize, 0);
+      ctx.lineTo(col * cellSize, canvasH);
+      ctx.stroke();
+    }
+    for (let row = 1; row < height; row++) {
+      ctx.beginPath();
+      ctx.moveTo(0, row * cellSize);
+      ctx.lineTo(canvasW, row * cellSize);
+      ctx.stroke();
+    }
+  }
+
+  // 编号
+  if (showNumbers && cellSize >= 8) {
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.font = `${Math.max(7, cellSize * 0.45)}px -apple-system,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const p of pixels) {
+      const cx = p.col * cellSize + cellSize / 2;
+      const cy = p.row * cellSize + cellSize / 2;
+      ctx.fillText(currentPalette[p.colorIndex].id, cx, cy);
+    }
+  }
+}
+
+// 颜色统计
+function updateStats() {
+  if (!beadData) return;
+  const counts = {};
+  for (const p of beadData.pixels) {
+    const idx = p.colorIndex;
+    counts[idx] = (counts[idx] || 0) + 1;
+  }
+
+  const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+  let total = 0;
+  statGrid.innerHTML = entries.map(([idx, count]) => {
+    total += count;
+    const c = currentPalette[parseInt(idx)];
+    return `<div class="stat-item">
+      <span class="stat-swatch" style="background:${c.hex}"></span>
+      <span>${c.name} ${count}</span>
+    </div>`;
+  }).join('');
+
+  totalBeadsEl.textContent = total;
+  statsPanel.style.display = 'block';
+}
+
+// ====== 上传处理 ======
+function handleFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      originalImage = img;
+      processImage(img);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+uploadZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+// 也支持全局粘贴
+document.addEventListener('paste', (e) => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      handleFile(item.getAsFile());
+      break;
+    }
+  }
+});
+
+// ====== 控制项 ======
+document.getElementById('beadSize').addEventListener('input', function() {
+  beadCount = parseInt(this.value);
+  document.getElementById('sizeVal').textContent = beadCount;
+  if (originalImage) processImage(originalImage);
+});
+document.getElementById('maxColors').addEventListener('input', function() {
+  maxColors = parseInt(this.value);
+  document.getElementById('colorVal').textContent = maxColors === 0 ? '自动' : maxColors;
+  if (originalImage) processImage(originalImage);
+});
+document.getElementById('zoomLevel').addEventListener('input', function() {
+  zoomLevel = parseInt(this.value);
+  document.getElementById('zoomVal').textContent = zoomLevel;
+  renderCanvas();
+});
+
+// 网格开关
+document.getElementById('toggleGrid').addEventListener('click', function() {
+  showGrid = !showGrid;
+  this.classList.toggle('active', showGrid);
+  renderCanvas();
+});
+
+// 编号开关
+document.getElementById('toggleNumbers').addEventListener('click', function() {
+  showNumbers = !showNumbers;
+  this.classList.toggle('active', showNumbers);
+  renderCanvas();
+});
+
+// 导出
+document.getElementById('btnExport').addEventListener('click', () => {
+  if (!beadData) { showToast('请先上传图片'); return; }
+  const link = document.createElement('a');
+  link.download = '拼豆图纸.png';
+  link.href = beadCanvas.toDataURL('image/png');
+  link.click();
+  showToast('图纸已导出');
+});
+
+// 打印
+document.getElementById('btnPrint').addEventListener('click', () => {
+  if (!beadData) { showToast('请先上传图片'); return; }
+  window.print();
+});
+
+// 清除
+document.getElementById('btnClear').addEventListener('click', () => {
+  originalImage = null;
+  beadData = null;
+  beadCanvas.style.display = 'none';
+  emptyState.style.display = 'flex';
+  statsPanel.style.display = 'none';
+  statGrid.innerHTML = '';
+  fileInput.value = '';
+  showToast('已清除');
+});
+
+// ====== Toast ======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ====== 色板渲染 ======
+const paletteGrid = document.createElement('div');
+paletteGrid.className = 'palette-grid';
+currentPalette.forEach((c, i) => {
+  const el = document.createElement('div');
+  el.className = 'palette-item';
+  el.style.background = c.hex;
+  el.title = `${c.id} ${c.name}`;
+  // 点击可切换颜色（替换为自定义色）
+  el.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = c.hex;
+    input.addEventListener('input', (ev) => {
+      currentPalette[i].hex = ev.target.value;
+      el.style.background = ev.target.value;
+      if (originalImage) processImage(originalImage);
+    });
+    input.click();
+    el.appendChild(input);
+    setTimeout(() => input.remove(), 0);
+  });
+  paletteGrid.appendChild(el);
+});
+
+// 插入色板到面板中（在控制项之后）
+const btnRow = document.querySelector('.btn-row');
+btnRow.parentNode.insertBefore(paletteGrid, btnRow);
+</script>
+</body>
+</html>
