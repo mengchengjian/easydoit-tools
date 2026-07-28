@@ -396,7 +396,18 @@ function processImage(img) {
   const tmpCtx = tmpCanvas.getContext('2d');
   tmpCtx.imageSmoothingEnabled = false;
   tmpCtx.drawImage(img, 0, 0, w, h);
-  const imageData = tmpCtx.getImageData(0, 0, w, h);
+
+  let imageData;
+  try {
+    imageData = tmpCtx.getImageData(0, 0, w, h);
+  } catch (e) {
+    if (e.name === 'SecurityError') {
+      showToast('file:// 协议下 Canvas 受限，请用 HTTP 服务器打开此页面', 4000);
+    } else {
+      showToast('图片处理失败：' + e.message);
+    }
+    return;
+  }
 
   // 颜色量化
   const colorIndices = quantizeColors(imageData, maxColors);
@@ -510,19 +521,27 @@ function updateStats() {
   statsPanel.style.display = 'block';
 }
 
+// ====== file:// 协议检测 ======
+const isFileProtocol = location.protocol === 'file:';
+
 // ====== 上传处理 ======
 function handleFile(file) {
   if (!file || !file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      originalImage = img;
-      processImage(img);
-    };
-    img.src = e.target.result;
+  if (isFileProtocol) {
+    showToast('file:// 协议下受限，建议用 python3 -m http.server 启动本地服务后打开', 4000);
+  }
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    originalImage = img;
+    processImage(img);
+    URL.revokeObjectURL(url);
   };
-  reader.readAsDataURL(file);
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    showToast('图片加载失败');
+  };
+  img.src = url;
 }
 
 uploadZone.addEventListener('click', () => fileInput.click());
@@ -582,11 +601,15 @@ document.getElementById('toggleNumbers').addEventListener('click', function() {
 // 导出
 document.getElementById('btnExport').addEventListener('click', () => {
   if (!beadData) { showToast('请先上传图片'); return; }
-  const link = document.createElement('a');
-  link.download = '拼豆图纸.png';
-  link.href = beadCanvas.toDataURL('image/png');
-  link.click();
-  showToast('图纸已导出');
+  try {
+    const link = document.createElement('a');
+    link.download = '拼豆图纸.png';
+    link.href = beadCanvas.toDataURL('image/png');
+    link.click();
+    showToast('图纸已导出');
+  } catch (e) {
+    showToast('导出失败，请用 HTTP 服务器打开此页面', 3000);
+  }
 });
 
 // 打印
@@ -608,12 +631,12 @@ document.getElementById('btnClear').addEventListener('click', () => {
 });
 
 // ====== Toast ======
-function showToast(msg) {
+function showToast(msg, duration = 1800) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+  t._timer = setTimeout(() => t.classList.remove('show'), duration);
 }
 
 // ====== 色板渲染 ======
