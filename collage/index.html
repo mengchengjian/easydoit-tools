@@ -530,11 +530,13 @@ async function generateCollages() {
     newCollages.push({ id: Date.now() + g, indices, canvasUrl: URL.createObjectURL(blob), blob, kept: false });
   }
 
-  collages = newCollages;
+  // Keep existing kept collages, append new ones
+  const keptCollages = collages.filter(c => c.kept);
+  collages = [...keptCollages, ...newCollages];
   renderResults();
   updateBottomBar();
   document.getElementById('btnGenerate').disabled = false;
-  showToast('已生成 ' + collages.length + ' 张拼图');
+  showToast('已生成 ' + newCollages.length + ' 张拼图（保留 ' + keptCollages.length + ' 张不变）');
 }
 
 // ─── Results ───────────────────────────────
