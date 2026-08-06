@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion Photo Generator</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:#f5f5f5;color:#333;line-height:1.5}
+.container{max-width:720px;margin:0 auto;padding:32px 20px 60px}
+h1{font-size:1.5rem;font-weight:600;color:#222;margin-bottom:4px}
+.subtitle{color:#888;font-size:.85rem;margin-bottom:32px}
+
+/* Drop Zone */
+.drop-zone{border:1.5px dashed #ccc;border-radius:6px;padding:36px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:#fafafa}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#888;background:#f0f0f0}
+.drop-zone-icon{font-size:2rem;color:#bbb;margin-bottom:8px;display:block;line-height:1}
+.drop-zone-text{color:#666;font-size:.9rem}
+.drop-zone-hint{color:#aaa;font-size:.8rem;margin-top:4px}
+.drop-zone input{display:none}
+
+/* Image Grid */
+.image-grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.image-item{position:relative;border-radius:4px;overflow:hidden;aspect-ratio:1;background:#e9ecef;border:1px solid #eee}
+.image-item img{width:100%;height:100%;object-fit:cover;display:block}
+.image-item .remove-btn{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:12px;line-height:22px;text-align:center;opacity:0;transition:opacity .15s}
+.image-item:hover .remove-btn{opacity:1}
+.image-item .remove-btn:hover{background:rgba(0,0,0,.75)}
+
+/* Controls */
+.controls{margin-top:20px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.control-group{display:flex;flex-direction:column;gap:4px}
+.control-group label{font-size:.8rem;color:#666}
+.control-group input,.control-group select{height:32px;padding:0 8px;border:1px solid #ccc;border-radius:4px;font-size:.85rem;color:#333;background:#fff;outline:none}
+.control-group input:focus,.control-group select:focus{border-color:#888}
+.btn{padding:0 20px;height:32px;border:none;border-radius:4px;font-size:.85rem;cursor:pointer;font-weight:500;transition:background .15s}
+.btn-primary{background:#444;color:#fff}
+.btn-primary:hover{background:#333}
+.btn-primary:disabled{background:#bbb;cursor:not-allowed}
+.btn-secondary{background:#eee;color:#333}
+.btn-secondary:hover{background:#ddd}
+
+/* Progress */
+.progress-area{margin-top:24px}
+.progress-bar-wrap{height:4px;background:#e9ecef;border-radius:2px;overflow:hidden}
+.progress-bar{height:100%;background:#555;transition:width .2s;width:0}
+.progress-text{margin-top:6px;font-size:.8rem;color:#888}
+
+/* Results */
+.results{margin-top:24px}
+.result-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #eee;border-radius:4px;margin-bottom:6px;background:#fff;transition:border-color .15s}
+.result-item:hover{border-color:#ccc}
+.result-item .thumb{width:48px;height:48px;border-radius:3px;overflow:hidden;flex-shrink:0;background:#e9ecef}
+.result-item .thumb img,.result-item .thumb video{width:100%;height:100%;object-fit:cover}
+.result-item .info{flex:1;min-width:0}
+.result-item .info .name{font-size:.85rem;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-item .info .size{font-size:.75rem;color:#999}
+.result-item .actions{display:flex;gap:6px}
+.result-item .actions .btn{padding:0 12px;height:28px;font-size:.8rem}
+
+/* Empty state */
+.empty-state{text-align:center;padding:40px 0;color:#aaa;font-size:.85rem}
+
+/* Footer */
+.footer{margin-top:40px;text-align:center;font-size:.75rem;color:#bbb}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Motion Photo Generator</h1>
+  <p class="subtitle">将静态图片转为带有 Ken Burns 动画效果的视频，纯浏览器端处理，无需上传。</p>
+
+  <div class="drop-zone" id="dropZone">
+    <span class="drop-zone-icon">+</span>
+    <div class="drop-zone-text">拖拽图片到这里，或点击选择</div>
+    <div class="drop-zone-hint">支持 JPG / PNG / WebP，可多选</div>
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple>
+  </div>
+
+  <div class="image-grid" id="imageGrid"></div>
+
+  <div class="controls" id="controls" style="display:none">
+    <div class="control-group">
+      <label>时长 (秒)</label>
+      <input type="number" id="duration" value="3" min="1" max="10" step="0.5" style="width:70px">
+    </div>
+    <div class="control-group">
+      <label>缩放强度</label>
+      <select id="zoomLevel" style="width:90px">
+        <option value="0.008">轻微</option>
+        <option value="0.015" selected>适中</option>
+        <option value="0.03">较强</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>帧率</label>
+      <select id="fps" style="width:80px">
+        <option value="24">24</option>
+        <option value="30" selected>30</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="processBtn" disabled>生成视频</button>
+    <button class="btn btn-secondary" id="downloadAllBtn" style="display:none">打包下载 ZIP</button>
+  </div>
+
+  <div class="progress-area" id="progressArea" style="display:none">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+
+  <div class="results" id="results"></div>
+
+  <div class="footer">所有处理均在浏览器本地完成，图片不会上传到任何服务器。</div>
+</div>
+
+<script>
+(function() {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const imageGrid = document.getElementById('imageGrid');
+  const controls = document.getElementById('controls');
+  const processBtn = document.getElementById('processBtn');
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
+  const progressArea = document.getElementById('progressArea');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const results = document.getElementById('results');
+
+  let selectedFiles = [];
+  let generatedBlobs = [];
+
+  // --- File handling ---
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    addFiles(Array.from(e.dataTransfer.files));
+  });
+  fileInput.addEventListener('change', () => addFiles(Array.from(fileInput.files)));
+
+  function addFiles(files) {
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+    if (imageFiles.length === 0) return;
+    selectedFiles = [...selectedFiles, ...imageFiles];
+    fileInput.value = '';
+    renderGrid();
+    updateUI();
+  }
+
+  function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderGrid();
+    updateUI();
+  }
+
+  function renderGrid() {
+    imageGrid.innerHTML = '';
+    selectedFiles.forEach((file, i) => {
+      const item = document.createElement('div');
+      item.className = 'image-item';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.onload = () => URL.revokeObjectURL(img.src);
+      const btn = document.createElement('button');
+      btn.className = 'remove-btn';
+      btn.textContent = 'x';
+      btn.onclick = (e) => { e.stopPropagation(); removeFile(i); };
+      item.appendChild(img);
+      item.appendChild(btn);
+      imageGrid.appendChild(item);
+    });
+  }
+
+  function updateUI() {
+    controls.style.display = selectedFiles.length > 0 ? 'flex' : 'none';
+    processBtn.disabled = selectedFiles.length === 0;
+    if (generatedBlobs.length > 0) {
+      downloadAllBtn.style.display = 'inline-block';
+    }
+  }
+
+  // --- Video generation ---
+  function renderFrame(ctx, img, frameIndex, totalFrames, scaleStart, scaleEnd, w, h) {
+    const progress = frameIndex / Math.max(totalFrames - 1, 1);
+    const scale = scaleStart + (scaleEnd - scaleStart) * progress;
+    const srcW = img.naturalWidth;
+    const srcH = img.naturalHeight;
+
+    // Fit image to canvas, then apply zoom
+    const canvasRatio = w / h;
+    const imgRatio = srcW / srcH;
+    let drawW, drawH;
+    if (imgRatio > canvasRatio) {
+      drawH = h * scale;
+      drawW = drawH * imgRatio;
+    } else {
+      drawW = w * scale;
+      drawH = drawW / imgRatio;
+    }
+
+    const left = (w - drawW) / 2;
+    const top = (h - drawH) / 2;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, left, top, drawW, drawH);
+  }
+
+  function generateVideo(file, duration, zoomLevel, fps) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+
+        // Enforce reasonable max resolution for performance
+        const maxDim = 1200;
+        let cw = w, ch = h;
+        if (Math.max(w, h) > maxDim) {
+          const ratio = maxDim / Math.max(w, h);
+          cw = Math.round(w * ratio);
+          ch = Math.round(h * ratio);
+          // Ensure even dimensions
+          cw = cw - (cw % 2);
+          ch = ch - (ch % 2);
+        } else {
+          cw = cw - (cw % 2);
+          ch = ch - (ch % 2);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = cw;
+        canvas.height = ch;
+        const ctx = canvas.getContext('2d');
+
+        const totalFrames = Math.round(duration * fps);
+        const scaleStart = 1.0;
+        const scaleEnd = 1.0 + parseFloat(zoomLevel);
+
+        // Determine supported MIME type
+        const mimeTypes = [
+          'video/webm;codecs=vp9',
+          'video/webm;codecs=vp8',
+          'video/webm'
+        ];
+        let mimeType = '';
+        for (const mt of mimeTypes) {
+          if (MediaRecorder.isTypeSupported(mt)) {
+            mimeType = mt;
+            break;
+          }
+        }
+        if (!mimeType) {
+          reject(new Error('浏览器不支持 MediaRecorder'));
+          return;
+        }
+
+        const stream = canvas.captureStream(fps);
+        const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 5000000 });
+        const chunks = [];
+
+        recorder.ondataavailable = e => {
+          if (e.data.size > 0) chunks.push(e.data);
+        };
+
+        let currentFrame = 0;
+        let lastFrameTime = 0;
+        const frameDuration = 1000 / fps;
+
+        function frameLoop(timestamp) {
+          if (currentFrame >= totalFrames) {
+            recorder.stop();
+            return;
+          }
+          if (!lastFrameTime) lastFrameTime = timestamp;
+          const elapsed = timestamp - lastFrameTime;
+
+          if (elapsed >= frameDuration) {
+            renderFrame(ctx, img, currentFrame, totalFrames, scaleStart, scaleEnd, cw, ch);
+            currentFrame++;
+            lastFrameTime = timestamp;
+          }
+          requestAnimationFrame(frameLoop);
+        }
+
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, { type: mimeType });
+          resolve({ blob, name: file.name.replace(/\.[^.]+$/, '') + '.webm', width: cw, height: ch });
+        };
+
+        recorder.onerror = () => reject(new Error('录制失败'));
+
+        // Render first frame immediately, then start
+        renderFrame(ctx, img, 0, totalFrames, scaleStart, scaleEnd, cw, ch);
+        recorder.start(100);
+        requestAnimationFrame(frameLoop);
+      };
+      img.onerror = () => reject(new Error('图片加载失败'));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // --- Process all ---
+  processBtn.addEventListener('click', async () => {
+    if (selectedFiles.length === 0) return;
+
+    const duration = parseFloat(document.getElementById('duration').value);
+    const zoomLevel = document.getElementById('zoomLevel').value;
+    const fps = parseInt(document.getElementById('fps').value);
+
+    processBtn.disabled = true;
+    progressArea.style.display = 'block';
+    results.innerHTML = '';
+
+    const total = selectedFiles.length;
+    let completed = 0;
+
+    for (let i = 0; i < total; i++) {
+      progressText.textContent = `处理中 ${i + 1}/${total}: ${selectedFiles[i].name}`;
+      progressBar.style.width = ((i / total) * 100) + '%';
+
+      try {
+        const result = await generateVideo(selectedFiles[i], duration, zoomLevel, fps);
+        generatedBlobs.push(result);
+        addResultItem(result, generatedBlobs.length - 1);
+      } catch (err) {
+        const errorItem = document.createElement('div');
+        errorItem.className = 'result-item';
+        errorItem.innerHTML = `<div class="info"><div class="name">${selectedFiles[i].name}</div><div class="size" style="color:#c33">${err.message}</div></div>`;
+        results.appendChild(errorItem);
+      }
+
+      completed++;
+    }
+
+    progressBar.style.width = '100%';
+    progressText.textContent = `完成 ${completed}/${total}`;
+    processBtn.disabled = false;
+    downloadAllBtn.style.display = generatedBlobs.length > 0 ? 'inline-block' : 'none';
+  });
+
+  function addResultItem(item, index) {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+
+    const url = URL.createObjectURL(item.blob);
+    const sizeMB = (item.blob.size / (1024 * 1024)).toFixed(2);
+
+    div.innerHTML = `
+      <div class="thumb"><video src="${url}" muted loop preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video></div>
+      <div class="info">
+        <div class="name">${item.name}</div>
+        <div class="size">${item.width}x${item.height} | ${sizeMB} MB</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary dl-single">下载</button>
+      </div>
+    `;
+
+    div.querySelector('.dl-single').onclick = () => downloadBlob(item.blob, item.name);
+    results.appendChild(div);
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // --- ZIP download ---
+  downloadAllBtn.addEventListener('click', () => {
+    if (generatedBlobs.length === 0) return;
+    downloadAsZip(generatedBlobs);
+  });
+
+  function downloadAsZip(items) {
+    // Minimal ZIP builder (store-only, no compression)
+    const encoder = new TextEncoder();
+    const parts = [];
+    const centralDir = [];
+    let offset = 0;
+
+    // CRC32 table
+    const crcTable = new Uint32Array(256);
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let j = 0; j < 8; j++) {
+        c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      crcTable[i] = c;
+    }
+
+    function crc32(data) {
+      let crc = 0xFFFFFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc = crcTable[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+      }
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    // Current time for file headers (MS-DOS format)
+    const now = new Date();
+    const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+
+    for (const item of items) {
+      const nameBytes = encoder.encode(item.name);
+      const data = new Uint8Array(item.blob.size);
+      // Read blob as ArrayBuffer synchronously... can't. Need to use FileReader.
+
+      // Actually, we need async reading for blobs. Let's use a different approach.
+      // For now, let's build the ZIP using async reads.
+    }
+
+    // Since blobs need async reading, rewrite this properly
+    buildZipAsync(items);
+  }
+
+  async function buildZipAsync(items) {
+    progressText.textContent = '正在打包 ZIP...';
+    progressBar.style.width = '0%';
+
+    const encoder = new TextEncoder();
+    const allParts = [];
+    let offset = 0;
+    const centralDirEntries = [];
+
+    const crcTable = new Uint32Array(256);
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let j = 0; j < 8; j++) {
+        c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      crcTable[i] = c;
+    }
+
+    function crc32(data) {
+      let crc = 0xFFFFFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc = crcTable[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+      }
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    const now = new Date();
+    const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      progressBar.style.width = ((i / items.length) * 90) + '%';
+
+      const nameBytes = encoder.encode(item.name);
+      const arrayBuf = await item.blob.arrayBuffer();
+      const data = new Uint8Array(arrayBuf);
+      const crc = crc32(data);
+      const size = data.length;
+
+      // Local file header
+      const localHeader = new Uint8Array(30 + nameBytes.length);
+      const lhView = new DataView(localHeader.buffer);
+      lhView.setUint32(0, 0x04034b50, true);
+      lhView.setUint16(4, 20, true); // version needed
+      lhView.setUint16(6, 0x0800, true); // bit flag (UTF-8)
+      lhView.setUint16(8, 0, true); // compression: store
+      lhView.setUint16(10, dosTime, true);
+      lhView.setUint16(12, dosDate, true);
+      lhView.setUint32(14, crc, true);
+      lhView.setUint32(18, size, true); // compressed size
+      lhView.setUint32(22, size, true); // uncompressed size
+      lhView.setUint16(26, nameBytes.length, true);
+      lhView.setUint16(28, 0, true); // extra field length
+      localHeader.set(nameBytes, 30);
+
+      allParts.push(localHeader);
+      allParts.push(data);
+
+      const entryOffset = offset;
+      offset += localHeader.length + size;
+
+      // Central directory entry
+      const cdEntry = new Uint8Array(46 + nameBytes.length);
+      const cdView = new DataView(cdEntry.buffer);
+      cdView.setUint32(0, 0x02014b50, true);
+      cdView.setUint16(4, 20, true); // version made by
+      cdView.setUint16(6, 20, true); // version needed
+      cdView.setUint16(8, 0x0800, true); // bit flag
+      cdView.setUint16(10, 0, true); // compression
+      cdView.setUint16(12, dosTime, true);
+      cdView.setUint16(14, dosDate, true);
+      cdView.setUint32(16, crc, true);
+      cdView.setUint32(20, size, true);
+      cdView.setUint32(24, size, true);
+      cdView.setUint16(28, nameBytes.length, true);
+      cdView.setUint16(30, 0, true); // extra field
+      cdView.setUint16(32, 0, true); // file comment
+      cdView.setUint16(34, 0, true); // disk start
+      cdView.setUint16(36, 0, true); // internal attr
+      cdView.setUint32(38, 0, true); // external attr
+      cdView.setUint32(42, entryOffset, true);
+      cdEntry.set(nameBytes, 46);
+
+      centralDirEntries.push(cdEntry);
+    }
+
+    // Write central directory
+    const cdOffset = offset;
+    for (const entry of centralDirEntries) {
+      allParts.push(entry);
+      offset += entry.length;
+    }
+    const cdSize = offset - cdOffset;
+
+    // EOCD
+    const eocd = new Uint8Array(22);
+    const eocdView = new DataView(eocd.buffer);
+    eocdView.setUint32(0, 0x06054b50, true);
+    eocdView.setUint16(4, 0, true); // disk
+    eocdView.setUint16(6, 0, true); // disk with cd
+    eocdView.setUint16(8, items.length, true); // entries on disk
+    eocdView.setUint16(10, items.length, true); // total entries
+    eocdView.setUint32(12, cdSize, true);
+    eocdView.setUint32(16, cdOffset, true);
+    eocdView.setUint16(20, 0, true); // comment length
+
+    allParts.push(eocd);
+
+    const zipBlob = new Blob(allParts, { type: 'application/zip' });
+    downloadBlob(zipBlob, 'motion-photos.zip');
+
+    progressBar.style.width = '100%';
+    progressText.textContent = 'ZIP 打包完成';
+  }
+
+  // Initialize
+  updateUI();
+})();
+</script>
+</body>
+</html>
